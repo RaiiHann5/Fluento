@@ -1,0 +1,151 @@
+<div class="flex h-screen">
+        <!-- SIDEBAR - PERSIS KAYAK GAMBAR PAKE AFACAD -->
+        <div class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <!-- Calendar -->
+            <div class="p-4">
+                <div class="flex items-center gap-3 px-3 py-2 bg-gray-100 rounded-lg text-gray-700 font-medium">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <span class="font-afacad">Calendar</span>
+                </div>
+            </div>
+
+            <!-- Workspaces Section -->
+            <div class="px-4 py-2">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider font-afacad">Workspaces</span>
+                    <button class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Best data organization text -->
+                <p class="text-xs text-gray-500 mb-3 leading-relaxed font-afacad">
+                    Best data organization. Choose a client or brand and get everything related to it in one place.
+                </p>
+
+                <!-- How Workspaces work link -->
+                <a href="#" class="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 mb-4 font-afacad">
+                    <span>How Workspaces work</span>
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+
+                <!-- Clients List -->
+                <div class="space-y-1">
+                    <!-- Client 1 -->
+                    <div class="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-100 rounded-lg cursor-pointer">
+                        <div class="w-5 h-5 bg-blue-100 rounded flex items-center justify-center text-xs text-blue-600 font-medium font-afacad">C1</div>
+                        <span class="text-sm text-gray-700 font-afacad">Client 1</span>
+                    </div>
+                    
+                    <!-- Client 2 (active) -->
+                    <div class="flex items-center gap-2 px-2 py-1.5 bg-blue-50 rounded-lg cursor-pointer">
+                        <div class="w-5 h-5 bg-blue-500 rounded flex items-center justify-center text-xs text-white font-medium font-afacad">C2</div>
+                        <span class="text-sm font-medium text-blue-700 font-afacad">Client 2</span>
+                    </div>
+                    
+                    <!-- Client 3 -->
+                    <div class="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-100 rounded-lg cursor-pointer">
+                        <div class="w-5 h-5 bg-green-100 rounded flex items-center justify-center text-xs text-green-600 font-medium font-afacad">C3</div>
+                        <span class="text-sm text-gray-700 font-afacad">Client 3</span>
+                    </div>
+                    
+                    <!-- Client 4 -->
+                    <div class="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-100 rounded-lg cursor-pointer">
+                        <div class="w-5 h-5 bg-purple-100 rounded flex items-center justify-center text-xs text-purple-600 font-medium font-afacad">C4</div>
+                        <span class="text-sm text-gray-700 font-afacad">Client 4</span>
+                    </div>
+                </div>
+
+                <!-- Client 2 Submenu (Apps & Chat) -->
+                <div class="mt-4 pl-7 border-l-2 border-blue-200 ml-2">
+                    <p class="text-xs font-semibold text-gray-500 mb-2 font-afacad">Client 2</p>
+                    <div class="space-y-1">
+                        <!-- Apps -->
+                        <div class="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-100 rounded-lg cursor-pointer">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                            </svg>
+                            <span class="text-sm text-gray-600 font-afacad">Apps</span>
+                        </div>
+                        
+                        <!-- Chat -->
+                        <div class="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-100 rounded-lg cursor-pointer">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                            </svg>
+                            <span class="text-sm text-gray-600 font-afacad">Chat</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom section -->
+            <div class="mt-auto p-4 border-t border-gray-200">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gradient-to-br from-yellow-300 to-orange-400 rounded-full flex items-center justify-center text-white">
+                        <span class="text-sm font-bold">🌱</span>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium font-afacad">Fluento Seeds</p>
+                        <p class="text-xs text-gray-400 font-afacad">fluento@seeds.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="flex-1 flex flex-col">
+            <!-- Top bar -->
+            <div class="bg-white border-b border-gray-200 px-6 py-3">
+                <h1 class="text-xl font-semibold text-gray-800 font-afacad">#Calendar</h1>
+            </div>
+            
+            <!-- Calendar content -->
+            <div class="flex-1 p-6">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                    <!-- Calendar grid placeholder -->
+                    <div class="grid grid-cols-7 gap-2">
+                        <!-- Week days -->
+                        <div class="text-center text-sm font-medium text-gray-500 py-2 font-afacad">Mon</div>
+                        <div class="text-center text-sm font-medium text-gray-500 py-2 font-afacad">Tue</div>
+                        <div class="text-center text-sm font-medium text-gray-500 py-2 font-afacad">Wed</div>
+                        <div class="text-center text-sm font-medium text-gray-500 py-2 font-afacad">Thu</div>
+                        <div class="text-center text-sm font-medium text-gray-500 py-2 font-afacad">Fri</div>
+                        <div class="text-center text-sm font-medium text-gray-500 py-2 font-afacad">Sat</div>
+                        <div class="text-center text-sm font-medium text-gray-500 py-2 font-afacad">Sun</div>
+                        
+                        <!-- Calendar dates -->
+                        <div class="text-center text-sm text-gray-400 py-2 font-afacad">29</div>
+                        <div class="text-center text-sm text-gray-400 py-2 font-afacad">30</div>
+                        <div class="text-center text-sm text-gray-400 py-2 font-afacad">31</div>
+                        <div class="text-center text-sm text-gray-700 font-medium py-2 bg-blue-50 rounded font-afacad">1</div>
+                        <div class="text-center text-sm text-gray-700 py-2 font-afacad">2</div>
+                        <div class="text-center text-sm text-gray-700 py-2 font-afacad">3</div>
+                        <div class="text-center text-sm text-gray-700 py-2 font-afacad">4</div>
+                        
+                        <div class="text-center text-sm text-gray-700 py-2 font-afacad">5</div>
+                        <div class="text-center text-sm text-gray-700 py-2 font-afacad">6</div>
+                        <div class="text-center text-sm text-gray-700 py-2 font-afacad">7</div>
+                        <div class="text-center text-sm text-gray-700 py-2 font-afacad">8</div>
+                        <div class="text-center text-sm text-gray-700 py-2 font-afacad">9</div>
+                        <div class="text-center text-sm text-gray-700 py-2 font-afacad">10</div>
+                        <div class="text-center text-sm text-gray-700 py-2 font-afacad">11</div>
+                        
+                        <div class="text-center text-sm text-gray-700 py-2 font-afacad">12</div>
+                        <div class="text-center text-sm text-gray-700 py-2 font-afacad">13</div>
+                        <div class="text-center text-sm text-gray-700 py-2 font-afacad">14</div>
+                        <div class="text-center text-sm text-gray-700 py-2 font-afacad">15</div>
+                        <div class="text-center text-sm text-gray-700 py-2 font-afacad">16</div>
+                        <div class="text-center text-sm text-gray-700 py-2 font-afacad">17</div>
+                        <div class="text-center text-sm text-gray-700 py-2 font-afacad">18</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

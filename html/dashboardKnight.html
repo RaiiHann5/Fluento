@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fluento Knight</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Afacad:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Afacad', sans-serif; background: #f0f2f7; min-height: 100vh; }
+
+    @keyframes sidebarIn { from{opacity:0;transform:translateX(-28px) scale(.96)} to{opacity:1;transform:none} }
+    @keyframes itemIn    { from{opacity:0;transform:translateX(-12px)} to{opacity:1;transform:none} }
+    @keyframes cardIn    { 0%{opacity:0;transform:translateY(20px) scale(.95)} 65%{transform:translateY(-4px) scale(1.01)} 100%{opacity:1;transform:none} }
+    @keyframes ripple    { from{transform:scale(0);opacity:.3} to{transform:scale(5);opacity:0} }
+    @keyframes pulseAva  { 0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,.5)} 50%{box-shadow:0 0 0 7px rgba(251,191,36,0)} }
+    @keyframes shimmer   { 0%{background-position:-200% center} 100%{background-position:200% center} }
+    @keyframes pageIn    { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:none} }
+    @keyframes barGrow   { from{width:0} to{width:var(--w)} }
+
+    /* SIDEBAR */
+    #sidebar {
+      background:#fff; border-radius:0 20px 20px 0;
+      box-shadow:4px 0 32px rgba(0,0,0,.08);
+      position:fixed; top:0; left:0; height:100vh; width:240px;
+      display:flex; flex-direction:column; overflow:hidden;
+      transition:width .35s cubic-bezier(.4,0,.2,1), box-shadow .3s;
+      animation:sidebarIn .5s cubic-bezier(.22,1,.36,1) both; z-index:100;
+    }
+    #sidebar:hover { box-shadow:6px 0 48px rgba(0,0,0,.12); }
+    #sidebar.collapsed { width:68px; }
+
+    #toggleBtn {
+      position:absolute; top:18px; right:-13px; width:26px; height:26px;
+      background:#fff; border:1.5px solid #e4e6ed; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; z-index:20; box-shadow:0 2px 8px rgba(0,0,0,.1);
+      transition:background .2s; color:#9098a9;
+    }
+    #toggleBtn:hover { background:#f5f6fa; color:#333; }
+    #toggleBtn svg { transition:transform .35s cubic-bezier(.4,0,.2,1); }
+    #sidebar.collapsed #toggleBtn svg { transform:rotate(180deg); }
+
+    #scrollArea {
+      flex:1; overflow-y:auto; overflow-x:hidden; padding:20px 12px 8px;
+      scrollbar-width:thin; scrollbar-color:#dde1eb transparent;
+    }
+    #scrollArea::-webkit-scrollbar { width:4px; }
+    #scrollArea::-webkit-scrollbar-thumb { background:#dde1eb; border-radius:4px; }
+
+    .logo-area {
+      display:flex; align-items:center; gap:10px;
+      padding:4px 8px 18px; min-height:56px; overflow:hidden;
+      animation:itemIn .45s .05s cubic-bezier(.22,1,.36,1) both;
+    }
+    .logo-icon { width:32px; height:32px; background:linear-gradient(135deg,#6c85e8,#4a6cf7); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:transform .25s; }
+    .logo-icon:hover { transform:rotate(-6deg) scale(1.08); }
+    .logo-text { font-weight:700; font-size:17px; color:#1a1d2e; white-space:nowrap; letter-spacing:-.3px; transition:opacity .2s, transform .2s; }
+    #sidebar.collapsed .logo-text { opacity:0; transform:translateX(-8px); pointer-events:none; }
+    #sidebar.collapsed .logo-area { justify-content:center; padding-left:0; padding-right:0; }
+
+    .section-label { font-size:11px; font-weight:600; color:#b0b8c9; letter-spacing:.07em; text-transform:uppercase; padding:14px 8px 5px; white-space:nowrap; overflow:hidden; transition:opacity .2s, max-height .3s; max-height:40px; }
+    #sidebar.collapsed .section-label { opacity:0; max-height:0; padding-top:0; padding-bottom:0; }
+
+    .nav-item {
+      display:flex; align-items:center; gap:12px; padding:10px 12px;
+      border-radius:12px; cursor:pointer; color:#6e7a8a; margin-bottom:2px;
+      white-space:nowrap; position:relative; overflow:hidden;
+      transition:background .18s, color .18s, padding .35s cubic-bezier(.4,0,.2,1);
+      animation:itemIn .45s cubic-bezier(.22,1,.36,1) both;
+    }
+    .nav-item:hover  { background:#f5f6fb; color:#1a1d2e; }
+    .nav-item.active { background:#f0f3ff; color:#1a1d2e; }
+    .nav-item.active .nav-icon { color:#4a6cf7; }
+    .nav-item:hover .nav-icon svg { transform:translateY(-2px); }
+    #sidebar.collapsed .nav-item  { justify-content:center; padding:10px 0; }
+    #sidebar.collapsed .nav-label { opacity:0; width:0; overflow:hidden; }
+
+    .nav-icon { flex-shrink:0; width:22px; height:22px; display:flex; align-items:center; justify-content:center; transition:color .18s; }
+    .nav-icon svg { transition:transform .2s; width:19px; height:19px; }
+    .nav-label { font-size:15.5px; font-weight:500; color:inherit; transition:opacity .2s, width .35s cubic-bezier(.4,0,.2,1); overflow:hidden; }
+
+    .ripple-el { position:absolute; border-radius:50%; width:30px; height:30px; background:rgba(74,108,247,.18); pointer-events:none; transform:scale(0); animation:ripple .55s ease-out forwards; }
+    .divider { height:1px; background:#f0f2f7; margin:8px 4px; }
+
+    .nav-item:nth-child(1){animation-delay:.06s} .nav-item:nth-child(2){animation-delay:.11s}
+    .nav-item:nth-child(3){animation-delay:.16s} .nav-item:nth-child(4){animation-delay:.21s}
+    .nav-item:nth-child(5){animation-delay:.26s} .nav-item:nth-child(6){animation-delay:.31s}
+    .nav-item:nth-child(7){animation-delay:.36s} .nav-item:nth-child(8){animation-delay:.41s}
+    .nav-item:nth-child(9){animation-delay:.46s} .nav-item:nth-child(10){animation-delay:.51s}
+
+    /* Profile card */
+    #profileCard { margin:0 12px 16px; border-radius:16px; background:linear-gradient(145deg,#fde68a,#fbbf24 45%,#fb923c); padding:15px; flex-shrink:0; position:relative; overflow:hidden; transition:padding .35s cubic-bezier(.4,0,.2,1), transform .25s, box-shadow .25s; animation:cardIn .6s .55s cubic-bezier(.22,1,.36,1) both; cursor:pointer; }
+    #profileCard::before { content:''; position:absolute; top:-30px; right:-30px; width:90px; height:90px; background:rgba(255,255,255,.15); border-radius:50%; }
+    #profileCard::after  { content:''; position:absolute; bottom:-20px; left:-20px; width:70px; height:70px; background:rgba(255,255,255,.10); border-radius:50%; }
+    #profileCard:hover   { transform:translateY(-2px); box-shadow:0 8px 28px rgba(251,146,60,.4); }
+    .shimmer { position:absolute; inset:0; background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.22) 50%,transparent 65%); background-size:200% 100%; animation:shimmer 3.5s linear infinite; border-radius:inherit; pointer-events:none; }
+    .profile-inner { position:relative; z-index:1; transition:opacity .2s; }
+    #sidebar.collapsed .profile-inner { opacity:0; pointer-events:none; height:0; overflow:hidden; }
+    .avatar-ring { width:36px; height:36px; background:rgba(255,255,255,.3); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; animation:pulseAva 2.4s ease-in-out infinite; border:2px solid rgba(255,255,255,.5); }
+    .profile-name { font-size:15px; font-weight:700; color:#1a1a00; line-height:1.1; }
+    .profile-role { font-size:11.5px; font-weight:500; color:rgba(0,0,0,.5); margin-top:1px; }
+    .profile-collapsed-icon { display:none; justify-content:center; position:relative; z-index:1; }
+    #sidebar.collapsed .profile-collapsed-icon { display:flex; }
+    #sidebar.collapsed #profileCard { padding:12px 0; }
+    .avatar-ring-sm { width:40px; height:40px; background:rgba(255,255,255,.3); border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid rgba(255,255,255,.5); animation:pulseAva 2.4s ease-in-out infinite; }
+
+    /* MAIN */
+    #main { margin-left:240px; min-height:100vh; padding:40px 44px; transition:margin-left .35s cubic-bezier(.4,0,.2,1); }
+    body.collapsed-body #main { margin-left:68px; }
+
+    .page { display:none; animation:pageIn .35s cubic-bezier(.22,1,.36,1) both; }
+    .page.active { display:block; }
+
+    /* Page header */
+    .ph { display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+    .ph-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .ph-icon svg { width:22px; height:22px; color:#fff; }
+    .page-title { font-size:26px; font-weight:700; color:#1a1d2e; letter-spacing:-.4px; }
+    .page-sub   { font-size:15px; color:#9098a9; margin-bottom:28px; margin-left:56px; }
+    .sec-title  { font-size:16px; font-weight:700; color:#1a1d2e; margin-bottom:12px; margin-top:4px; }
+
+    /* Stat cards */
+    .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:16px; margin-bottom:24px; }
+    .card { background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,.05); transition:transform .2s, box-shadow .2s; }
+    .card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.1); }
+    .card-icon { margin-bottom:12px; } .card-icon svg { width:24px; height:24px; }
+    .card-label { font-size:12px; font-weight:600; color:#9098a9; text-transform:uppercase; letter-spacing:.05em; }
+    .card-val   { font-size:28px; font-weight:700; color:#1a1d2e; margin-top:2px; line-height:1; }
+    .card-hint  { font-size:12px; color:#b0b8c9; margin-top:4px; }
+
+    /* Streak */
+    .streak-box { background:#fff; border-radius:16px; padding:20px 22px; box-shadow:0 2px 12px rgba(0,0,0,.05); margin-bottom:24px; }
+    .streak-days { display:flex; gap:8px; margin-top:12px; }
+    .sday { flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; }
+    .sday-dot { width:32px; height:32px; border-radius:50%; background:#f0f2f7; display:flex; align-items:center; justify-content:center; }
+    .sday-dot.done  { background:linear-gradient(135deg,#fbbf24,#f97316); }
+    .sday-dot.today { background:linear-gradient(135deg,#4a6cf7,#6c85e8); box-shadow:0 0 0 3px rgba(74,108,247,.2); }
+    .sday-dot svg { width:14px; height:14px; color:#fff; }
+    .sday-lbl { font-size:11px; color:#b0b8c9; font-weight:500; }
+
+    /* Lesson grid */
+    .lesson-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; margin-bottom:24px; }
+    .lesson-card { background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,.05); transition:transform .2s, box-shadow .2s; cursor:pointer; display:flex; flex-direction:column; gap:10px; }
+    .lesson-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.1); }
+    .lc-top { display:flex; align-items:center; justify-content:space-between; }
+    .lc-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; }
+    .lc-icon svg { width:20px; height:20px; color:#fff; }
+    .lc-badge { font-size:11px; font-weight:600; padding:3px 8px; border-radius:99px; }
+    .lc-title { font-size:16px; font-weight:700; color:#1a1d2e; }
+    .lc-sub   { font-size:13px; color:#9098a9; }
+    .lc-prog  { height:5px; border-radius:99px; background:#f0f2f7; overflow:hidden; }
+    .lc-fill  { height:100%; border-radius:99px; animation:barGrow 1s .3s ease both; }
+
+    /* Quest rows */
+    .quest-list { display:flex; flex-direction:column; gap:10px; margin-bottom:24px; }
+    .quest-row { background:#fff; border-radius:14px; padding:16px 18px; box-shadow:0 2px 12px rgba(0,0,0,.05); display:flex; align-items:center; gap:14px; transition:transform .18s, box-shadow .18s; cursor:pointer; }
+    .quest-row:hover { transform:translateX(4px); box-shadow:0 4px 18px rgba(0,0,0,.08); }
+    .quest-ico { width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .quest-ico svg { width:20px; height:20px; color:#fff; }
+    .quest-info { flex:1; }
+    .quest-name { font-size:15px; font-weight:600; color:#1a1d2e; }
+    .quest-desc { font-size:13px; color:#9098a9; margin-top:1px; }
+    .quest-xp   { font-size:13px; font-weight:700; color:#f59e0b; white-space:nowrap; }
+    .quest-done   { width:26px; height:26px; border-radius:50%; background:#10b981; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .quest-locked { width:26px; height:26px; border-radius:50%; background:#f0f2f7; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .quest-done svg, .quest-locked svg { width:14px; height:14px; color:#fff; }
+    .quest-locked svg { color:#b0b8c9; }
+
+    /* Vocab */
+    .vocab-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:12px; margin-bottom:24px; }
+    .vocab-card { background:#fff; border-radius:14px; padding:16px; box-shadow:0 2px 12px rgba(0,0,0,.05); transition:transform .18s; cursor:pointer; }
+    .vocab-card:hover { transform:translateY(-2px); }
+    .vocab-word  { font-size:18px; font-weight:700; color:#1a1d2e; }
+    .vocab-trans { font-size:13px; color:#9098a9; margin-top:2px; }
+    .vocab-tag   { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:99px; margin-top:8px; }
+
+    /* Achievements */
+    .ach-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:14px; margin-bottom:24px; }
+    .ach-card { background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,.05); display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px; transition:transform .2s, box-shadow .2s; cursor:pointer; }
+    .ach-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.1); }
+    .ach-card.locked { opacity:.5; }
+    .ach-ico { width:52px; height:52px; border-radius:16px; display:flex; align-items:center; justify-content:center; }
+    .ach-ico svg { width:26px; height:26px; color:#fff; }
+    .ach-name  { font-size:14px; font-weight:700; color:#1a1d2e; }
+    .ach-desc  { font-size:12px; color:#9098a9; line-height:1.4; }
+    .ach-badge { font-size:11px; font-weight:600; padding:2px 10px; border-radius:99px; }
+
+    /* Progress bars */
+    .prog-list { display:flex; flex-direction:column; gap:14px; margin-bottom:24px; }
+    .prog-row  { background:#fff; border-radius:14px; padding:18px 20px; box-shadow:0 2px 12px rgba(0,0,0,.05); }
+    .prog-top  { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .prog-name { font-size:15px; font-weight:600; color:#1a1d2e; }
+    .prog-pct  { font-size:14px; font-weight:700; }
+    .prog-bar  { height:8px; border-radius:99px; background:#f0f2f7; overflow:hidden; }
+    .prog-fill { height:100%; border-radius:99px; animation:barGrow 1s .2s ease both; }
+
+    /* Settings */
+    .setting-section { background:#fff; border-radius:16px; padding:22px; box-shadow:0 2px 12px rgba(0,0,0,.05); margin-bottom:16px; }
+    .setting-section h3 { font-size:15px; font-weight:700; color:#1a1d2e; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+    .setting-section h3 svg { width:18px; height:18px; color:#4a6cf7; }
+    .setting-row { display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f2f7; }
+    .setting-row:last-child { border-bottom:none; }
+    .setting-label { font-size:14.5px; color:#1a1d2e; font-weight:500; }
+    .setting-hint  { font-size:12px; color:#9098a9; margin-top:2px; }
+    .toggle-sw { width:44px; height:24px; border-radius:99px; background:#e4e6ed; position:relative; cursor:pointer; transition:background .2s; flex-shrink:0; }
+    .toggle-sw.on { background:#4a6cf7; }
+    .toggle-sw::after { content:''; position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.2); transition:transform .2s; }
+    .toggle-sw.on::after { transform:translateX(20px); }
+
+    /* Help */
+    .help-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; margin-bottom:24px; }
+    .help-card { background:#fff; border-radius:16px; padding:22px; box-shadow:0 2px 12px rgba(0,0,0,.05); transition:transform .18s, box-shadow .18s; cursor:pointer; }
+    .help-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.1); }
+    .help-card-ico { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
+    .help-card-ico svg { width:22px; height:22px; color:#fff; }
+    .help-card h4 { font-size:15px; font-weight:700; color:#1a1d2e; margin-bottom:4px; }
+    .help-card p  { font-size:13px; color:#9098a9; line-height:1.5; }
+    .faq-list { background:#fff; border-radius:16px; padding:4px; box-shadow:0 2px 12px rgba(0,0,0,.05); }
+    .faq-item { padding:16px 18px; border-bottom:1px solid #f0f2f7; cursor:pointer; }
+    .faq-item:last-child { border-bottom:none; }
+    .faq-q { font-size:15px; font-weight:600; color:#1a1d2e; display:flex; justify-content:space-between; align-items:center; }
+    .faq-q svg { width:16px; height:16px; color:#9098a9; flex-shrink:0; transition:transform .2s; }
+    .faq-a { font-size:13.5px; color:#6e7a8a; margin-top:8px; display:none; line-height:1.6; }
+    .faq-item.open .faq-a { display:block; }
+    .faq-item.open .faq-q svg { transform:rotate(180deg); }
+
+    /* Logout */
+    .logout-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:60vh; text-align:center; }
+    .logout-icon { width:72px; height:72px; border-radius:20px; background:linear-gradient(135deg,#f0f3ff,#e0e7ff); display:flex; align-items:center; justify-content:center; margin-bottom:20px; }
+    .logout-icon svg { width:34px; height:34px; color:#4a6cf7; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div id="toggleBtn" onclick="toggleSidebar()">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </div>
+  <div id="scrollArea">
+    <div class="logo-area">
+      <div class="logo-icon"><i data-lucide="graduation-cap" style="width:18px;height:18px;color:#fff;"></i></div>
+      <span class="logo-text">Fluento Knight</span>
+    </div>
+
+    <div class="section-label">Menu</div>
+    <div class="nav-item active" onclick="setActive(this,event,'dashboard')" title="Dashboard">
+      <span class="nav-icon"><i data-lucide="layout-dashboard"></i></span><span class="nav-label">Dashboard</span>
+    </div>
+    <div class="nav-item" onclick="setActive(this,event,'journey')" title="Journey">
+      <span class="nav-icon"><i data-lucide="swords"></i></span><span class="nav-label">Journey</span>
+    </div>
+    <div class="nav-item" onclick="setActive(this,event,'practice')" title="Practice">
+      <span class="nav-icon"><i data-lucide="pencil-line"></i></span><span class="nav-label">Practice</span>
+    </div>
+    <div class="nav-item" onclick="setActive(this,event,'vocabulary')" title="Vocabulary">
+      <span class="nav-icon"><i data-lucide="book-marked"></i></span><span class="nav-label">Vocabulary</span>
+    </div>
+    <div class="nav-item" onclick="setActive(this,event,'quests')" title="Quests">
+      <span class="nav-icon"><i data-lucide="crosshair"></i></span><span class="nav-label">Quests</span>
+    </div>
+    <div class="nav-item" onclick="setActive(this,event,'achievements')" title="Achievements">
+      <span class="nav-icon"><i data-lucide="trophy"></i></span><span class="nav-label">Achievements</span>
+    </div>
+    <div class="nav-item" onclick="setActive(this,event,'progress')" title="Progress">
+      <span class="nav-icon"><i data-lucide="bar-chart-2"></i></span><span class="nav-label">Progress</span>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-label">Account</div>
+    <div class="nav-item" onclick="setActive(this,event,'settings')" title="Settings">
+      <span class="nav-icon"><i data-lucide="settings-2"></i></span><span class="nav-label">Settings</span>
+    </div>
+    <div class="nav-item" onclick="setActive(this,event,'help')" title="Help &amp; Support">
+      <span class="nav-icon"><i data-lucide="circle-help"></i></span><span class="nav-label">Help &amp; Support</span>
+    </div>
+    <div class="nav-item" style="color:#b0b8c9;margin-top:4px" onclick="setActive(this,event,'logout')" title="Log out">
+      <span class="nav-icon"><i data-lucide="log-out"></i></span><span class="nav-label">Log out</span>
+    </div>
+  </div>
+
+  <div id="profileCard">
+    <div class="shimmer"></div>
+    <div class="profile-inner">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="avatar-ring">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="rgba(0,0,0,.55)" stroke="none"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div><div class="profile-name">John Doe</div><div class="profile-role">Gold Learner</div></div>
+      </div>
+    </div>
+    <div class="profile-collapsed-icon">
+      <div class="avatar-ring-sm">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="rgba(0,0,0,.55)" stroke="none"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div class="ph"><div class="ph-icon" style="background:linear-gradient(135deg,#6c85e8,#4a6cf7)"><i data-lucide="layout-dashboard"></i></div><div class="page-title">Dashboard</div></div>
+    <div class="page-sub">Welcome back, John! You're on a 12-day streak 🔥</div>
+    <div class="cards">
+      <div class="card"><div class="card-icon" style="color:#f97316"><i data-lucide="flame"></i></div><div class="card-label">Day Streak</div><div class="card-val">12</div><div class="card-hint">Best: 18 days</div></div>
+      <div class="card"><div class="card-icon" style="color:#eab308"><i data-lucide="star"></i></div><div class="card-label">XP Points</div><div class="card-val">3,240</div><div class="card-hint">+420 this week</div></div>
+      <div class="card"><div class="card-icon" style="color:#4a6cf7"><i data-lucide="crosshair"></i></div><div class="card-label">Quests Done</div><div class="card-val">8/10</div><div class="card-hint">2 remaining today</div></div>
+      <div class="card"><div class="card-icon" style="color:#10b981"><i data-lucide="book-marked"></i></div><div class="card-label">Words Learned</div><div class="card-val">142</div><div class="card-hint">+6 today</div></div>
+    </div>
+    <div class="streak-box">
+      <div class="sec-title">This Week's Streak</div>
+      <div class="streak-days">
+        <div class="sday"><div class="sday-dot done"><i data-lucide="check"></i></div><div class="sday-lbl">Mon</div></div>
+        <div class="sday"><div class="sday-dot done"><i data-lucide="check"></i></div><div class="sday-lbl">Tue</div></div>
+        <div class="sday"><div class="sday-dot done"><i data-lucide="check"></i></div><div class="sday-lbl">Wed</div></div>
+        <div class="sday"><div class="sday-dot done"><i data-lucide="check"></i></div><div class="sday-lbl">Thu</div></div>
+        <div class="sday"><div class="sday-dot today"><i data-lucide="zap"></i></div><div class="sday-lbl">Fri</div></div>
+        <div class="sday"><div class="sday-dot"></div><div class="sday-lbl">Sat</div></div>
+        <div class="sday"><div class="sday-dot"></div><div class="sday-lbl">Sun</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JOURNEY -->
+  <div class="page" id="page-journey">
+    <div class="ph"><div class="ph-icon" style="background:linear-gradient(135deg,#f97316,#ef4444)"><i data-lucide="swords"></i></div><div class="page-title">Journey</div></div>
+    <div class="page-sub">Continue your adventure — pick up where you left off.</div>
+    <div class="sec-title">Active Paths</div>
+    <div class="lesson-grid">
+      <div class="lesson-card">
+        <div class="lc-top"><div class="lc-icon" style="background:linear-gradient(135deg,#4a6cf7,#6c85e8)"><i data-lucide="text-cursor-input"></i></div><span class="lc-badge" style="background:#f0f3ff;color:#4a6cf7">Lesson 5</span></div>
+        <div class="lc-title">Grammar Basics</div><div class="lc-sub">Sentence structure & tenses</div>
+        <div class="lc-prog"><div class="lc-fill" style="--w:72%;width:72%;background:linear-gradient(90deg,#4a6cf7,#6c85e8)"></div></div>
+      </div>
+      <div class="lesson-card">
+        <div class="lc-top"><div class="lc-icon" style="background:linear-gradient(135deg,#f97316,#fb923c)"><i data-lucide="mic"></i></div><span class="lc-badge" style="background:#fff7ed;color:#f97316">Lesson 3</span></div>
+        <div class="lc-title">Speaking</div><div class="lc-sub">Pronunciation & fluency</div>
+        <div class="lc-prog"><div class="lc-fill" style="--w:45%;width:45%;background:linear-gradient(90deg,#f97316,#fb923c)"></div></div>
+      </div>
+      <div class="lesson-card">
+        <div class="lc-top"><div class="lc-icon" style="background:linear-gradient(135deg,#10b981,#34d399)"><i data-lucide="headphones"></i></div><span class="lc-badge" style="background:#ecfdf5;color:#10b981">Lesson 7</span></div>
+        <div class="lc-title">Listening</div><div class="lc-sub">Comprehension drills</div>
+        <div class="lc-prog"><div class="lc-fill" style="--w:85%;width:85%;background:linear-gradient(90deg,#10b981,#34d399)"></div></div>
+      </div>
+      <div class="lesson-card">
+        <div class="lc-top"><div class="lc-icon" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa)"><i data-lucide="pen-line"></i></div><span class="lc-badge" style="background:#f5f3ff;color:#8b5cf6">Lesson 2</span></div>
+        <div class="lc-title">Writing</div><div class="lc-sub">Essays & composition</div>
+        <div class="lc-prog"><div class="lc-fill" style="--w:30%;width:30%;background:linear-gradient(90deg,#8b5cf6,#a78bfa)"></div></div>
+      </div>
+    </div>
+    <div class="sec-title">Locked</div>
+    <div class="lesson-grid">
+      <div class="lesson-card" style="opacity:.5">
+        <div class="lc-top"><div class="lc-icon" style="background:#e4e6ed"><i data-lucide="lock" style="color:#9098a9"></i></div><span class="lc-badge" style="background:#f0f2f7;color:#9098a9">Locked</span></div>
+        <div class="lc-title">Advanced Grammar</div><div class="lc-sub">Complete Lesson 5 first</div>
+      </div>
+      <div class="lesson-card" style="opacity:.5">
+        <div class="lc-top"><div class="lc-icon" style="background:#e4e6ed"><i data-lucide="lock" style="color:#9098a9"></i></div><span class="lc-badge" style="background:#f0f2f7;color:#9098a9">Locked</span></div>
+        <div class="lc-title">Reading Mastery</div><div class="lc-sub">Reach Level 8 first</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRACTICE -->
+  <div class="page" id="page-practice">
+    <div class="ph"><div class="ph-icon" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa)"><i data-lucide="pencil-line"></i></div><div class="page-title">Practice</div></div>
+    <div class="page-sub">Sharpen your skills with daily drills.</div>
+    <div class="sec-title">Quick Sessions</div>
+    <div class="lesson-grid">
+      <div class="lesson-card">
+        <div class="lc-top"><div class="lc-icon" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)"><i data-lucide="zap"></i></div><span class="lc-badge" style="background:#fffbeb;color:#f59e0b">5 min</span></div>
+        <div class="lc-title">Flash Cards</div><div class="lc-sub">20 words, timed rounds</div>
+        <div class="lc-prog"><div class="lc-fill" style="--w:100%;width:100%;background:linear-gradient(90deg,#fbbf24,#f59e0b)"></div></div>
+      </div>
+      <div class="lesson-card">
+        <div class="lc-top"><div class="lc-icon" style="background:linear-gradient(135deg,#10b981,#34d399)"><i data-lucide="check-circle-2"></i></div><span class="lc-badge" style="background:#ecfdf5;color:#10b981">10 min</span></div>
+        <div class="lc-title">Multiple Choice</div><div class="lc-sub">Grammar & vocabulary quiz</div>
+        <div class="lc-prog"><div class="lc-fill" style="--w:60%;width:60%;background:linear-gradient(90deg,#10b981,#34d399)"></div></div>
+      </div>
+      <div class="lesson-card">
+        <div class="lc-top"><div class="lc-icon" style="background:linear-gradient(135deg,#f97316,#ef4444)"><i data-lucide="timer"></i></div><span class="lc-badge" style="background:#fff7ed;color:#f97316">3 min</span></div>
+        <div class="lc-title">Speed Round</div><div class="lc-sub">Answer as fast as you can</div>
+        <div class="lc-prog"><div class="lc-fill" style="--w:0%;width:0%;background:#f97316"></div></div>
+      </div>
+      <div class="lesson-card">
+        <div class="lc-top"><div class="lc-icon" style="background:linear-gradient(135deg,#4a6cf7,#6c85e8)"><i data-lucide="mic-2"></i></div><span class="lc-badge" style="background:#f0f3ff;color:#4a6cf7">8 min</span></div>
+        <div class="lc-title">Pronunciation</div><div class="lc-sub">Repeat & record yourself</div>
+        <div class="lc-prog"><div class="lc-fill" style="--w:40%;width:40%;background:linear-gradient(90deg,#4a6cf7,#6c85e8)"></div></div>
+      </div>
+    </div>
+    <div class="sec-title">Today's Challenge</div>
+    <div class="quest-list">
+      <div class="quest-row">
+        <div class="quest-ico" style="background:linear-gradient(135deg,#fbbf24,#f97316)"><i data-lucide="flame"></i></div>
+        <div class="quest-info"><div class="quest-name">Daily Word Challenge</div><div class="quest-desc">Translate 10 words without hints</div></div>
+        <div class="quest-xp">+50 XP</div>
+        <div class="quest-done"><i data-lucide="check"></i></div>
+      </div>
+      <div class="quest-row">
+        <div class="quest-ico" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa)"><i data-lucide="pencil"></i></div>
+        <div class="quest-info"><div class="quest-name">Write a Sentence</div><div class="quest-desc">Compose 3 sentences in French</div></div>
+        <div class="quest-xp">+30 XP</div>
+        <div class="quest-locked"><i data-lucide="circle"></i></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VOCABULARY -->
+  <div class="page" id="page-vocabulary">
+    <div class="ph"><div class="ph-icon" style="background:linear-gradient(135deg,#10b981,#34d399)"><i data-lucide="book-marked"></i></div><div class="page-title">Vocabulary</div></div>
+    <div class="page-sub">Your personal word bank — review, practice, master.</div>
+    <div class="cards">
+      <div class="card"><div class="card-icon" style="color:#10b981"><i data-lucide="badge-check"></i></div><div class="card-label">Mastered</div><div class="card-val">98</div></div>
+      <div class="card"><div class="card-icon" style="color:#eab308"><i data-lucide="loader"></i></div><div class="card-label">In Progress</div><div class="card-val">34</div></div>
+      <div class="card"><div class="card-icon" style="color:#ef4444"><i data-lucide="refresh-cw"></i></div><div class="card-label">To Review</div><div class="card-val">10</div></div>
+      <div class="card"><div class="card-icon" style="color:#4a6cf7"><i data-lucide="sparkles"></i></div><div class="card-label">New Today</div><div class="card-val">6</div></div>
+    </div>
+    <div class="sec-title">Recent Words</div>
+    <div class="vocab-grid">
+      <div class="vocab-card"><div class="vocab-word">Bonjour</div><div class="vocab-trans">Hello / Good day</div><span class="vocab-tag" style="background:#ecfdf5;color:#10b981">Mastered</span></div>
+      <div class="vocab-card"><div class="vocab-word">Merci</div><div class="vocab-trans">Thank you</div><span class="vocab-tag" style="background:#ecfdf5;color:#10b981">Mastered</span></div>
+      <div class="vocab-card"><div class="vocab-word">Bibliothèque</div><div class="vocab-trans">Library</div><span class="vocab-tag" style="background:#fffbeb;color:#eab308">Learning</span></div>
+      <div class="vocab-card"><div class="vocab-word">Extraordinaire</div><div class="vocab-trans">Extraordinary</div><span class="vocab-tag" style="background:#fffbeb;color:#eab308">Learning</span></div>
+      <div class="vocab-card"><div class="vocab-word">Papillon</div><div class="vocab-trans">Butterfly</div><span class="vocab-tag" style="background:#fef2f2;color:#ef4444">Review</span></div>
+      <div class="vocab-card"><div class="vocab-word">Château</div><div class="vocab-trans">Castle</div><span class="vocab-tag" style="background:#f0f3ff;color:#4a6cf7">New</span></div>
+      <div class="vocab-card"><div class="vocab-word">Soleil</div><div class="vocab-trans">Sun</div><span class="vocab-tag" style="background:#f0f3ff;color:#4a6cf7">New</span></div>
+      <div class="vocab-card"><div class="vocab-word">Rencontrer</div><div class="vocab-trans">To meet</div><span class="vocab-tag" style="background:#fef2f2;color:#ef4444">Review</span></div>
+    </div>
+  </div>
+
+  <!-- QUESTS -->
+  <div class="page" id="page-quests">
+    <div class="ph"><div class="ph-icon" style="background:linear-gradient(135deg,#f97316,#fbbf24)"><i data-lucide="crosshair"></i></div><div class="page-title">Quests</div></div>
+    <div class="page-sub">Complete quests to earn XP and unlock rewards.</div>
+    <div class="sec-title">Daily Quests</div>
+    <div class="quest-list">
+      <div class="quest-row"><div class="quest-ico" style="background:linear-gradient(135deg,#10b981,#34d399)"><i data-lucide="check-circle-2"></i></div><div class="quest-info"><div class="quest-name">Daily Quiz</div><div class="quest-desc">Score 80%+ on today's quiz</div></div><div class="quest-xp">+50 XP</div><div class="quest-done"><i data-lucide="check"></i></div></div>
+      <div class="quest-row"><div class="quest-ico" style="background:linear-gradient(135deg,#fbbf24,#f97316)"><i data-lucide="flame"></i></div><div class="quest-info"><div class="quest-name">Keep the Streak</div><div class="quest-desc">Log in and complete one lesson</div></div><div class="quest-xp">+20 XP</div><div class="quest-done"><i data-lucide="check"></i></div></div>
+      <div class="quest-row"><div class="quest-ico" style="background:linear-gradient(135deg,#4a6cf7,#6c85e8)"><i data-lucide="book-open"></i></div><div class="quest-info"><div class="quest-name">Learn 10 New Words</div><div class="quest-desc">6 / 10 completed</div></div><div class="quest-xp">+40 XP</div><div class="quest-locked"><i data-lucide="circle"></i></div></div>
+      <div class="quest-row"><div class="quest-ico" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa)"><i data-lucide="mic"></i></div><div class="quest-info"><div class="quest-name">Speaking Practice</div><div class="quest-desc">Complete a 5-min speaking drill</div></div><div class="quest-xp">+30 XP</div><div class="quest-locked"><i data-lucide="circle"></i></div></div>
+    </div>
+    <div class="sec-title">Weekly Quests</div>
+    <div class="quest-list">
+      <div class="quest-row"><div class="quest-ico" style="background:linear-gradient(135deg,#eab308,#f59e0b)"><i data-lucide="star"></i></div><div class="quest-info"><div class="quest-name">7-Day Streak</div><div class="quest-desc">5 / 7 days completed</div></div><div class="quest-xp">+200 XP</div><div class="quest-locked"><i data-lucide="circle"></i></div></div>
+      <div class="quest-row"><div class="quest-ico" style="background:linear-gradient(135deg,#ef4444,#f97316)"><i data-lucide="swords"></i></div><div class="quest-info"><div class="quest-name">Boss Battle</div><div class="quest-desc">Unlocks Sunday — complete all dailies first</div></div><div class="quest-xp">+500 XP</div><div class="quest-locked"><i data-lucide="lock"></i></div></div>
+    </div>
+  </div>
+
+  <!-- ACHIEVEMENTS -->
+  <div class="page" id="page-achievements">
+    <div class="ph"><div class="ph-icon" style="background:linear-gradient(135deg,#eab308,#f59e0b)"><i data-lucide="trophy"></i></div><div class="page-title">Achievements</div></div>
+    <div class="page-sub">Milestones you've earned on your learning journey.</div>
+    <div class="sec-title">Unlocked</div>
+    <div class="ach-grid">
+      <div class="ach-card"><div class="ach-ico" style="background:linear-gradient(135deg,#fbbf24,#f97316)"><i data-lucide="flame"></i></div><div class="ach-name">On Fire</div><div class="ach-desc">Maintain a 7-day streak</div><span class="ach-badge" style="background:#fff7ed;color:#f97316">Earned</span></div>
+      <div class="ach-card"><div class="ach-ico" style="background:linear-gradient(135deg,#4a6cf7,#6c85e8)"><i data-lucide="book-open"></i></div><div class="ach-name">Bookworm</div><div class="ach-desc">Learn 100+ vocabulary words</div><span class="ach-badge" style="background:#f0f3ff;color:#4a6cf7">Earned</span></div>
+      <div class="ach-card"><div class="ach-ico" style="background:linear-gradient(135deg,#10b981,#34d399)"><i data-lucide="check-circle-2"></i></div><div class="ach-name">Perfect Score</div><div class="ach-desc">Get 100% on any quiz</div><span class="ach-badge" style="background:#ecfdf5;color:#10b981">Earned</span></div>
+      <div class="ach-card"><div class="ach-ico" style="background:linear-gradient(135deg,#eab308,#fbbf24)"><i data-lucide="star"></i></div><div class="ach-name">Star Student</div><div class="ach-desc">Reach 3,000 XP total</div><span class="ach-badge" style="background:#fffbeb;color:#eab308">Earned</span></div>
+    </div>
+    <div class="sec-title">Locked</div>
+    <div class="ach-grid">
+      <div class="ach-card locked"><div class="ach-ico" style="background:#e4e6ed"><i data-lucide="swords" style="color:#9098a9"></i></div><div class="ach-name">Battle Master</div><div class="ach-desc">Win 10 Boss Battles</div><span class="ach-badge" style="background:#f0f2f7;color:#9098a9">0/10</span></div>
+      <div class="ach-card locked"><div class="ach-ico" style="background:#e4e6ed"><i data-lucide="globe" style="color:#9098a9"></i></div><div class="ach-name">Polyglot</div><div class="ach-desc">Study 3 different languages</div><span class="ach-badge" style="background:#f0f2f7;color:#9098a9">1/3</span></div>
+      <div class="ach-card locked"><div class="ach-ico" style="background:#e4e6ed"><i data-lucide="calendar-days" style="color:#9098a9"></i></div><div class="ach-name">30-Day Legend</div><div class="ach-desc">Keep a 30-day streak</div><span class="ach-badge" style="background:#f0f2f7;color:#9098a9">12/30</span></div>
+      <div class="ach-card locked"><div class="ach-ico" style="background:#e4e6ed"><i data-lucide="trophy" style="color:#9098a9"></i></div><div class="ach-name">Top 100</div><div class="ach-desc">Reach global rank top 100</div><span class="ach-badge" style="background:#f0f2f7;color:#9098a9">#1,204</span></div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="page" id="page-progress">
+    <div class="ph"><div class="ph-icon" style="background:linear-gradient(135deg,#4a6cf7,#6c85e8)"><i data-lucide="bar-chart-2"></i></div><div class="page-title">Progress</div></div>
+    <div class="page-sub">Track how far you've come.</div>
+    <div class="cards">
+      <div class="card"><div class="card-icon" style="color:#10b981"><i data-lucide="trending-up"></i></div><div class="card-label">This Week</div><div class="card-val">+420 XP</div></div>
+      <div class="card"><div class="card-icon" style="color:#4a6cf7"><i data-lucide="calendar-days"></i></div><div class="card-label">This Month</div><div class="card-val">+1,840 XP</div></div>
+      <div class="card"><div class="card-icon" style="color:#eab308"><i data-lucide="medal"></i></div><div class="card-label">Rank</div><div class="card-val">Gold</div></div>
+      <div class="card"><div class="card-icon" style="color:#f97316"><i data-lucide="globe"></i></div><div class="card-label">Global Rank</div><div class="card-val">#1,204</div></div>
+    </div>
+    <div class="sec-title">Skill Progress</div>
+    <div class="prog-list">
+      <div class="prog-row"><div class="prog-top"><div class="prog-name">Grammar</div><div class="prog-pct" style="color:#4a6cf7">72%</div></div><div class="prog-bar"><div class="prog-fill" style="--w:72%;width:72%;background:linear-gradient(90deg,#4a6cf7,#6c85e8)"></div></div></div>
+      <div class="prog-row"><div class="prog-top"><div class="prog-name">Listening</div><div class="prog-pct" style="color:#10b981">85%</div></div><div class="prog-bar"><div class="prog-fill" style="--w:85%;width:85%;background:linear-gradient(90deg,#10b981,#34d399)"></div></div></div>
+      <div class="prog-row"><div class="prog-top"><div class="prog-name">Speaking</div><div class="prog-pct" style="color:#f97316">45%</div></div><div class="prog-bar"><div class="prog-fill" style="--w:45%;width:45%;background:linear-gradient(90deg,#f97316,#fb923c)"></div></div></div>
+      <div class="prog-row"><div class="prog-top"><div class="prog-name">Writing</div><div class="prog-pct" style="color:#8b5cf6">30%</div></div><div class="prog-bar"><div class="prog-fill" style="--w:30%;width:30%;background:linear-gradient(90deg,#8b5cf6,#a78bfa)"></div></div></div>
+      <div class="prog-row"><div class="prog-top"><div class="prog-name">Vocabulary</div><div class="prog-pct" style="color:#eab308">63%</div></div><div class="prog-bar"><div class="prog-fill" style="--w:63%;width:63%;background:linear-gradient(90deg,#eab308,#fbbf24)"></div></div></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="page" id="page-settings">
+    <div class="ph"><div class="ph-icon" style="background:linear-gradient(135deg,#6e7a8a,#9098a9)"><i data-lucide="settings-2"></i></div><div class="page-title">Settings</div></div>
+    <div class="page-sub">Manage your account and preferences.</div>
+    <div class="setting-section">
+      <h3><i data-lucide="user"></i> Profile</h3>
+      <div class="setting-row"><div><div class="setting-label">Display Name</div><div class="setting-hint">John Doe</div></div><span style="font-size:13px;color:#4a6cf7;cursor:pointer;font-weight:600;">Edit</span></div>
+      <div class="setting-row"><div><div class="setting-label">Email</div><div class="setting-hint">john@example.com</div></div><span style="font-size:13px;color:#4a6cf7;cursor:pointer;font-weight:600;">Edit</span></div>
+      <div class="setting-row"><div><div class="setting-label">Learning Language</div><div class="setting-hint">French 🇫🇷</div></div><span style="font-size:13px;color:#4a6cf7;cursor:pointer;font-weight:600;">Change</span></div>
+    </div>
+    <div class="setting-section">
+      <h3><i data-lucide="bell"></i> Notifications</h3>
+      <div class="setting-row"><div><div class="setting-label">Daily Reminder</div><div class="setting-hint">Get notified at 8:00 AM</div></div><div class="toggle-sw on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-row"><div><div class="setting-label">Streak Alerts</div><div class="setting-hint">Warned when streak is at risk</div></div><div class="toggle-sw on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-row"><div><div class="setting-label">Quest Completion</div><div class="setting-hint">Notify when a quest is done</div></div><div class="toggle-sw" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+    <div class="setting-section">
+      <h3><i data-lucide="palette"></i> Appearance</h3>
+      <div class="setting-row"><div><div class="setting-label">Dark Mode</div><div class="setting-hint">Currently: Light</div></div><div class="toggle-sw" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-row"><div><div class="setting-label">Compact Sidebar</div><div class="setting-hint">Collapse sidebar by default</div></div><div class="toggle-sw" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+  </div>
+
+  <!-- HELP -->
+  <div class="page" id="page-help">
+    <div class="ph"><div class="ph-icon" style="background:linear-gradient(135deg,#4a6cf7,#6c85e8)"><i data-lucide="circle-help"></i></div><div class="page-title">Help &amp; Support</div></div>
+    <div class="page-sub">We're here to help you succeed.</div>
+    <div class="sec-title">Quick Help</div>
+    <div class="help-grid">
+      <div class="help-card"><div class="help-card-ico" style="background:linear-gradient(135deg,#4a6cf7,#6c85e8)"><i data-lucide="book-open"></i></div><h4>Getting Started</h4><p>New to LearnApp? Read our beginner's guide to set up your learning path.</p></div>
+      <div class="help-card"><div class="help-card-ico" style="background:linear-gradient(135deg,#10b981,#34d399)"><i data-lucide="message-circle"></i></div><h4>Live Chat</h4><p>Chat with a support agent — available Mon–Fri, 9AM–6PM.</p></div>
+      <div class="help-card"><div class="help-card-ico" style="background:linear-gradient(135deg,#f97316,#fbbf24)"><i data-lucide="video"></i></div><h4>Tutorial Videos</h4><p>Watch short walkthroughs on how to use every feature.</p></div>
+      <div class="help-card"><div class="help-card-ico" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa)"><i data-lucide="mail"></i></div><h4>Email Support</h4><p>Send us a message and we'll get back within 24 hours.</p></div>
+    </div>
+    <div class="sec-title">FAQ</div>
+    <div class="faq-list">
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">How do I reset my streak? <i data-lucide="chevron-down"></i></div><div class="faq-a">You can use a Streak Freeze (found in the shop) to protect your streak for one missed day. Streaks cannot be manually reset.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Can I change my learning language? <i data-lucide="chevron-down"></i></div><div class="faq-a">Yes! Go to Settings → Profile → Learning Language. Your progress in the old language is saved separately.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">How are XP points calculated? <i data-lucide="chevron-down"></i></div><div class="faq-a">XP is awarded based on lesson difficulty, accuracy, and speed. Bonus XP is given for streaks and perfect scores.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">How do Boss Battles work? <i data-lucide="chevron-down"></i></div><div class="faq-a">Boss Battles unlock every Sunday if you've completed all daily quests that week. They test everything you've learned in a timed challenge.</div></div>
+    </div>
+  </div>
+
+  <!-- LOGOUT -->
+  <div class="page" id="page-logout">
+    <div class="logout-wrap">
+      <div class="logout-icon"><i data-lucide="log-out"></i></div>
+      <div class="page-title" style="margin-bottom:8px;">See you soon, John! 👋</div>
+      <div style="font-size:15px;color:#9098a9;margin-bottom:28px;">Your progress has been saved. Keep the streak alive!</div>
+      <button onclick="setActiveById('dashboard')" style="background:linear-gradient(135deg,#4a6cf7,#6c85e8);color:#fff;border:none;border-radius:12px;padding:12px 32px;font-family:'Afacad',sans-serif;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(74,108,247,.35);transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+        Back to Dashboard
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const sidebar = document.getElementById('sidebar');
+  lucide.createIcons();
+
+  function toggleSidebar() {
+    sidebar.classList.toggle('collapsed');
+    document.body.classList.toggle('collapsed-body');
+  }
+
+  function setActive(el, e, pageId) {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    showPage(pageId);
+    const rect = el.getBoundingClientRect();
+    const rip = document.createElement('span');
+    rip.className = 'ripple-el';
+    rip.style.left = (e.clientX - rect.left - 15) + 'px';
+    rip.style.top  = (e.clientY - rect.top  - 15) + 'px';
+    el.appendChild(rip);
+    setTimeout(() => rip.remove(), 600);
+  }
+
+  function setActiveById(pageId) {
+    const keys = ['dashboard','journey','practice','vocabulary','quests','achievements','progress','settings','help','logout'];
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(i => i.classList.remove('active'));
+    const idx = keys.indexOf(pageId);
+    if (idx !== -1) navItems[idx].classList.add('active');
+    showPage(pageId);
+  }
+
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const pg = document.getElementById('page-' + pageId);
+    if (pg) {
+      pg.classList.add('active');
+      pg.style.animation = 'none'; pg.offsetHeight; pg.style.animation = '';
+      lucide.createIcons();
+    }
+  }
+
+  function toggleFaq(el) {
+    el.classList.toggle('open');
+    lucide.createIcons();
+  }
+</script>
+</body>
+</html>

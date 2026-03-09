@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluento - Learn Languages</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'afacad': ['"Afacad Flux"', 'sans-serif'],
+                        'afacad-flux': ['"Afacad Flux"', 'sans-serif'],
+                        'great-vibes': ['"Great Vibes"', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&family=Afacad:ital,wght@0,400..700;1,400..700&family=New+Amsterdam&family=Pixelify+Sans:wght@400..700&family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        /* Background panjang dengan efek smooth */
+        .scroll-bg {
+            background-image: url('/assets/heroheaderr3.png');
+            background-size: cover;
+            background-position: center;
+            width: 100%;
+            background-attachment: scroll;
+            min-height: 500vh;
+            position: relative;
+        }
+        
+        /* Konten yang nempel di tengah */
+        .center-content {
+            position: sticky !important;
+            top: 70% !important;
+            transform: translateY(-50%) !important;
+            text-align: center;
+            color: white;
+            z-index: 10;
+            padding: 2rem 1rem 6rem 1rem;
+            max-width: 100%;
+            margin: 0 auto;
+            left: 0;
+            right: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 768px) {
+            .center-content {
+                top: 54%;
+                padding: 2rem 2rem 6rem 2rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .center-content {
+                max-width: 1200px;
+                top: 50%;
+                padding: 2rem 2rem 6rem 2rem;
+            }
+        }
+        
+        /* Overlay gradient */
+        .gradient-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.5) 100%);
+            z-index: 1;
+        }
+        
+        /* Header di atas background */
+        .header-wrapper {
+            position: fixed;
+            top: 1rem;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            pointer-events: none;
+        }
+        
+        .header-wrapper > * {
+            pointer-events: auto;
+        }
+        
+        /* Transisi ke putih */
+        .to-white {
+            position: relative;
+            z-index: 20;
+            background: white;
+            border-radius: 3rem 3rem 0 0;
+            margin-top: -3rem;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+            min-height: 100vh;
+        }
+
+        @keyframes scrollCountries {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+        
+        .carousel-track {
+            display: flex;
+            width: fit-content;
+            animation: scrollCountries 40s linear infinite;
+            pointer-events: none;
+            user-select: none;
+        }
+        
+        .carousel-track .group {
+            pointer-events: none;
+        }
+
+        /* STYLE BENDERA DI ATAS "and" */
+        .flag-above {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-40%);
+            bottom: 100%;
+            margin-bottom: 0.10rem !important;
+            width: 100%;
+            min-width: 50px;
+        }
+
+        .flag-container {
+            display: block;
+            width: 5rem !important;
+            height: 2.7rem !important;
+            border-radius: 0.2rem;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .flag-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        #rotating-flag {
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        @media (min-width: 768px) {
+            .flag-container {
+                height: 1.8rem;
+            }
+            .flag-above {
+                margin-bottom: 0.3rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .flag-container {
+                height: 2rem;
+            }
+            .flag-above {
+                margin-bottom: 0.35rem;
+            }
+        }
+
+        .and-text {
+            font-size: inherit;
+            font-weight: 500;
+            color: white;
+        }
+
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px -10px rgba(251, 146, 60, 0.3);
+        }
+        
+        .image-zoom {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover .image-zoom {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen font-afacad">
+    <!-- Fixed Header (Navbar) -->
+    <div class="header-wrapper">
+        <header class="w-full max-w-4xl bg-white rounded-full shadow-md px-6 py-[15px] mt-4 flex flex-wrap items-center justify-between">
+            <!-- Logo -->
+            <div class="logo">
+                <a href="#" class="text-lg font-bold text-gray-800 hover:text-gray-600 tracking-tight no-underline font-afacad">
+                    Fluento
+                </a>
+            </div>
+
+            <!-- Navigation Menu -->
+            <nav class="flex flex-wrap items-center gap-4 md:gap-6 mx-4 text-xl md:text-2xl lg:text-4xl">
+                <a href="#" class="text-[13px] md:text-sm lg:text-base text-gray-600 hover:text-orange-400 font-medium hover:font-semibold hover:-translate-y-0.5 transition-all duration-300 no-underline font-afacad">
+                    Home
+                </a>
+                <a href="#" class="text-[13px] md:text-sm lg:text-base text-gray-600 hover:text-orange-400 font-medium hover:font-semibold hover:-translate-y-0.5 transition-all duration-300 no-underline font-afacad">
+                    Features
+                </a>
+                <a href="#" class="text-[13px] md:text-sm lg:text-base text-gray-600 hover:text-orange-400 font-medium hover:font-semibold hover:-translate-y-0.5 transition-all duration-300 no-underline font-afacad">
+                    How It Works
+                </a>
+                <a href="#" class="text-[13px] md:text-sm lg:text-base text-gray-600 hover:text-orange-400 font-medium hover:font-semibold hover:-translate-y-0.5 transition-all duration-300 no-underline font-afacad">
+                    Automation
+                </a>
+                <a href="#" class="text-[13px] md:text-sm lg:text-base text-gray-600 hover:text-orange-400 font-medium hover:font-semibold hover:-translate-y-0.5 transition-all duration-300 no-underline font-afacad">
+                    AI System
+                </a>
+            </nav>
+
+            <!-- Get The App Button -->
+            <a href="#" class="bg-gradient-to-r from-yellow-300 to-orange-400 text-white px-6 py-1.5 rounded-full text-sm whitespace-nowrap hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 no-underline font-afacad font-normal hover:font-bold">
+                Get The App
+            </a>
+        </header>
+    </div>
+
+    <!-- Background panjang yang ke-scroll (Hero) -->
+    <div class="scroll-bg">
+        <div class="gradient-overlay"></div>
+        
+        <div class="center-content">
+            <!-- Judul dengan bendera DI ATAS "and" -->
+            <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-4 leading-relaxed max-w-5xl mx-auto px-4">
+                <span class="block font-medium mb-2 font-afacad">
+                    Complete lessons, earn points,
+                    
+                    <!-- BENDERA DI ATAS "and" -->
+                    <span class="relative inline-block mx-1">
+                        <span class="flag-above">
+                            <span class="flag-container">
+                                <img id="rotating-flag" src="https://flagcdn.com/w320/gb.png" alt="Flag">
+                            </span>
+                        </span>
+                        
+                        <span class="and-text font-afacad">and</span>
+                    </span>
+                </span>
+                
+                <span class="block font-great-vibes font-normal text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl" 
+                      style="text-shadow: 2px 2px 8px rgba(0,0,0,0.5);">
+                    level up your language journey
+                </span>
+            </h1>
+            
+            <!-- DESKRIPSI -->
+            <p class="text-white/80 text-base md:text-lg max-w-2xl mx-auto px-4 mb-8 font-afacad font-normal">
+                Learn languages effectively with interactive lessons, real-time feedback, 
+                and a supportive community. Start your fluency journey today.
+            </p>
+            
+            <!-- GLASS BUTTON -->
+            <div class="flex justify-center px-4">
+                <a href="#" class="group relative px-10 py-3 rounded-full bg-white/10 backdrop-blur-md border border-white/30 text-white font-afacad font-semibold text-base md:text-lg overflow-hidden transition-all duration-300 hover:bg-white/20 hover:scale-105 hover:shadow-xl hover:border-white/50">
+                    <span class="relative z-10">Start Learning Free</span>
+                    <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
+                </a>
+            </div>
+            
+            <!-- Spacer -->
+            <div class="h-12 md:h-16"></div>
+        </div>
+    </div>
+    
+    <!-- Content Putih -->
+    <div class="to-white">
+        <!-- Carousel Section -->
+        <div class="w-full bg-white py-8 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4">
+                <h2 class="font-afacad text-2xl md:text-3xl font-bold text-center text-gray-800 mb-1">
+                    Learn Language From
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
+                        Around The World
+                    </span>
+                </h2>
+                <p class="text-center text-gray-500 text-md mb-6 font-afacad font-normal">30+ Language Ready To Explore</p>
+                
+                <!-- Carousel Container -->
+                <div class="relative">
+                    <div class="carousel-track flex gap-4" style="animation: scrollCountries 40s linear infinite; width: fit-content;">
+                        <!-- GROUP 1 - 15 Negara -->
+                        <div class="flex gap-4">
+                            <!-- Inggris -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/gb.svg" alt="Inggris" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">English</h3>
+                            </div>
+                            
+                            <!-- Indonesia -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/id.svg" alt="Indonesia" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Indonesian</h3>
+                            </div>
+                            
+                            <!-- Jerman -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/de.svg" alt="Jerman" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Germany</h3>
+                            </div>
+                            
+                            <!-- Prancis -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/fr.svg" alt="Prancis" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">France</h3>
+                            </div>
+                            
+                            <!-- Jepang -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/jp.svg" alt="Jepang" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Japanese</h3>
+                            </div>
+                            
+                            <!-- Korea -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/kr.svg" alt="Korea" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Korean</h3>
+                            </div>
+                            
+                            <!-- China -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/cn.svg" alt="China" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Chinese</h3>
+                            </div>
+                            
+                            <!-- Italia -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/it.svg" alt="Italia" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Italia</h3>
+                            </div>
+                            
+                            <!-- Spanyol -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/es.svg" alt="Spanyol" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Spain</h3>
+                            </div>
+                            
+                            <!-- Belanda -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/nl.svg" alt="Belanda" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Dutch</h3>
+                            </div>
+                            
+                            <!-- Rusia -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/ru.svg" alt="Rusia" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Russian</h3>
+                            </div>
+                            
+                            <!-- India -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/in.svg" alt="India" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">India</h3>
+                            </div>
+                            
+                            <!-- Arab Saudi -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/sa.svg" alt="Arab Saudi" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Saudi Arabia</h3>
+                            </div>
+                            
+                            <!-- Turki -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/tr.svg" alt="Turki" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Turkey</h3>
+                            </div>
+                        </div>
+                        
+                        <!-- GROUP 2 - DUPLIKAT BUAT LOOPING -->
+                        <div class="flex gap-4">
+                            <!-- Inggris -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/gb.svg" alt="Inggris" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Inggris</h3>
+                            </div>
+                            
+                            <!-- Indonesia -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/id.svg" alt="Indonesia" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Indonesia</h3>
+                            </div>
+                            
+                            <!-- Jerman -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/de.svg" alt="Jerman" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Jerman</h3>
+                            </div>
+                            
+                            <!-- Prancis -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/fr.svg" alt="Prancis" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Prancis</h3>
+                            </div>
+                            
+                            <!-- Jepang -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/jp.svg" alt="Jepang" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Jepang</h3>
+                            </div>
+                            
+                            <!-- Korea -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/kr.svg" alt="Korea" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Korea</h3>
+                            </div>
+                            
+                            <!-- China -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/cn.svg" alt="China" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">China</h3>
+                            </div>
+                            
+                            <!-- Italia -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/it.svg" alt="Italia" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Italia</h3>
+                            </div>
+                            
+                            <!-- Spanyol -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/es.svg" alt="Spanyol" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Spanyol</h3>
+                            </div>
+                            
+                            <!-- Belanda -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/nl.svg" alt="Belanda" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Belanda</h3>
+                            </div>
+                            
+                            <!-- Rusia -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/ru.svg" alt="Rusia" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Rusia</h3>
+                            </div>
+                            
+                            <!-- India -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/in.svg" alt="India" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">India</h3>
+                            </div>
+                            
+                            <!-- Arab Saudi -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/sa.svg" alt="Arab Saudi" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Arab Saudi</h3>
+                            </div>
+                            
+                            <!-- Turki -->
+                            <div class="flex-shrink-0 w-20 md:w-24 text-center group">
+                                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
+                                    <img src="https://flagcdn.com/tr.svg" alt="Turki" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="font-afacad font-semibold text-xs md:text-sm text-gray-800">Turki</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Indicator dots -->
+                <div class="flex justify-center gap-1.5 mt-4">
+                    <div class="w-1.5 h-1.5 bg-gray-300 rounded-full"></div>
+                    <div class="w-1.5 h-1.5 bg-gray-300 rounded-full"></div>
+                    <div class="w-1.5 h-1.5 bg-orange-400 rounded-full"></div>
+                    <div class="w-1.5 h-1.5 bg-gray-300 rounded-full"></div>
+                    <div class="w-1.5 h-1.5 bg-gray-300 rounded-full"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hero Section -->
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
+            <div class="flex items-center gap-12">
+                <!-- LEFT CONTENT -->
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="px-3 py-1 bg-orange-100 text-orange-600 text-xs font-semibold rounded-full font-afacad">Just Learn.</span>
+                    </div>
+
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 leading-tight">
+                        <span class="font-afacad font-semibold">Learn new languages <br>step by step with</span>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 font-afacad font-bold">
+                            Fluento
+                        </span>
+                    </h1>
+
+                    <p class="text-gray-600 text-lg md:text-xl mb-6 max-w-lg font-afacad font-medium">
+                        Interactive lessons, daily challenges, and fun exercises designed to help you learn faster.
+                    </p>
+                </div>
+
+                <!-- RIGHT CONTENT -->
+                <div class="flex-1">
+                    <div class="relative">
+                        <div class="absolute -top-4 -left-4 w-24 h-24 bg-yellow-200 rounded-full opacity-50 blur-2xl"></div>
+                        <div class="absolute -bottom-4 -right-4 w-32 h-32 bg-orange-200 rounded-full opacity-50 blur-2xl"></div>
+                        
+                        <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600&auto=format&fit=crop" 
+                             alt="Workspaces" 
+                             class="rounded-2xl shadow-2xl relative z-10 w-full h-auto">
+                        
+                        <div class="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-lg p-3 flex items-center gap-2 z-20">
+                            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                <span class="text-lg">📚</span>
+                            </div>
+                            <div>
+                                <p class="text-xs font-afacad font-medium">Learn with • <span class="text-gray-900 font-afacad font-bold">Fluento</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Why Learn with Fluento Section -->
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="text-center mb-10 md:mb-12">
+                <h2 class="font-afacad text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3">
+                    Why You Should Choose Fluento?
+                </h2>
+                <p class="font-afacad text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
+                    Fluento have three powerful modes designed for every type of language learner.
+                </p>
+            </div>
+
+            <!-- BENTO GRID -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <!-- CARD 1: Interactive Lessons -->
+                <div class="card-hover rounded-2xl p-5 shadow-lg text-white relative overflow-hidden group">
+                    <div class="absolute inset-0 z-0">
+                        <img src="/assets/maps44.jpg" alt="Interactive Lessons" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-br from-black/60 to-black/40"></div>
+                    </div>
+                    
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full z-1"></div>
+                    <div class="absolute -left-4 -bottom-4 w-20 h-20 bg-white/10 rounded-full z-1"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
+                                <span class="text-lg font-afacad">📚</span>
+                            </div>
+                            <h3 class="text-lg font-bold font-afacad">Interactive Lessons</h3>
+                        </div>
+                        
+                        <p class="text-sm text-white/95 mb-3 leading-relaxed font-afacad">
+                            Engaging lessons with real-time feedback to help you learn faster and remember longer.
+                        </p>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-white text-sm font-medium group font-afacad">
+                                <span>Learn more</span>
+                                <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                            <span class="text-sm bg-black/30 px-3 py-1 rounded-full font-afacad backdrop-blur-sm">🔥 50+ lessons</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 2: AI-Powered Learning -->
+                <div class="card-hover rounded-2xl p-5 shadow-lg text-white relative overflow-hidden group">
+                    <div class="absolute inset-0 z-0">
+                        <img src="/assets/maps44.jpg" alt="AI Learning" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-br from-black/60 to-black/40"></div>
+                    </div>
+                    
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full z-1"></div>
+                    <div class="absolute -left-4 -bottom-4 w-20 h-20 bg-white/10 rounded-full z-1"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
+                                <span class="text-lg font-afacad">🤖</span>
+                            </div>
+                            <h3 class="text-lg font-bold font-afacad">AI-Powered Learning</h3>
+                        </div>
+                        
+                        <p class="text-sm text-white/95 mb-3 leading-relaxed font-afacad">
+                            Personalized lessons adapt to your level and learning style for maximum progress.
+                        </p>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-white text-sm font-medium group font-afacad">
+                                <span>Learn more</span>
+                                <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                            <span class="text-sm bg-black/30 px-3 py-1 rounded-full font-afacad backdrop-blur-sm">⚡ Smart AI</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 3: Progress Tracking -->
+                <div class="card-hover rounded-2xl p-5 shadow-lg text-white relative overflow-hidden group">
+                    <div class="absolute inset-0 z-0">
+                        <img src="/assets/maps44.jpg" alt="Progress Tracking" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-br from-black/60 to-black/40"></div>
+                    </div>
+                    
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full z-1"></div>
+                    <div class="absolute -left-4 -bottom-4 w-20 h-20 bg-white/10 rounded-full z-1"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
+                                <span class="text-lg font-afacad">📊</span>
+                            </div>
+                            <h3 class="text-lg font-bold font-afacad">Progress Tracking</h3>
+                        </div>
+                        
+                        <p class="text-sm text-white/95 mb-3 leading-relaxed font-afacad">
+                            Monitor your improvement with detailed analytics and personalized insights.
+                        </p>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-white text-sm font-medium group font-afacad">
+                                <span>Learn more</span>
+                                <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                            <span class="text-sm bg-black/30 px-3 py-1 rounded-full font-afacad backdrop-blur-sm">📈 Live stats</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 4: Gamified Experience (SPAN 2) -->
+                <div class="md:col-span-2 card-hover rounded-2xl p-6 shadow-lg text-white relative overflow-hidden group">
+                    <div class="absolute inset-0 z-0">
+                        <img src="/assets/maps44.jpg" alt="Gamified Learning" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-br from-black/60 to-black/40"></div>
+                    </div>
+                    
+                    <div class="absolute -right-10 -top-10 w-48 h-48 bg-white/10 rounded-full z-1"></div>
+                    <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full z-1"></div>
+                    <div class="absolute right-20 bottom-10 w-20 h-20 bg-white/5 rounded-full z-1"></div>
+                    
+                    <div class="relative z-10 flex flex-col md:flex-row gap-6 items-center">
+                        <div class="md:w-full">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                                    <span class="text-2xl font-afacad">🎮</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-2xl font-bold font-afacad">Gamified Experience</h3>
+                                    <p class="text-base text-white/90 font-afacad">Learn while having fun</p>
+                                </div>
+                            </div>
+                            
+                            <p class="text-base text-white/95 mb-4 leading-relaxed font-afacad">
+                                Earn points, unlock achievements, and compete with friends. Our gamified system 
+                                keeps you motivated and engaged throughout your language learning journey.
+                            </p>
+                            
+                            <div class="grid grid-cols-3 gap-2 mb-4">
+                                <div class="flex items-center gap-1 text-sm bg-black/30 px-3 py-2 rounded-full font-afacad backdrop-blur-sm">
+                                    <span>⭐</span> Daily Streaks
+                                </div>
+                                <div class="flex items-center gap-1 text-sm bg-black/30 px-3 py-2 rounded-full font-afacad backdrop-blur-sm">
+                                    <span>🏆</span> Achievements
+                                </div>
+                                <div class="flex items-center gap-1 text-sm bg-black/30 px-3 py-2 rounded-full font-afacad backdrop-blur-sm">
+                                    <span>👥</span> Leaderboards
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center text-white text-base font-medium group font-afacad">
+                                    <span>Start playing</span>
+                                    <svg class="w-5 h-5 ml-2 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-base bg-black/30 px-4 py-2 rounded-full font-afacad font-semibold backdrop-blur-sm">
+                                    🎮 5,000+ players
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 5: Community Support -->
+                <div class="card-hover rounded-2xl p-5 shadow-lg text-white relative overflow-hidden group">
+                    <div class="absolute inset-0 z-0">
+                        <img src="/assets/maps44.jpg" alt="Community" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-br from-black/60 to-black/40"></div>
+                    </div>
+                    
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full z-1"></div>
+                    <div class="absolute -left-4 -bottom-4 w-20 h-20 bg-white/10 rounded-full z-1"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
+                                <span class="text-lg font-afacad">👥</span>
+                            </div>
+                            <h3 class="text-lg font-bold font-afacad">Community Support</h3>
+                        </div>
+                        
+                        <p class="text-sm text-white/95 mb-3 leading-relaxed font-afacad">
+                            Join a global community of learners. Practice with native speakers and get help anytime.
+                        </p>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-white text-sm font-medium group font-afacad">
+                                <span>Join community</span>
+                                <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                            <span class="text-sm bg-black/30 px-3 py-1 rounded-full font-afacad backdrop-blur-sm">🌍 10k+ members</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JOIN NOW BUTTON -->
+            <div class="text-center mt-6">
+                <button class="group relative bg-gradient-to-r from-yellow-300 to-orange-400 text-white px-10 py-3 rounded-full text-base font-semibold hover:shadow-xl transition-all duration-300 overflow-hidden font-afacad">
+                    <span class="relative z-10">Start Learning Now</span>
+                    <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                </button>
+                <p class="text-sm text-gray-500 mt-3 font-afacad">Join thousands of learners worldwide 🌱</p>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-white py-12 px-4">
+            <div class="max-w-6xl mx-auto text-center">
+                <p class="text-gray-400 font-afacad">© 2024 Fluento - Learn Languages. All rights reserved.</p>
+            </div>
+        </footer>
+    </div> <!-- ← TUTUP to-white -->
+
+    <!-- SCRIPT BENDERA BERPUTAR -->
+    <script>
+        const flags = [
+            'gb', 'id', 'us', 'de', 'fr', 'jp', 'kr', 'it', 'es'
+        ];
+        
+        let currentIndex = 0;
+        const flagImg = document.getElementById('rotating-flag');
+        
+        function changeFlag() {
+            flagImg.style.opacity = '0';
+            
+            setTimeout(() => {
+                currentIndex = (currentIndex + 1) % flags.length;
+                flagImg.src = `https://flagcdn.com/w320/${flags[currentIndex]}.png`;
+                flagImg.style.opacity = '1';
+            }, 400);
+        }
+        
+        setInterval(changeFlag, 2000);
+        flagImg.style.opacity = '1';
+        flagImg.style.transition = 'opacity 0.3s ease-in-out';
+    </script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+/* Custom styles if needed, tapi Tailwind udah handle大部分 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Optional: custom hover effect for button */
+.btn-hover {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.btn-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* Background panjang dengan efek smooth */
+        .scroll-bg {
+            background-image: url('/assets/heroheaderr3.png');
+            background-size: cover;
+            background-position: center;
+            width: 100%;
+            background-attachment: scroll;
+            min-height: 500vh;
+            position: relative;
+        }
+        
+        /* Konten yang nempel di tengah */
+       .center-content {
+    position: sticky;
+    top: 65%;
+    transform: translateY(-50%);
+    text-align: center;
+    color: white;
+    z-index: 10;
+    padding: 2rem 1rem;     /* atas-bawah 1rem, kiri-kanan 2rem */
+    max-width: 1200px;       /* batas lebar konten */
+    margin-left: auto;       /* ketengah */
+    margin-right: auto;      /* ketengah */
+    left: 0;
+    right: 0;
+    width: 100%;
+    box-sizing: border-box;  /* biar padding gak nambah lebar */
+}
+
+
+/* Overlay gradient */
+.gradient-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.5) 100%);
+    z-index: 1;
+}
+
+        
+        /* Header di atas background */
+        .header-wrapper {
+            position: fixed;
+            top: 1rem;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            pointer-events: none;
+        }
+        
+        .header-wrapper > * {
+            pointer-events: auto;
+        }
+        
+        /* Transisi ke putih */
+        .to-white {
+            position: relative;
+            z-index: 20;
+            background: white;
+            border-radius: 3rem 3rem 0 0;
+            margin-top: -3rem;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+            min-height: 100vh;
+        }
+
+        /* Animasi fade bendera */
+        #rotating-flag {
+            transition: opacity 0.8s ease-in-out;
+        }

@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Fluento Kids</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --green:#58CC02;
+  --green-dark:#46A302;
+  --green-light:#89E219;
+  --blue:#1CB0F6;
+  --blue-dark:#0A8FCC;
+  --yellow:#FFC800;
+  --yellow-dark:#E5A100;
+  --red:#FF4B4B;
+  --red-dark:#CC3B3B;
+  --purple:#CE82FF;
+  --orange:#FF9600;
+  --bg:#F7F7F7;
+  --sidebar:#235390;
+  --sidebar-dark:#1A3D6B;
+  --sw:248px;
+}
+
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  min-height:100vh;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes slideIn{from{opacity:0;transform:translateX(-32px)}to{opacity:1;transform:none}}
+@keyframes popIn{0%{opacity:0;transform:scale(0.5)}60%{transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
+@keyframes nudge{0%,100%{transform:translateX(0)}30%{transform:translateX(-3px)}70%{transform:translateX(3px)}}
+@keyframes floatY{0%,100%{transform:translateY(0px)}50%{transform:translateY(-6px)}}
+@keyframes pageIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes ripple{from{transform:scale(0);opacity:.5}to{transform:scale(8);opacity:0}}
+@keyframes grow{from{width:0}to{width:var(--w)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-8px)}60%{transform:translateY(-4px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes confetti{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(120px) rotate(720deg);opacity:0}}
+@keyframes sparkle{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
+
+/* ── SIDEBAR ── */
+#sidebar{
+  position:fixed;top:0;left:0;height:100vh;
+  width:var(--sw);
+  background:var(--sidebar);
+  display:flex;flex-direction:column;
+  transition:width .3s cubic-bezier(.77,0,.18,1);
+  animation:slideIn .5s cubic-bezier(.77,0,.18,1) both;
+  z-index:100;
+  /* chunky right border */
+  border-right:4px solid var(--sidebar-dark);
+}
+
+
+/* top accent stripe */
+#sidebar::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:repeating-linear-gradient(90deg,#58CC02 0,#58CC02 24px,#1CB0F6 24px,#1CB0F6 48px,#FFC800 48px,#FFC800 72px,#FF4B4B 72px,#FF4B4B 96px);
+  z-index:2;
+}
+
+/* scroll area */
+#scrollArea{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  padding:16px 10px 8px;
+  scrollbar-width:none;margin-top:4px;
+}
+#scrollArea::-webkit-scrollbar{display:none}
+
+
+
+/* ── LOGO ── */
+.logo-wrap{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 8px 18px;
+  animation:popIn .6s .1s cubic-bezier(.77,0,.18,1) both;
+}
+.logo-bird{
+  width:44px;height:44px;flex-shrink:0;
+  animation:floatY 2.8s ease-in-out infinite;
+  cursor:pointer;
+  transition:transform .2s;
+}
+.logo-bird:hover{transform:rotate(-15deg) scale(1.1)}
+/* SVG bird inline */
+.logo-text-wrap{overflow:hidden;transition:opacity .25s,transform .25s}
+.logo-title{font-family:'Fredoka One',cursive;font-size:22px;color:#fff;line-height:1;letter-spacing:.3px;white-space:nowrap}
+.logo-sub{font-size:11px;font-weight:900;color:rgba(255,255,255,.5);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+
+/* ── NAV ITEM ── */
+.nav-item{
+  display:flex;align-items:center;gap:0;
+  margin-bottom:4px;
+  cursor:pointer;
+  position:relative;overflow:hidden;
+  border-radius:16px;
+  transition:transform .15s cubic-bezier(.77,0,.18,1);
+  animation:pageIn .4s cubic-bezier(.77,0,.18,1) both;
+}
+.nav-item:active{transform:scale(.96)}
+
+/* the chunky button look */
+.nav-btn{
+  display:flex;align-items:center;gap:12px;
+  width:100%;padding:11px 12px;
+  border-radius:16px;
+  background:rgba(255,255,255,.08);
+  border-bottom:3px solid rgba(0,0,0,.25);
+  transition:background .15s,border-bottom .1s,transform .1s;
+  color:rgba(255,255,255,.75);
+}
+.nav-item:hover .nav-btn{background:rgba(255,255,255,.15);color:#fff}
+.nav-item:active .nav-btn{border-bottom-width:1px;transform:translateY(2px)}
+.nav-item.active .nav-btn{
+  background:#fff;color:#235390;
+  border-bottom:3px solid #bcd1f0;
+  box-shadow:0 2px 0 #a0bce8;
+}
+.nav-item.active .nav-ico-box{background:var(--green);border-color:var(--green-dark)}
+.nav-item.active .nav-ico-box svg,
+.nav-item.active .nav-ico-box span{filter:brightness(10)}
+
+
+/* icon box — the chunky Duolingo icon feel */
+.nav-ico-box{
+  width:36px;height:36px;flex-shrink:0;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.12);
+  border-bottom:3px solid rgba(0,0,0,.2);
+  font-size:19px;line-height:1;
+  transition:transform .2s cubic-bezier(.77,0,.18,1),background .15s;
+}
+.nav-item:hover .nav-ico-box{transform:rotate(-8deg) scale(1.08)}
+.nav-item.active:hover .nav-ico-box{transform:scale(1.05)}
+
+.nav-label{
+  font-family:'Fredoka One',cursive;
+  font-size:17px;color:inherit;
+  letter-spacing:.2px;white-space:nowrap;
+  transition:opacity .2s;
+}
+
+/* ripple */
+.rip{position:absolute;border-radius:50%;width:20px;height:20px;background:rgba(255,200,0,.5);pointer-events:none;transform:scale(0);animation:ripple .5s ease-out forwards}
+
+/* divider */
+.sdiv{height:2px;background:rgba(255,255,255,.08);margin:8px 4px;border-radius:99px}
+
+/* stagger */
+.nav-item:nth-child(1){animation-delay:.08s}.nav-item:nth-child(2){animation-delay:.13s}
+.nav-item:nth-child(3){animation-delay:.18s}.nav-item:nth-child(4){animation-delay:.23s}
+.nav-item:nth-child(5){animation-delay:.28s}.nav-item:nth-child(6){animation-delay:.33s}
+.nav-item:nth-child(7){animation-delay:.38s}.nav-item:nth-child(8){animation-delay:.43s}
+
+/* section label */
+.slabel{
+  font-family:'Fredoka One',cursive;
+  font-size:11px;color:rgba(255,255,255,.35);
+  letter-spacing:.12em;text-transform:uppercase;
+  padding:10px 10px 4px;white-space:nowrap;overflow:hidden;
+  transition:opacity .2s,max-height .3s;max-height:40px;
+}
+
+/* ── STREAK + XP card at bottom ── */
+#xpCard{
+  margin:0 10px 14px;
+  background:rgba(255,255,255,.1);
+  border-radius:18px;
+  border:2px solid rgba(255,255,255,.15);
+  border-bottom:4px solid rgba(0,0,0,.2);
+  padding:13px 12px;
+  flex-shrink:0;
+  transition:padding .3s;
+  animation:popIn .6s .6s cubic-bezier(.77,0,.18,1) both;
+  cursor:pointer;
+}
+#xpCard:hover{background:rgba(255,255,255,.16)}
+.xp-inner{display:flex;align-items:center;gap:10px;transition:opacity .2s}
+.xp-avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#FFC800,#FF9600);border:3px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:20px}
+.xp-name{font-family:'Fredoka One',cursive;font-size:14px;color:#fff;line-height:1.1}
+.xp-level{font-size:11px;color:rgba(255,255,255,.6);font-weight:800;margin-top:1px}
+.xp-bar-track{height:6px;background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden;margin-top:5px}
+.xp-bar-fill{height:100%;width:68%;background:linear-gradient(90deg,#58CC02,#89E219);border-radius:99px;animation:grow .8s .8s ease both;--w:68%}
+
+/* ── MAIN ── */
+#main{
+  margin-left:var(--sw);min-height:100vh;
+  padding:36px 40px;
+  transition:margin-left .3s cubic-bezier(.77,0,.18,1);
+}
+
+.page{display:none;animation:pageIn .35s cubic-bezier(.77,0,.18,1) both}
+.page.active{display:block}
+
+/* ── PAGE HEADER ── */
+.ph{display:flex;align-items:center;gap:14px;margin-bottom:4px}
+.ph-ico{
+  width:56px;height:56px;border-radius:20px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;flex-shrink:0;
+  border-bottom:4px solid rgba(0,0,0,.15);
+  box-shadow:0 4px 0 rgba(0,0,0,.12);
+}
+.ptitle{font-family:'Fredoka One',cursive;font-size:32px;color:#3c3c3c;letter-spacing:.2px}
+.psub{font-size:14px;color:#afafaf;font-weight:800;margin-bottom:28px;margin-left:70px;letter-spacing:.02em}
+
+/* ── CHUNKY STAT CARDS ── */
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px;margin-bottom:28px}
+.scard{
+  border-radius:20px;padding:20px 16px;
+  cursor:pointer;position:relative;overflow:hidden;
+  border-bottom:5px solid rgba(0,0,0,.15);
+  transition:transform .15s cubic-bezier(.77,0,.18,1),box-shadow .15s;
+  box-shadow:0 4px 0 rgba(0,0,0,.1);
+}
+.scard:hover{transform:translateY(-4px);box-shadow:0 8px 0 rgba(0,0,0,.1)}
+.scard:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.1);border-bottom-width:2px}
+.scard-ico{font-size:34px;display:block;margin-bottom:8px;animation:floatY 3s ease-in-out infinite}
+.scard-lbl{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:rgba(0,0,0,.4)}
+.scard-val{font-family:'Fredoka One',cursive;font-size:34px;color:#fff;line-height:1;margin-top:2px}
+.scard-hint{font-size:12px;font-weight:800;color:rgba(255,255,255,.7);margin-top:3px}
+
+/* ── SECTION TITLE ── */
+.sec{font-family:'Fredoka One',cursive;font-size:18px;color:#3c3c3c;margin-bottom:12px;margin-top:4px;letter-spacing:.2px}
+
+/* ── STREAK DAYS ── */
+.streak-wrap{background:#fff;border-radius:22px;padding:20px 22px;margin-bottom:26px;border-bottom:4px solid #e0e0e0;box-shadow:0 4px 0 #e8e8e8}
+.streak-days{display:flex;gap:10px;margin-top:12px}
+.sday{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+.sdot{
+  width:40px;height:40px;border-radius:50%;
+  background:#f0f0f0;border:3px solid #e0e0e0;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  transition:transform .2s cubic-bezier(.77,0,.18,1);
+}
+.sdot:hover{transform:scale(1.15)}
+.sdot.done{background:var(--yellow);border-color:var(--yellow-dark);box-shadow:0 3px 0 var(--yellow-dark)}
+.sdot.today{background:var(--green);border-color:var(--green-dark);box-shadow:0 3px 0 var(--green-dark);animation:bounce 1.4s ease-in-out infinite}
+.slbl{font-size:11px;font-weight:900;color:#aaa}
+
+/* ── MISSION ROWS ── */
+.mission{
+  background:#fff;border-radius:18px;padding:15px 18px;margin-bottom:10px;
+  display:flex;align-items:center;gap:14px;cursor:pointer;
+  border-bottom:4px solid #e0e0e0;box-shadow:0 4px 0 #e8e8e8;
+  transition:transform .15s cubic-bezier(.77,0,.18,1);
+}
+.mission:hover{transform:translateY(-2px)}
+.mission:active{transform:translateY(2px);border-bottom-width:1px}
+.mission-ico{font-size:28px;flex-shrink:0}
+.mission-name{font-family:'Fredoka One',cursive;font-size:16px;color:#3c3c3c;letter-spacing:.1px}
+.mission-desc{font-size:12px;color:#aaa;font-weight:800;margin-top:1px}
+.mission-xp{font-family:'Fredoka One',cursive;font-size:15px;color:var(--yellow-dark);flex-shrink:0}
+.m-check{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;border-bottom:3px solid rgba(0,0,0,.15)}
+.m-done{background:var(--green);color:#fff;box-shadow:0 2px 0 var(--green-dark)}
+.m-todo{background:#f0f0f0;color:#ccc}
+
+/* ── EXPLORE WORLD CARDS ── */
+.worlds{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:28px}
+.world-card{
+  border-radius:24px;padding:0;overflow:hidden;cursor:pointer;
+  border-bottom:5px solid rgba(0,0,0,.18);
+  box-shadow:0 5px 0 rgba(0,0,0,.1);
+  transition:transform .15s cubic-bezier(.77,0,.18,1);
+}
+.world-card:hover{transform:translateY(-5px)}
+.world-card:active{transform:translateY(2px);border-bottom-width:2px}
+.world-top{padding:20px 18px 14px;position:relative;overflow:hidden}
+.world-top::after{content:'';position:absolute;bottom:-18px;right:-18px;width:60px;height:60px;background:rgba(255,255,255,.15);border-radius:50%}
+.world-emoji{font-size:44px;display:block;animation:floatY 3s ease-in-out infinite}
+.world-title{font-family:'Fredoka One',cursive;font-size:18px;color:#fff;margin-top:8px;letter-spacing:.1px}
+.world-bot{background:rgba(0,0,0,.12);padding:10px 18px;display:flex;align-items:center;justify-content:space-between}
+.world-count{font-size:12px;font-weight:900;color:rgba(255,255,255,.8)}
+.world-btn{font-family:'Fredoka One',cursive;font-size:13px;background:rgba(255,255,255,.25);color:#fff;border:none;border-radius:99px;padding:4px 14px;cursor:pointer;transition:background .15s}
+.world-btn:hover{background:rgba(255,255,255,.4)}
+
+/* ── PLAY GAME CARDS ── */
+.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:28px}
+.game-card{
+  background:#fff;border-radius:22px;padding:20px;
+  border-bottom:5px solid #e0e0e0;box-shadow:0 5px 0 #e8e8e8;
+  cursor:pointer;transition:transform .15s cubic-bezier(.77,0,.18,1);
+  display:flex;flex-direction:column;gap:12px;
+}
+.game-card:hover{transform:translateY(-4px)}
+.game-card:active{transform:translateY(2px);border-bottom-width:2px}
+.game-top{display:flex;align-items:center;gap:12px}
+.game-ico{width:50px;height:50px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;border-bottom:3px solid rgba(0,0,0,.15)}
+.game-title{font-family:'Fredoka One',cursive;font-size:17px;color:#3c3c3c;letter-spacing:.1px}
+.game-stars{display:flex;gap:2px;margin-top:2px}
+.game-stars span{font-size:13px}
+.game-desc{font-size:13px;color:#aaa;font-weight:800;line-height:1.4}
+.game-play-btn{
+  width:100%;background:var(--green);color:#fff;
+  border:none;border-radius:14px;padding:11px 0;
+  font-family:'Fredoka One',cursive;font-size:16px;
+  cursor:pointer;
+  border-bottom:4px solid var(--green-dark);
+  box-shadow:0 4px 0 var(--green-dark);
+  transition:transform .1s,box-shadow .1s,border-bottom .1s;
+  letter-spacing:.3px;
+}
+.game-play-btn:hover{filter:brightness(1.05)}
+.game-play-btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--green-dark);border-bottom-width:1px}
+.game-play-btn.blue{background:var(--blue);border-bottom-color:var(--blue-dark);box-shadow:0 4px 0 var(--blue-dark)}
+.game-play-btn.yellow{background:var(--yellow);color:#5c3a00;border-bottom-color:var(--yellow-dark);box-shadow:0 4px 0 var(--yellow-dark)}
+.game-play-btn.purple{background:var(--purple);border-bottom-color:#a45fd4;box-shadow:0 4px 0 #a45fd4}
+.game-play-btn.orange{background:var(--orange);border-bottom-color:#cc7700;box-shadow:0 4px 0 #cc7700}
+.game-play-btn.locked{background:#e0e0e0;color:#aaa;border-bottom-color:#c8c8c8;box-shadow:0 4px 0 #c8c8c8;cursor:not-allowed}
+
+/* ── WORD CARDS ── */
+.word-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:26px}
+.word-card{
+  background:#fff;border-radius:18px;padding:18px 12px;text-align:center;
+  cursor:pointer;border-bottom:4px solid #e0e0e0;box-shadow:0 4px 0 #e8e8e8;
+  transition:transform .15s cubic-bezier(.77,0,.18,1);
+}
+.word-card:hover{transform:translateY(-4px) rotate(-2deg)}
+.word-card:active{transform:translateY(1px) rotate(0deg);border-bottom-width:1px}
+.word-emo{font-size:32px;display:block;margin-bottom:8px}
+.word-en{font-family:'Fredoka One',cursive;font-size:18px;color:#3c3c3c;letter-spacing:.1px}
+.word-tr{font-size:12px;font-weight:800;color:#aaa;margin-top:2px}
+.word-tag{display:inline-block;font-size:10px;font-weight:900;padding:3px 8px;border-radius:99px;margin-top:8px;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid rgba(0,0,0,.12)}
+
+/* ── BADGE / ACHIEVEMENT CARDS ── */
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:26px}
+.badge-card{
+  background:#fff;border-radius:22px;padding:22px 14px;
+  text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;
+  border-bottom:4px solid #e0e0e0;box-shadow:0 4px 0 #e8e8e8;cursor:pointer;
+  transition:transform .15s cubic-bezier(.77,0,.18,1);
+}
+.badge-card:hover{transform:translateY(-4px) scale(1.02)}
+.badge-card:active{transform:translateY(1px);border-bottom-width:1px}
+.badge-card.locked{opacity:.45;filter:grayscale(.7)}
+.badge-emo{font-size:42px;animation:floatY 3s ease-in-out infinite}
+.badge-card.locked .badge-emo{animation:none}
+.badge-name{font-family:'Fredoka One',cursive;font-size:15px;color:#3c3c3c;letter-spacing:.1px}
+.badge-desc{font-size:12px;color:#aaa;font-weight:800;line-height:1.4}
+.badge-pill{font-size:11px;font-weight:900;padding:3px 12px;border-radius:99px;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid rgba(0,0,0,.1)}
+
+/* ── ACH ROWS ── */
+.ach-row{
+  background:#fff;border-radius:18px;padding:18px;margin-bottom:12px;
+  display:flex;align-items:center;gap:16px;
+  border-bottom:4px solid #e0e0e0;box-shadow:0 4px 0 #e8e8e8;
+  cursor:pointer;transition:transform .15s cubic-bezier(.77,0,.18,1);
+}
+.ach-row:hover{transform:translateX(5px)}
+.ach-emo{font-size:36px;flex-shrink:0}
+.ach-info{flex:1}
+.ach-name{font-family:'Fredoka One',cursive;font-size:17px;color:#3c3c3c;letter-spacing:.1px}
+.ach-desc{font-size:12px;color:#aaa;font-weight:800;margin-top:2px}
+.ach-bar{height:8px;background:#f0f0f0;border-radius:99px;overflow:hidden;margin-top:8px}
+.ach-fill{height:100%;border-radius:99px;animation:grow 1s .2s ease both}
+.ach-stars{font-family:'Fredoka One',cursive;font-size:16px;color:var(--yellow-dark);flex-shrink:0}
+
+/* ── SETTINGS ── */
+.set-box{background:#fff;border-radius:22px;padding:22px;margin-bottom:16px;border-bottom:4px solid #e0e0e0;box-shadow:0 4px 0 #e8e8e8}
+.set-head{font-family:'Fredoka One',cursive;font-size:17px;color:#3c3c3c;margin-bottom:14px;letter-spacing:.2px}
+.set-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:2px dashed #f0f0f0}
+.set-row:last-child{border-bottom:none}
+.set-label{font-family:'Fredoka One',cursive;font-size:15px;color:#3c3c3c;letter-spacing:.1px}
+.set-hint{font-size:12px;color:#aaa;font-weight:800;margin-top:2px}
+/* Duolingo-style toggle */
+.tog{width:52px;height:30px;border-radius:99px;background:#e0e0e0;border-bottom:3px solid #c8c8c8;position:relative;cursor:pointer;transition:background .2s,border-color .2s;flex-shrink:0}
+.tog.on{background:var(--green);border-color:var(--green-dark)}
+.tog::after{content:'';position:absolute;top:4px;left:4px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.2);transition:transform .25s cubic-bezier(.77,0,.18,1)}
+.tog.on::after{transform:translateX(22px)}
+
+/* confetti */
+.conf{position:fixed;pointer-events:none;font-size:20px;animation:confetti 1.2s ease-in forwards;z-index:9999}
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══ -->
+<div id="sidebar">
+
+  <div id="scrollArea">
+    <!-- Logo -->
+    <div class="logo-wrap">
+      <!-- chunky owl/bird SVG character -->
+      <svg class="logo-bird" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="22" cy="22" r="20" fill="#58CC02"/>
+        <circle cx="22" cy="22" r="20" fill="none" stroke="#46A302" stroke-width="3"/>
+        <!-- body shape -->
+        <ellipse cx="22" cy="26" rx="13" ry="11" fill="#fff" opacity=".15"/>
+        <!-- eyes -->
+        <circle cx="16" cy="20" r="5" fill="#fff"/>
+        <circle cx="28" cy="20" r="5" fill="#fff"/>
+        <circle cx="17" cy="20" r="2.5" fill="#1a1a1a"/>
+        <circle cx="29" cy="20" r="2.5" fill="#1a1a1a"/>
+        <circle cx="17.8" cy="19.2" r="1" fill="#fff"/>
+        <circle cx="29.8" cy="19.2" r="1" fill="#fff"/>
+        <!-- beak -->
+        <path d="M20 24 L22 27 L24 24 Z" fill="#FFC800"/>
+        <!-- eyebrows -->
+        <path d="M13 16.5 Q16 14.5 19 16.5" stroke="#46A302" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <path d="M25 16.5 Q28 14.5 31 16.5" stroke="#46A302" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <!-- chest -->
+        <ellipse cx="22" cy="30" rx="8" ry="6" fill="#89E219" opacity=".6"/>
+      </svg>
+      <div class="logo-text-wrap">
+        <div class="logo-title">Fluento</div>
+        <div class="logo-sub">for Kids ✨</div>
+      </div>
+    </div>
+
+    <div class="slabel">Learn</div>
+    <div class="nav-item active" onclick="nav(this,'home')">
+      <div class="nav-btn">
+        <div class="nav-ico-box">🏠</div>
+        <span class="nav-label">Home</span>
+      </div>
+    </div>
+    <div class="nav-item" onclick="nav(this,'explore')">
+      <div class="nav-btn">
+        <div class="nav-ico-box">🗺️</div>
+        <span class="nav-label">Explore</span>
+      </div>
+    </div>
+    <div class="nav-item" onclick="nav(this,'play')">
+      <div class="nav-btn">
+        <div class="nav-ico-box">🎮</div>
+        <span class="nav-label">Play</span>
+      </div>
+    </div>
+    <div class="nav-item" onclick="nav(this,'mywords')">
+      <div class="nav-btn">
+        <div class="nav-ico-box">📝</div>
+        <span class="nav-label">My Words</span>
+      </div>
+    </div>
+
+    <div class="sdiv"></div>
+    <div class="slabel">My Stuff</div>
+
+    <div class="nav-item" onclick="nav(this,'achievements')">
+      <div class="nav-btn">
+        <div class="nav-ico-box">🏆</div>
+        <span class="nav-label">Achievements</span>
+      </div>
+    </div>
+    <div class="nav-item" onclick="nav(this,'badges')">
+      <div class="nav-btn">
+        <div class="nav-ico-box">🎖️</div>
+        <span class="nav-label">Badges</span>
+      </div>
+    </div>
+    <div class="nav-item" onclick="nav(this,'settings')">
+      <div class="nav-btn">
+        <div class="nav-ico-box">⚙️</div>
+        <span class="nav-label">Settings</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- XP / avatar card -->
+  <div id="xpCard">
+    <div class="xp-inner">
+      <div class="xp-avatar">🐱</div>
+      <div style="flex:1;overflow:hidden">
+        <div class="xp-name">Mia ⭐</div>
+        <div class="xp-level">Level 5 · 680 XP</div>
+        <div class="xp-bar-track"><div class="xp-bar-fill"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div id="main">
+
+  <!-- HOME -->
+  <div class="page active" id="page-home">
+    <div class="ph">
+      <div class="ph-ico" style="background:#FFC800;border-bottom-color:#c89900;">🏠</div>
+      <div class="ptitle">Hi Mia! 👋</div>
+    </div>
+    <div class="psub">5-day streak! You're crushing it! 🔥</div>
+
+    <div class="stats">
+      <div class="scard" style="background:#FF4B4B">
+        <span class="scard-ico">🔥</span>
+        <div class="scard-lbl">Day Streak</div>
+        <div class="scard-val">5</div>
+        <div class="scard-hint">Best: 12 🏅</div>
+      </div>
+      <div class="scard" style="background:#FFC800">
+        <span class="scard-ico">⭐</span>
+        <div class="scard-lbl">Stars</div>
+        <div class="scard-val" style="color:#5c3a00">680</div>
+        <div class="scard-hint" style="color:rgba(92,58,0,.6)">+40 today!</div>
+      </div>
+      <div class="scard" style="background:#58CC02">
+        <span class="scard-ico">💬</span>
+        <div class="scard-lbl">Words</div>
+        <div class="scard-val">84</div>
+        <div class="scard-hint">+6 new! 🎉</div>
+      </div>
+      <div class="scard" style="background:#1CB0F6">
+        <span class="scard-ico">🎖️</span>
+        <div class="scard-lbl">Badges</div>
+        <div class="scard-val">7</div>
+        <div class="scard-hint">3 to unlock!</div>
+      </div>
+    </div>
+
+    <div class="streak-wrap">
+      <div class="sec" style="margin-bottom:0">🗓️ My Week</div>
+      <div class="streak-days">
+        <div class="sday"><div class="sdot done">⭐</div><div class="slbl">Mon</div></div>
+        <div class="sday"><div class="sdot done">⭐</div><div class="slbl">Tue</div></div>
+        <div class="sday"><div class="sdot done">⭐</div><div class="slbl">Wed</div></div>
+        <div class="sday"><div class="sdot done">⭐</div><div class="slbl">Thu</div></div>
+        <div class="sday"><div class="sdot today">🌟</div><div class="slbl">Fri</div></div>
+        <div class="sday"><div class="sdot"></div><div class="slbl">Sat</div></div>
+        <div class="sday"><div class="sdot"></div><div class="slbl">Sun</div></div>
+      </div>
+    </div>
+
+    <div class="sec">🎯 Today's Missions</div>
+    <div class="mission">
+      <div class="mission-ico">🎵</div>
+      <div style="flex:1"><div class="mission-name">Sing a Song!</div><div class="mission-desc">Learn 5 words through music</div></div>
+      <div class="mission-xp">+30 ⭐</div>
+      <div class="m-check m-done">✓</div>
+    </div>
+    <div class="mission">
+      <div class="mission-ico">🧩</div>
+      <div style="flex:1"><div class="mission-name">Word Puzzle</div><div class="mission-desc">Match pictures to words — 3/5 done!</div></div>
+      <div class="mission-xp">+20 ⭐</div>
+      <div class="m-check m-todo">○</div>
+    </div>
+    <div class="mission">
+      <div class="mission-ico">🎤</div>
+      <div style="flex:1"><div class="mission-name">Say It Out Loud!</div><div class="mission-desc">Repeat 3 phrases out loud</div></div>
+      <div class="mission-xp">+25 ⭐</div>
+      <div class="m-check m-todo">○</div>
+    </div>
+  </div>
+
+  <!-- EXPLORE -->
+  <div class="page" id="page-explore">
+    <div class="ph">
+      <div class="ph-ico" style="background:#1CB0F6;border-bottom-color:#0a8fcc;">🗺️</div>
+      <div class="ptitle">Explore Worlds! 🌍</div>
+    </div>
+    <div class="psub">Pick a world and start your adventure!</div>
+    <div class="worlds">
+      <div class="world-card" style="border-bottom-color:#cc3b0a">
+        <div class="world-top" style="background:linear-gradient(135deg,#FF6B35,#FF4B4B)">
+          <span class="world-emoji">🐾</span>
+          <div class="world-title">Animal Kingdom</div>
+        </div>
+        <div class="world-bot"><span class="world-count">24 words</span><button class="world-btn">Play →</button></div>
+      </div>
+      <div class="world-card" style="border-bottom-color:#46a302">
+        <div class="world-top" style="background:linear-gradient(135deg,#58CC02,#4ECDC4)">
+          <span class="world-emoji">🍎</span>
+          <div class="world-title">Yummy Food</div>
+        </div>
+        <div class="world-bot"><span class="world-count">18 words</span><button class="world-btn">Play →</button></div>
+      </div>
+      <div class="world-card" style="border-bottom-color:#c89900">
+        <div class="world-top" style="background:linear-gradient(135deg,#FFC800,#FF9600)">
+          <span class="world-emoji">🏠</span>
+          <div class="world-title">My Home</div>
+        </div>
+        <div class="world-bot" style="background:rgba(0,0,0,.12)"><span class="world-count" style="color:rgba(255,255,255,.8)">20 words</span><button class="world-btn">Play →</button></div>
+      </div>
+      <div class="world-card" style="border-bottom-color:#0a8fcc">
+        <div class="world-top" style="background:linear-gradient(135deg,#1CB0F6,#CE82FF)">
+          <span class="world-emoji">🌈</span>
+          <div class="world-title">Colors & Shapes</div>
+        </div>
+        <div class="world-bot"><span class="world-count">15 words</span><button class="world-btn">Play →</button></div>
+      </div>
+      <div class="world-card" style="border-bottom-color:#7a40d4">
+        <div class="world-top" style="background:linear-gradient(135deg,#CE82FF,#1CB0F6)">
+          <span class="world-emoji">🚀</span>
+          <div class="world-title">Outer Space</div>
+        </div>
+        <div class="world-bot"><span class="world-count">12 words</span><button class="world-btn">Play →</button></div>
+      </div>
+      <div class="world-card" style="border-bottom-color:#cc7700">
+        <div class="world-top" style="background:linear-gradient(135deg,#FF9600,#FF4B4B)">
+          <span class="world-emoji">⚽</span>
+          <div class="world-title">Sports & Play</div>
+        </div>
+        <div class="world-bot"><span class="world-count">16 words</span><button class="world-btn">Play →</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAY -->
+  <div class="page" id="page-play">
+    <div class="ph">
+      <div class="ph-ico" style="background:#FF9600;border-bottom-color:#cc7700;">🎮</div>
+      <div class="ptitle">Play Games! 🎉</div>
+    </div>
+    <div class="psub">Learning is more fun when it's a game!</div>
+    <div class="games">
+      <div class="game-card">
+        <div class="game-top"><div class="game-ico" style="background:#FFF3CD;border-bottom-color:#e5c800;">🃏</div><div><div class="game-title">Match It!</div><div class="game-stars"><span>⭐</span><span>⭐</span><span>⭐</span></div></div></div>
+        <div class="game-desc">Flip cards and match the picture to the word!</div>
+        <button class="game-play-btn yellow" onclick="pop(this)">Play Now! 🎯</button>
+      </div>
+      <div class="game-card">
+        <div class="game-top"><div class="game-ico" style="background:#e8d5ff;border-bottom-color:#a45fd4;">🧩</div><div><div class="game-title">Word Puzzle</div><div class="game-stars"><span>⭐</span><span>⭐</span><span style="opacity:.25">⭐</span></div></div></div>
+        <div class="game-desc">Unscramble the letters to find the hidden word!</div>
+        <button class="game-play-btn purple" onclick="pop(this)">Play Now! 🧩</button>
+      </div>
+      <div class="game-card">
+        <div class="game-top"><div class="game-ico" style="background:#d1f0ff;border-bottom-color:#0a8fcc;">🎵</div><div><div class="game-title">Sing Along</div><div class="game-stars"><span>⭐</span><span>⭐</span><span>⭐</span></div></div></div>
+        <div class="game-desc">Listen and repeat the fun vocabulary song!</div>
+        <button class="game-play-btn blue" onclick="pop(this)">Play Now! 🎵</button>
+      </div>
+      <div class="game-card">
+        <div class="game-top"><div class="game-ico" style="background:#d4f5d4;border-bottom-color:#46a302;">⚡</div><div><div class="game-title">Speed Quiz</div><div class="game-stars"><span>⭐</span><span style="opacity:.25">⭐</span><span style="opacity:.25">⭐</span></div></div></div>
+        <div class="game-desc">How fast can you answer? Beat the clock!</div>
+        <button class="game-play-btn" onclick="pop(this)">Play Now! ⚡</button>
+      </div>
+      <div class="game-card">
+        <div class="game-top"><div class="game-ico" style="background:#ffe5d4;border-bottom-color:#cc7700;">🎨</div><div><div class="game-title">Color & Learn</div><div class="game-stars"><span>⭐</span><span>⭐</span><span style="opacity:.25">⭐</span></div></div></div>
+        <div class="game-desc">Color the picture and learn the word for it!</div>
+        <button class="game-play-btn orange" onclick="pop(this)">Play Now! 🎨</button>
+      </div>
+      <div class="game-card" style="opacity:.5">
+        <div class="game-top"><div class="game-ico" style="background:#f0f0f0;border-bottom-color:#c8c8c8;">🔒</div><div><div class="game-title">Story Time</div><div class="game-stars"><span style="opacity:.25">⭐</span><span style="opacity:.25">⭐</span><span style="opacity:.25">⭐</span></div></div></div>
+        <div class="game-desc">Unlock at Level 8 to read fun stories!</div>
+        <button class="game-play-btn locked">Locked 🔒</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY WORDS -->
+  <div class="page" id="page-mywords">
+    <div class="ph">
+      <div class="ph-ico" style="background:#FFC800;border-bottom-color:#c89900;">📝</div>
+      <div class="ptitle">My Words! 💬</div>
+    </div>
+    <div class="psub">All the cool words you've learned!</div>
+    <div class="stats" style="margin-bottom:24px">
+      <div class="scard" style="background:#58CC02"><span class="scard-ico">🌟</span><div class="scard-lbl">I Know!</div><div class="scard-val">84</div></div>
+      <div class="scard" style="background:#FFC800"><span class="scard-ico">📖</span><div class="scard-lbl" style="color:rgba(0,0,0,.4)">Learning</div><div class="scard-val" style="color:#5c3a00">18</div></div>
+      <div class="scard" style="background:#FF4B4B"><span class="scard-ico">🔁</span><div class="scard-lbl">Review</div><div class="scard-val">6</div></div>
+    </div>
+    <div class="sec">🐾 Animals</div>
+    <div class="word-grid">
+      <div class="word-card"><span class="word-emo">🐱</span><div class="word-en">Cat</div><div class="word-tr">Kucing</div><span class="word-tag" style="background:#58CC02;color:#fff">✓ Got it!</span></div>
+      <div class="word-card"><span class="word-emo">🐶</span><div class="word-en">Dog</div><div class="word-tr">Anjing</div><span class="word-tag" style="background:#58CC02;color:#fff">✓ Got it!</span></div>
+      <div class="word-card"><span class="word-emo">🐘</span><div class="word-en">Elephant</div><div class="word-tr">Gajah</div><span class="word-tag" style="background:#FFC800;color:#5c3a00">📖 Learning</span></div>
+      <div class="word-card"><span class="word-emo">🦋</span><div class="word-en">Butterfly</div><div class="word-tr">Kupu-kupu</div><span class="word-tag" style="background:#FF4B4B;color:#fff">🔁 Review</span></div>
+      <div class="word-card"><span class="word-emo">🐸</span><div class="word-en">Frog</div><div class="word-tr">Katak</div><span class="word-tag" style="background:#58CC02;color:#fff">✓ Got it!</span></div>
+      <div class="word-card"><span class="word-emo">🦁</span><div class="word-en">Lion</div><div class="word-tr">Singa</div><span class="word-tag" style="background:#FFC800;color:#5c3a00">📖 Learning</span></div>
+      <div class="word-card"><span class="word-emo">🐬</span><div class="word-en">Dolphin</div><div class="word-tr">Lumba-lumba</div><span class="word-tag" style="background:#1CB0F6;color:#fff">🆕 New!</span></div>
+      <div class="word-card"><span class="word-emo">🦊</span><div class="word-en">Fox</div><div class="word-tr">Rubah</div><span class="word-tag" style="background:#1CB0F6;color:#fff">🆕 New!</span></div>
+    </div>
+    <div class="sec">🍎 Food</div>
+    <div class="word-grid">
+      <div class="word-card"><span class="word-emo">🍎</span><div class="word-en">Apple</div><div class="word-tr">Apel</div><span class="word-tag" style="background:#58CC02;color:#fff">✓ Got it!</span></div>
+      <div class="word-card"><span class="word-emo">🍌</span><div class="word-en">Banana</div><div class="word-tr">Pisang</div><span class="word-tag" style="background:#58CC02;color:#fff">✓ Got it!</span></div>
+      <div class="word-card"><span class="word-emo">🍕</span><div class="word-en">Pizza</div><div class="word-tr">Pizza</div><span class="word-tag" style="background:#FF4B4B;color:#fff">🔁 Review</span></div>
+      <div class="word-card"><span class="word-emo">🍦</span><div class="word-en">Ice Cream</div><div class="word-tr">Es Krim</div><span class="word-tag" style="background:#58CC02;color:#fff">✓ Got it!</span></div>
+    </div>
+  </div>
+
+  <!-- ACHIEVEMENTS -->
+  <div class="page" id="page-achievements">
+    <div class="ph">
+      <div class="ph-ico" style="background:#FFC800;border-bottom-color:#c89900;">🏆</div>
+      <div class="ptitle">Achievements! 🌟</div>
+    </div>
+    <div class="psub">Look at all the awesome things you've done!</div>
+    <div class="ach-row">
+      <div class="ach-emo">🔥</div>
+      <div class="ach-info"><div class="ach-name">Streak Star!</div><div class="ach-desc">5-day learning streak — you're on fire!</div><div class="ach-bar"><div class="ach-fill" style="--w:71%;width:71%;background:linear-gradient(90deg,#FFC800,#FF9600)"></div></div></div>
+      <div class="ach-stars">+100 ⭐</div>
+    </div>
+    <div class="ach-row">
+      <div class="ach-emo">💬</div>
+      <div class="ach-info"><div class="ach-name">Word Wizard!</div><div class="ach-desc">Learned 84 words — you're amazing!</div><div class="ach-bar"><div class="ach-fill" style="--w:84%;width:84%;background:linear-gradient(90deg,#58CC02,#89E219)"></div></div></div>
+      <div class="ach-stars">+200 ⭐</div>
+    </div>
+    <div class="ach-row">
+      <div class="ach-emo">🎵</div>
+      <div class="ach-info"><div class="ach-name">Sing It!</div><div class="ach-desc">Completed 3 sing-along lessons!</div><div class="ach-bar"><div class="ach-fill" style="--w:100%;width:100%;background:linear-gradient(90deg,#1CB0F6,#CE82FF)"></div></div></div>
+      <div class="ach-stars">+50 ⭐</div>
+    </div>
+    <div class="ach-row" style="opacity:.5">
+      <div class="ach-emo">🚀</div>
+      <div class="ach-info"><div class="ach-name">Speed Racer!</div><div class="ach-desc">Win 5 speed quizzes — 2/5 so far!</div><div class="ach-bar"><div class="ach-fill" style="--w:40%;width:40%;background:#e0e0e0"></div></div></div>
+      <div class="ach-stars" style="color:#aaa">+150 ⭐</div>
+    </div>
+    <div class="ach-row" style="opacity:.5">
+      <div class="ach-emo">🌍</div>
+      <div class="ach-info"><div class="ach-name">World Explorer!</div><div class="ach-desc">Explore all 6 worlds — 3/6 done!</div><div class="ach-bar"><div class="ach-fill" style="--w:50%;width:50%;background:#e0e0e0"></div></div></div>
+      <div class="ach-stars" style="color:#aaa">+300 ⭐</div>
+    </div>
+  </div>
+
+  <!-- BADGES -->
+  <div class="page" id="page-badges">
+    <div class="ph">
+      <div class="ph-ico" style="background:#CE82FF;border-bottom-color:#a45fd4;">🎖️</div>
+      <div class="ptitle">My Badges! 🎉</div>
+    </div>
+    <div class="psub">Collect them all — you're a superstar!</div>
+    <div class="sec">✨ Earned</div>
+    <div class="badges">
+      <div class="badge-card"><div class="badge-emo">🌟</div><div class="badge-name">First Star</div><div class="badge-desc">Completed your first lesson!</div><span class="badge-pill" style="background:#FFC800;color:#5c3a00;border-bottom-color:#c89900">Earned!</span></div>
+      <div class="badge-card"><div class="badge-emo">🔥</div><div class="badge-name">On Fire</div><div class="badge-desc">5-day streak achieved!</div><span class="badge-pill" style="background:#FF4B4B;color:#fff;border-bottom-color:#cc3b3b">Earned!</span></div>
+      <div class="badge-card"><div class="badge-emo">🦁</div><div class="badge-name">Lion Heart</div><div class="badge-desc">Never gave up — 10 lessons done!</div><span class="badge-pill" style="background:#FF9600;color:#fff;border-bottom-color:#cc7700">Earned!</span></div>
+      <div class="badge-card"><div class="badge-emo">🎵</div><div class="badge-name">Music Star</div><div class="badge-desc">Sang along 3 times!</div><span class="badge-pill" style="background:#CE82FF;color:#fff;border-bottom-color:#a45fd4">Earned!</span></div>
+      <div class="badge-card"><div class="badge-emo">🐾</div><div class="badge-name">Animal Expert</div><div class="badge-desc">Learned all Animal Kingdom words!</div><span class="badge-pill" style="background:#58CC02;color:#fff;border-bottom-color:#46a302">Earned!</span></div>
+      <div class="badge-card"><div class="badge-emo">💯</div><div class="badge-name">Perfect!</div><div class="badge-desc">Got 100% on a quiz!</div><span class="badge-pill" style="background:#1CB0F6;color:#fff;border-bottom-color:#0a8fcc">Earned!</span></div>
+    </div>
+    <div class="sec">🔒 Still Locked</div>
+    <div class="badges">
+      <div class="badge-card locked"><div class="badge-emo">🚀</div><div class="badge-name">Rocket Kid</div><div class="badge-desc">Explore the Outer Space world</div><span class="badge-pill" style="background:#e0e0e0;color:#aaa;border-bottom-color:#c8c8c8">Locked</span></div>
+      <div class="badge-card locked"><div class="badge-emo">🌈</div><div class="badge-name">Rainbow</div><div class="badge-desc">Complete Colors & Shapes</div><span class="badge-pill" style="background:#e0e0e0;color:#aaa;border-bottom-color:#c8c8c8">Locked</span></div>
+      <div class="badge-card locked"><div class="badge-emo">🏆</div><div class="badge-name">Champion</div><div class="badge-desc">Reach Level 10</div><span class="badge-pill" style="background:#e0e0e0;color:#aaa;border-bottom-color:#c8c8c8">Locked</span></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="page" id="page-settings">
+    <div class="ph">
+      <div class="ph-ico" style="background:#1CB0F6;border-bottom-color:#0a8fcc;">⚙️</div>
+      <div class="ptitle">Settings ⚙️</div>
+    </div>
+    <div class="psub">Make Fluento just right for you!</div>
+    <div class="set-box">
+      <div class="set-head">🐱 My Profile</div>
+      <div class="set-row"><div><div class="set-label">My Name</div><div class="set-hint">Mia</div></div><button style="font-family:'Fredoka One',cursive;font-size:14px;background:#1CB0F6;color:#fff;border:none;border-radius:10px;padding:7px 16px;cursor:pointer;border-bottom:3px solid #0a8fcc;">Edit ✏️</button></div>
+      <div class="set-row"><div><div class="set-label">My Animal</div><div class="set-hint">🐱 Kitty Cat</div></div><button style="font-family:'Fredoka One',cursive;font-size:14px;background:#CE82FF;color:#fff;border:none;border-radius:10px;padding:7px 16px;cursor:pointer;border-bottom:3px solid #a45fd4;">Change 🐾</button></div>
+      <div class="set-row"><div><div class="set-label">Language</div><div class="set-hint">🇬🇧 English</div></div><button style="font-family:'Fredoka One',cursive;font-size:14px;background:#58CC02;color:#fff;border:none;border-radius:10px;padding:7px 16px;cursor:pointer;border-bottom:3px solid #46a302;">Change 🌍</button></div>
+    </div>
+    <div class="set-box">
+      <div class="set-head">🔔 Sounds & Alerts</div>
+      <div class="set-row"><div><div class="set-label">Daily Reminder 🌅</div><div class="set-hint">Remind me to practice every day!</div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="set-row"><div><div class="set-label">Streak Alert 🔥</div><div class="set-hint">Don't let the fire go out!</div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="set-row"><div><div class="set-label">Sound Effects 🔊</div><div class="set-hint">Fun sounds when I get it right!</div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+    <div class="set-box">
+      <div class="set-head">🎨 Fun Options</div>
+      <div class="set-row"><div><div class="set-label">Confetti 🎉</div><div class="set-hint">Celebrate when I win!</div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="set-row"><div><div class="set-label">Animations ✨</div><div class="set-hint">Bouncy buttons and effects</div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="set-row"><div><div class="set-label">Dark Mode 🌙</div><div class="set-hint">Easier on the eyes at night</div></div><div class="tog" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const sidebar = document.getElementById('sidebar');
+
+
+function nav(el, pageId){
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  showPage(pageId);
+  // ripple
+  const btn = el.querySelector('.nav-btn');
+  const rip = document.createElement('span');
+  rip.className='rip';
+  rip.style.left='20px';rip.style.top='16px';
+  btn.appendChild(rip);
+  setTimeout(()=>rip.remove(),600);
+}
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const pg=document.getElementById('page-'+id);
+  if(pg){pg.classList.add('active');pg.style.animation='none';pg.offsetHeight;pg.style.animation=''}
+}
+
+function pop(btn){
+  // bounce
+  btn.style.transform='scale(.92) translateY(4px)';
+  btn.style.boxShadow='0 1px 0 currentColor';
+  setTimeout(()=>{btn.style.transform='';btn.style.boxShadow='';},140);
+  // confetti
+  const picks=['⭐','🌟','✨','🎉','🎊','🏆'];
+  for(let i=0;i<12;i++){
+    setTimeout(()=>{
+      const c=document.createElement('div');
+      c.className='conf';
+      c.textContent=picks[Math.floor(Math.random()*picks.length)];
+      c.style.left=(20+Math.random()*60)+'vw';
+      c.style.top=(20+Math.random()*30)+'vh';
+      c.style.fontSize=(14+Math.random()*16)+'px';
+      c.style.animationDuration=(.7+Math.random()*.8)+'s';
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),1400);
+    },i*60);
+  }
+}
+
+// Wobble icon on nav hover
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('mouseenter',()=>{
+    const ico=item.querySelector('.nav-ico-box');
+    if(ico){ico.style.animation='nudge .35s ease';setTimeout(()=>ico.style.animation='',350);}
+  });
+});
+</script>
+</body>
+</html>
