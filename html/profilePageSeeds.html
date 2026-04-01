@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Fluento Kids - My Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --green:#58CC02;
+  --green-dark:#46A302;
+  --green-light:#89E219;
+  --blue:#1CB0F6;
+  --blue-dark:#0A8FCC;
+  --yellow:#FFC800;
+  --yellow-dark:#E5A100;
+  --red:#FF4B4B;
+  --red-dark:#CC3B3B;
+  --purple:#CE82FF;
+  --orange:#FF9600;
+  --bg:#F7F7F7;
+  --sidebar:#235390;
+  --sidebar-dark:#1A3D6B;
+}
+
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes popIn{0%{opacity:0;transform:scale(0.5)}60%{transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
+@keyframes floatY{0%,100%{transform:translateY(0px)}50%{transform:translateY(-6px)}}
+@keyframes pageIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes grow{from{width:0}to{width:var(--w)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-8px)}60%{transform:translateY(-4px)}}
+@keyframes confetti{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(120px) rotate(720deg);opacity:0}}
+@keyframes modalSlide{from{opacity:0;transform:translateY(20px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes backdropFade{from{opacity:0}to{opacity:1}}
+
+/* ── BACK BUTTON ── */
+.back-btn{
+  position:fixed;top:20px;left:20px;z-index:50;
+  display:flex;align-items:center;gap:8px;
+  background:#fff;border:none;border-radius:14px;
+  padding:10px 16px;font-family:'Fredoka One',cursive;
+  font-size:14px;color:#3c3c3c;cursor:pointer;
+  border-bottom:4px solid #e0e0e0;box-shadow:0 4px 0 #e8e8e8;
+  transition:transform .1s,box-shadow .1s;
+}
+.back-btn:hover{transform:translateY(-2px)}
+.back-btn:active{transform:translateY(2px);border-bottom-width:1px;box-shadow:0 2px 0 #e8e8e8}
+.back-btn-ico{font-size:18px}
+
+/* ── MAIN ── */
+#main{
+  min-height:100vh;padding:36px 40px 60px;
+  max-width:900px;margin:0 auto;
+}
+
+.page{display:none;animation:pageIn .35s cubic-bezier(.77,0,.18,1) both}
+.page.active{display:block}
+
+/* ── PAGE HEADER ── */
+.ph{display:flex;align-items:center;gap:14px;margin-bottom:4px}
+.ph-ico{
+  width:56px;height:56px;border-radius:20px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;flex-shrink:0;
+  border-bottom:4px solid rgba(0,0,0,.15);
+  box-shadow:0 4px 0 rgba(0,0,0,.12);
+}
+.ptitle{font-family:'Fredoka One',cursive;font-size:32px;color:#3c3c3c;letter-spacing:.2px}
+.psub{font-size:14px;color:#afafaf;font-weight:800;margin-bottom:28px;margin-left:70px;letter-spacing:.02em}
+
+/* ── CHUNKY STAT CARDS ── */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.scard{
+  border-radius:20px;padding:20px 16px;
+  cursor:pointer;position:relative;overflow:hidden;
+  border-bottom:5px solid rgba(0,0,0,.15);
+  transition:transform .15s cubic-bezier(.77,0,.18,1),box-shadow .15s;
+  box-shadow:0 4px 0 rgba(0,0,0,.1);
+  text-align:center;
+}
+.scard:hover{transform:translateY(-4px);box-shadow:0 8px 0 rgba(0,0,0,.1)}
+.scard:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.1);border-bottom-width:2px}
+.scard-ico{font-size:34px;display:block;margin-bottom:8px;animation:floatY 3s ease-in-out infinite}
+.scard-lbl{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:rgba(0,0,0,.4)}
+.scard-val{font-family:'Fredoka One',cursive;font-size:34px;color:#fff;line-height:1;margin-top:2px}
+.scard-hint{font-size:12px;font-weight:800;color:rgba(255,255,255,.7);margin-top:3px}
+
+/* ── SECTION TITLE ── */
+.sec{font-family:'Fredoka One',cursive;font-size:18px;color:#3c3c3c;margin-bottom:12px;margin-top:4px;letter-spacing:.2px;display:flex;align-items:center;gap:8px}
+
+/* ── SETTINGS BOX ── */
+.set-box{background:#fff;border-radius:22px;padding:22px;margin-bottom:16px;border-bottom:4px solid #e0e0e0;box-shadow:0 4px 0 #e8e8e8}
+.set-head{font-family:'Fredoka One',cursive;font-size:17px;color:#3c3c3c;margin-bottom:14px;letter-spacing:.2px;display:flex;align-items:center;gap:8px}
+.set-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:2px dashed #f0f0f0}
+.set-row:last-child{border-bottom:none}
+.set-label{font-family:'Fredoka One',cursive;font-size:15px;color:#3c3c3c;letter-spacing:.1px}
+.set-hint{font-size:12px;color:#aaa;font-weight:800;margin-top:2px}
+
+/* ── INPUT FIELDS ── */
+.input-chunky{
+  width:100%;padding:12px 16px;border-radius:14px;
+  border:3px solid #e0e0e0;border-bottom:4px solid #c8c8c8;
+  font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;
+  background:#f8f8f8;transition:border-color .2s,box-shadow .2s;
+}
+.input-chunky:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(28,176,246,.2)}
+
+/* ── BUTTONS ── */
+.btn-chunky{
+  font-family:'Fredoka One',cursive;font-size:14px;
+  background:var(--green);color:#fff;border:none;
+  border-radius:14px;padding:10px 20px;cursor:pointer;
+  border-bottom:4px solid var(--green-dark);
+  box-shadow:0 4px 0 var(--green-dark);
+  transition:transform .1s,box-shadow .1s,border-bottom .1s;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.btn-chunky:hover{filter:brightness(1.05)}
+.btn-chunky:active{transform:translateY(3px);box-shadow:0 1px 0 var(--green-dark);border-bottom-width:1px}
+.btn-chunky.blue{background:var(--blue);border-bottom-color:var(--blue-dark);box-shadow:0 4px 0 var(--blue-dark)}
+.btn-chunky.yellow{background:var(--yellow);color:#5c3a00;border-bottom-color:var(--yellow-dark);box-shadow:0 4px 0 var(--yellow-dark)}
+.btn-chunky.purple{background:var(--purple);border-bottom-color:#a45fd4;box-shadow:0 4px 0 #a45fd4}
+.btn-chunky.ghost{background:#fff;color:#235390;border:2px solid #235390;border-bottom-color:#1a3d6b;box-shadow:0 4px 0 #1a3d6b}
+
+/* ── CONFETTI ── */
+.conf{position:fixed;pointer-events:none;font-size:20px;animation:confetti 1.2s ease-in forwards;z-index:9999}
+
+/* ═══════════════════════════════════════════════════════ */
+/* ═══════ PROFILE PAGE SPECIFIC STYLES ═══════════════════ */
+/* ═══════════════════════════════════════════════════════ */
+
+/* Profile Header Card */
+.profile-header{
+  background:#fff;border-radius:24px;padding:24px;margin-bottom:20px;
+  border-bottom:5px solid #e0e0e0;box-shadow:0 5px 0 #e8e8e8;
+  display:flex;gap:20px;align-items:center;flex-wrap:wrap;
+  animation:popIn .5s ease both;
+}
+
+/* Avatar with Click to Edit */
+.profile-avatar-wrap{
+  position:relative;cursor:pointer;
+  transition:transform .2s;
+}
+.profile-avatar-wrap:hover{transform:scale(1.05)}
+.profile-avatar{
+  width:96px;height:96px;border-radius:50%;
+  background:linear-gradient(135deg,var(--yellow),var(--orange));
+  border:5px solid #fff;
+  box-shadow:0 4px 0 rgba(0,0,0,.15),0 0 0 4px #f0f0f0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:48px;overflow:hidden;
+}
+.avatar-edit-badge{
+  position:absolute;bottom:-4px;right:-4px;
+  width:32px;height:32px;border-radius:50%;
+  background:var(--green);border:3px solid #fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;box-shadow:0 2px 0 var(--green-dark);
+  animation:bounce 2s ease-in-out infinite;
+}
+
+/* User Info with Editable Name */
+.profile-info{flex:1;min-width:200px}
+.profile-name-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+.profile-name-input{
+  font-family:'Fredoka One',cursive;font-size:28px;color:#3c3c3c;
+  border:none;background:transparent;border-bottom:3px dashed #ccc;
+  padding:2px 4px;cursor:text;transition:border-color .2s;
+}
+.profile-name-input:focus{outline:none;border-bottom-style:solid;border-color:var(--blue)}
+.profile-level{
+  font-family:'Fredoka One',cursive;font-size:14px;
+  background:var(--yellow);color:#5c3a00;
+  padding:4px 12px;border-radius:99px;
+  border-bottom:3px solid var(--yellow-dark);
+}
+.profile-joined{font-size:14px;color:#aaa;font-weight:800;margin:4px 0 12px}
+
+/* XP Bar */
+.xp-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.xp-text{font-family:'Fredoka One',cursive;font-size:16px;color:#3c3c3c}
+.xp-hint{font-size:12px;color:#aaa;font-weight:800}
+.xp-bar-container{
+  height:14px;background:#f0f0f0;border-radius:99px;
+  overflow:hidden;border:2px solid #e0e0e0;position:relative;
+}
+.xp-bar{
+  height:100%;background:linear-gradient(90deg,var(--green),var(--green-light));
+  border-radius:99px;animation:grow 1s ease both;position:relative;
+}
+.xp-bar::after{
+  content:'';position:absolute;right:-6px;top:-3px;
+  width:12px;height:20px;background:#fff;
+  border:2px solid var(--green);border-radius:4px;
+  transform:rotate(45deg);
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* ═══════ AVATAR MODAL (POPUP) ═══════════════════════════ */
+/* ═══════════════════════════════════════════════════════ */
+
+.avatar-modal-overlay{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,.4);backdrop-filter:blur(4px);
+  z-index:1000;display:none;align-items:center;justify-content:center;
+  animation:backdropFade .2s ease forwards;
+}
+.avatar-modal-overlay.active{display:flex}
+
+.avatar-modal-container{
+  background:#fff;width:90%;max-width:400px;
+  border-radius:24px;padding:0;
+  border-bottom:6px solid #e0e0e0;box-shadow:0 10px 25px rgba(0,0,0,.2);
+  animation:modalSlide .3s cubic-bezier(.18,.89,.32,1.28) forwards;
+  overflow:hidden;
+}
+
+/* Modal Header */
+.modal-header{
+  background:#f8f9fa;padding:16px 20px;
+  border-bottom:2px dashed #e0e0e0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.modal-title{font-family:'Fredoka One',cursive;font-size:16px;color:#3c3c3c;display:flex;align-items:center;gap:8px}
+.modal-close-btn{
+  width:36px;height:36px;border-radius:50%;
+  background:#fff;border:2px solid #e0e0e0;border-bottom:3px solid #ccc;
+  cursor:pointer;font-size:18px;color:#666;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .1s;
+}
+.modal-close-btn:hover{transform:scale(1.1);background:#f0f0f0}
+.modal-close-btn:active{transform:scale(.95);border-bottom-width:1px}
+
+/* Modal Body */
+.modal-body{padding:20px}
+.modal-section-title{
+  font-family:'Fredoka One',cursive;font-size:13px;
+  color:#aaa;text-transform:uppercase;letter-spacing:.05em;
+  margin-bottom:12px;text-align:center;
+}
+
+/* Avatar Grid */
+.avatar-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;
+}
+.avatar-option{
+  aspect-ratio:1;border-radius:16px;
+  border:3px solid #fff;
+  box-shadow:0 3px 0 rgba(0,0,0,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;cursor:pointer;transition:transform .2s;
+  background:#f0f0f0;
+}
+.avatar-option:hover{transform:scale(1.05)}
+.avatar-option:active{transform:scale(.95)}
+.avatar-option.selected{
+  box-shadow:0 3px 0 rgba(0,0,0,.15),0 0 0 3px var(--green);
+  border-color:var(--green);
+}
+.avatar-option[data-bg="yellow"]{background:linear-gradient(135deg,var(--yellow),var(--orange))}
+.avatar-option[data-bg="green"]{background:linear-gradient(135deg,var(--green),#4ECDC4)}
+.avatar-option[data-bg="blue"]{background:linear-gradient(135deg,var(--blue),var(--purple))}
+.avatar-option[data-bg="orange"]{background:linear-gradient(135deg,var(--orange),var(--red))}
+.avatar-option[data-bg="purple"]{background:linear-gradient(135deg,var(--purple),var(--blue))}
+.avatar-option[data-bg="red"]{background:linear-gradient(135deg,var(--red),#FF6B35)}
+
+/* Upload Area */
+.avatar-upload-area{
+  background:#f0f7ff;border:3px dashed var(--blue);
+  border-radius:16px;padding:16px;text-align:center;
+  cursor:pointer;transition:background .2s,border-color .2s;
+}
+.avatar-upload-area:hover{background:#e0f0ff;border-color:var(--blue-dark)}
+.upload-ico{font-size:28px;margin-bottom:6px;display:block}
+.upload-text{font-family:'Fredoka One',cursive;font-size:13px;color:var(--blue-dark)}
+.upload-sub{font-size:11px;color:#8899a6;font-weight:800;margin-top:2px}
+#avatarFileInput{display:none}
+
+/* Progress Ring */
+.progress-ring-wrap{display:flex;align-items:center;gap:16px}
+.progress-ring{
+  width:80px;height:80px;position:relative;flex-shrink:0;
+}
+.progress-ring svg{transform:rotate(-90deg)}
+.progress-ring-bg{fill:none;stroke:#f0f0f0;stroke-width:8}
+.progress-ring-fill{
+  fill:none;stroke:var(--green);stroke-width:8;
+  stroke-linecap:round;stroke-dasharray:200;
+  stroke-dashoffset:200;animation:growRing 1s ease forwards;
+}
+@keyframes growRing{to{stroke-dashoffset:var(--offset)}}
+.progress-ring-text{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:'Fredoka One',cursive;font-size:14px;color:#3c3c3c;
+}
+
+/* Achievement Mini Card */
+.ach-mini{
+  background:#fff;border-radius:16px;padding:14px;
+  display:flex;align-items:center;gap:12px;
+  border-bottom:4px solid #e0e0e0;box-shadow:0 3px 0 #e8e8e8;
+  cursor:pointer;transition:transform .15s;
+}
+.ach-mini:hover{transform:translateX(4px)}
+.ach-mini-emo{font-size:28px;flex-shrink:0}
+.ach-mini-info{flex:1}
+.ach-mini-name{font-family:'Fredoka One',cursive;font-size:14px;color:#3c3c3c}
+.ach-mini-desc{font-size:11px;color:#aaa;font-weight:800}
+.ach-mini-date{font-size:10px;color:var(--yellow-dark);font-weight:900}
+
+/* Badges Grid */
+.badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:12px}
+.badge-mini{
+  background:#fff;border-radius:16px;padding:16px 10px;
+  text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;
+  border-bottom:4px solid #e0e0e0;box-shadow:0 3px 0 #e8e8e8;
+  transition:transform .15s;cursor:pointer;
+}
+.badge-mini:hover{transform:translateY(-3px)}
+.badge-mini-emo{font-size:32px}
+.badge-mini-name{font-family:'Fredoka One',cursive;font-size:11px;color:#3c3c3c}
+.badge-mini.locked{opacity:.4;filter:grayscale(.8)}
+.badge-mini.locked .badge-mini-emo{filter:grayscale(1)}
+
+/* Dashboard Card */
+.dashboard-card{
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  border-radius:22px;padding:20px;color:#fff;
+  border-bottom:4px solid var(--blue-dark);
+  cursor:pointer;transition:transform .15s,box-shadow .15s;
+  display:flex;align-items:center;gap:16px;
+}
+.dashboard-card:hover{transform:translateY(-4px);box-shadow:0 8px 0 rgba(0,0,0,.15)}
+.dashboard-card:active{transform:translateY(2px);border-bottom-width:1px}
+.dashboard-ico{
+  width:56px;height:56px;border-radius:16px;
+  background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;
+  font-size:28px;flex-shrink:0;border-bottom:3px solid rgba(0,0,0,.15);
+}
+.dashboard-info{flex:1}
+.dashboard-title{font-family:'Fredoka One',cursive;font-size:18px;margin-bottom:4px}
+.dashboard-desc{font-size:13px;color:rgba(255,255,255,.85);font-weight:800}
+.dashboard-arrow{font-size:24px;opacity:.8}
+
+/* Responsive */
+@media(max-width:600px){
+  #main{padding:24px 16px 60px}
+  .ph{flex-wrap:wrap}
+  .ptitle{font-size:24px}
+  .profile-header{padding:16px;gap:16px}
+  .profile-avatar{width:72px;height:72px;font-size:36px}
+  .profile-name-input{font-size:22px}
+  .stats{grid-template-columns:1fr}
+  .avatar-grid{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- Back Button -->
+<button class="back-btn" onclick="goBack()">
+  <span class="back-btn-ico">←</span>
+  <span>Back</span>
+</button>
+
+<!-- ═══ MAIN ═══ -->
+<div id="main">
+
+  <!-- ═══ PROFILE PAGE ═══ -->
+  <div class="page active" id="page-profile">
+    <div class="ph">
+      <div class="ph-ico" style="background:#CE82FF;border-bottom-color:#a45fd4;">👤</div>
+      <div class="ptitle">My Profile! ✨</div>
+    </div>
+    <div class="psub">This is all about YOU, superstar! 🌟</div>
+
+    <!-- Profile Header Card -->
+    <div class="profile-header">
+      <!-- Avatar (Click to Open Modal) -->
+      <div class="profile-avatar-wrap" onclick="openAvatarModal()">
+        <div class="profile-avatar" id="mainAvatar">🐱</div>
+        <div class="avatar-edit-badge">✏️</div>
+      </div>
+      
+      <!-- User Info with Editable Name -->
+      <div class="profile-info">
+        <div class="profile-name-row">
+          <input type="text" class="profile-name-input" id="userName" value="Mia" placeholder="Your name" maxlength="15" onblur="saveName()" onkeypress="if(event.key==='Enter')this.blur()"/>
+          <span class="profile-level">Level 5</span>
+        </div>
+        <div class="profile-joined">Learning English since March 2026 🎉</div>
+        
+        <!-- XP Bar -->
+        <div class="xp-row">
+          <span class="xp-text">680 / 800 XP</span>
+          <span class="xp-hint">· 120 XP to Level 6! 🚀</span>
+        </div>
+        <div class="xp-bar-container">
+          <div class="xp-bar" style="--w:85%;width:85%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 Stat Cards: Lesson, Achievement, Streak -->
+    <div class="sec" style="margin-top:24px">📈 My Progress</div>
+    <div class="stats">
+      <div class="scard" style="background:linear-gradient(135deg,#58CC02,#4ECDC4)" onclick="pop(this)">
+        <span class="scard-ico">📚</span>
+        <div class="scard-lbl" style="color:rgba(255,255,255,.9)">Lessons</div>
+        <div class="scard-val">24</div>
+        <div class="scard-hint">Completed! 🎉</div>
+      </div>
+      <div class="scard" style="background:linear-gradient(135deg,#FFC800,#FF9600)" onclick="pop(this)">
+        <span class="scard-ico">🏆</span>
+        <div class="scard-lbl" style="color:rgba(92,58,0,.9)">Achievements</div>
+        <div class="scard-val" style="color:#5c3a00">6</div>
+        <div class="scard-hint" style="color:rgba(92,58,0,.7)">3 more to go! ✨</div>
+      </div>
+      <div class="scard" style="background:linear-gradient(135deg,#FF4B4B,#FF6B35)" onclick="pop(this)">
+        <span class="scard-ico">🔥</span>
+        <div class="scard-lbl">Streak</div>
+        <div class="scard-val">5</div>
+        <div class="scard-hint">Days in a row! 🔥</div>
+      </div>
+    </div>
+
+    <!-- Level Progress -->
+    <div class="sec" style="margin-top:24px">🎯 Level Progress</div>
+    <div class="set-box" style="display:flex;align-items:center;gap:20px">
+      <div class="progress-ring">
+        <svg width="80" height="80">
+          <circle class="progress-ring-bg" cx="40" cy="40" r="32"/>
+          <circle class="progress-ring-fill" cx="40" cy="40" r="32" style="--offset:30"/>
+        </svg>
+        <div class="progress-ring-text">85%</div>
+      </div>
+      <div>
+        <div style="font-family:'Fredoka One',cursive;font-size:18px;color:#3c3c3c;margin-bottom:4px">Level 5 → Level 6</div>
+        <div style="font-size:13px;color:#aaa;font-weight:800;margin-bottom:12px">Complete 3 more lessons to level up! 🚀</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span style="font-size:11px;font-weight:900;background:#f0f0f0;padding:4px 10px;border-radius:99px;color:#666">📚 2 lessons left</span>
+          <span style="font-size:11px;font-weight:900;background:var(--yellow);color:#5c3a00;padding:4px 10px;border-radius:99px;border-bottom:2px solid var(--yellow-dark)">⭐ +120 XP</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Achievements -->
+    <div class="sec" style="margin-top:24px">🏆 Recent Achievements</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="ach-mini" onclick="pop(this)">
+        <div class="ach-mini-emo">🔥</div>
+        <div class="ach-mini-info">
+          <div class="ach-mini-name">Streak Star!</div>
+          <div class="ach-mini-desc">5-day learning streak</div>
+        </div>
+        <div class="ach-mini-date">Today</div>
+      </div>
+      <div class="ach-mini" onclick="pop(this)">
+        <div class="ach-mini-emo">💬</div>
+        <div class="ach-mini-info">
+          <div class="ach-mini-name">Word Wizard</div>
+          <div class="ach-mini-desc">Learned 84 words!</div>
+        </div>
+        <div class="ach-mini-date">Yesterday</div>
+      </div>
+      <div class="ach-mini" onclick="pop(this)">
+        <div class="ach-mini-emo">🎵</div>
+        <div class="ach-mini-info">
+          <div class="ach-mini-name">Music Star</div>
+          <div class="ach-mini-desc">Sang 3 songs</div>
+        </div>
+        <div class="ach-mini-date">2 days ago</div>
+      </div>
+    </div>
+
+    <!-- My Badges Preview -->
+    <div class="sec" style="margin-top:24px">🎖️ Badge Collection</div>
+    <div class="badges-grid">
+      <div class="badge-mini" onclick="pop(this)"><div class="badge-mini-emo">🌟</div><div class="badge-mini-name">First Star</div></div>
+      <div class="badge-mini" onclick="pop(this)"><div class="badge-mini-emo">🔥</div><div class="badge-mini-name">On Fire</div></div>
+      <div class="badge-mini" onclick="pop(this)"><div class="badge-mini-emo">🦁</div><div class="badge-mini-name">Lion Heart</div></div>
+      <div class="badge-mini" onclick="pop(this)"><div class="badge-mini-emo">🎵</div><div class="badge-mini-name">Music Star</div></div>
+      <div class="badge-mini" onclick="pop(this)"><div class="badge-mini-emo">🐾</div><div class="badge-mini-name">Animal Expert</div></div>
+      <div class="badge-mini" onclick="pop(this)"><div class="badge-mini-emo">💯</div><div class="badge-mini-name">Perfect!</div></div>
+      <div class="badge-mini locked"><div class="badge-mini-emo">🚀</div><div class="badge-mini-name">Rocket</div></div>
+      <div class="badge-mini locked"><div class="badge-mini-emo">🌈</div><div class="badge-mini-name">Rainbow</div></div>
+      <div class="badge-mini locked"><div class="badge-mini-emo">🏆</div><div class="badge-mini-name">Champion</div></div>
+    </div>
+    <div style="text-align:center;margin-top:16px">
+      <button class="btn-chunky ghost" onclick="pop(this)">View All Badges 🏆</button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ═══ AVATAR MODAL (Hidden by Default) ═══ -->
+<div class="avatar-modal-overlay" id="avatarModal" onclick="closeAvatarModal(event)">
+  <div class="avatar-modal-container" onclick="event.stopPropagation()">
+    
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="modal-title">🎨 Customize Avatar</div>
+      <button class="modal-close-btn" onclick="closeAvatarModal()">✕</button>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="modal-body">
+      
+      <!-- Default Avatars -->
+      <div class="modal-section-title">Choose a Character</div>
+      <div class="avatar-grid">
+        <div class="avatar-option selected" data-bg="yellow" data-emo="🐱" onclick="selectAvatar(this)">🐱</div>
+        <div class="avatar-option" data-bg="green" data-emo="🐶" onclick="selectAvatar(this)">🐶</div>
+        <div class="avatar-option" data-bg="blue" data-emo="🦊" onclick="selectAvatar(this)">🦊</div>
+        <div class="avatar-option" data-bg="orange" data-emo="🐼" onclick="selectAvatar(this)">🐼</div>
+        <div class="avatar-option" data-bg="purple" data-emo="🦄" onclick="selectAvatar(this)">🦄</div>
+        <div class="avatar-option" data-bg="red" data-emo="🐰" onclick="selectAvatar(this)">🐰</div>
+      </div>
+      
+      <!-- Upload Custom Photo -->
+      <div class="modal-section-title" style="margin-top:20px">Or Use Your Photo</div>
+      <label class="avatar-upload-area" for="avatarFileInput">
+        <span class="upload-ico">📷</span>
+        <div class="upload-text">Upload Photo</div>
+        <div class="upload-sub">PNG, JPG up to 2MB</div>
+      </label>
+      <input type="file" id="avatarFileInput" accept="image/*" onchange="handleAvatarUpload(event)"/>
+      
+    </div>
+  </div>
+</div>
+
+<script>
+// Go back function
+function goBack(){
+  for(let i=0;i<8;i++){
+    setTimeout(()=>{
+      const c=document.createElement('div');
+      c.className='conf';
+      c.textContent=['✨','⭐','🌟'][Math.floor(Math.random()*3)];
+      c.style.left=(20+Math.random()*60)+'vw';
+      c.style.top=(30+Math.random()*30)+'vh';
+      c.style.fontSize=(14+Math.random()*12)+'px';
+      c.style.animationDuration=(.6+Math.random()*.6)+'s';
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),1200);
+    },i*40);
+  }
+  setTimeout(()=>{
+    if(window.history.length>1){window.history.back();}
+    else{alert('👋 See you soon, '+document.getElementById('userName').value+'!');}
+  },400);
+}
+
+// Open Avatar Modal
+function openAvatarModal(){
+  document.getElementById('avatarModal').classList.add('active');
+  pop(document.querySelector('.profile-avatar-wrap'));
+}
+
+// Close Avatar Modal
+function closeAvatarModal(e){
+  // Close if clicked on overlay or close button
+  if(!e || e.target.id === 'avatarModal'){
+    document.getElementById('avatarModal').classList.remove('active');
+  }
+}
+
+// Select default avatar
+function selectAvatar(el){
+  document.querySelectorAll('.avatar-option').forEach(a=>a.classList.remove('selected'));
+  el.classList.add('selected');
+  const emoji=el.dataset.emo;
+  updateMainAvatar(emoji, null);
+  pop(el);
+}
+
+// Handle custom avatar upload
+function handleAvatarUpload(event){
+  const file=event.target.files[0];
+  if(file&&file.type.startsWith('image/')){
+    const reader=new FileReader();
+    reader.onload=(e)=>{
+      updateMainAvatar(null, e.target.result);
+      // Deselect default avatars visually
+      document.querySelectorAll('.avatar-option').forEach(a=>a.classList.remove('selected'));
+      pop(document.querySelector('.avatar-upload-area'));
+    };
+    reader.readAsDataURL(file);
+  }
+  event.target.value=''; // Reset input
+}
+
+// Helper to update main avatar display
+function updateMainAvatar(emoji, imageUrl){
+  const avatar=document.getElementById('mainAvatar');
+  if(imageUrl){
+    avatar.textContent='';
+    avatar.style.backgroundImage=`url(${imageUrl})`;
+    avatar.style.backgroundSize='cover';
+    avatar.style.backgroundPosition='center';
+  } else {
+    avatar.textContent=emoji;
+    avatar.style.backgroundImage='';
+    // Restore gradient based on selection if needed, or keep simple
+    const selected = document.querySelector('.avatar-option.selected');
+    if(selected){
+       // Optional: Sync gradient with selected emoji logic if desired
+    }
+  }
+}
+
+// Save name on blur
+function saveName(){
+  const name=document.getElementById('userName').value.trim();
+  if(name){
+    const input=document.getElementById('userName');
+    input.style.borderColor='var(--green)';
+    setTimeout(()=>{input.style.borderColor='';},300);
+    pop(input);
+  }
+}
+
+// Pop animation + confetti
+function pop(el){
+  if(el.style){
+    const originalTransform=el.style.transform;
+    el.style.transform='scale(.95)';
+    setTimeout(()=>{el.style.transform=originalTransform;},120);
+  }
+  const picks=['⭐','🌟','✨','🎉','💫'];
+  const rect=el.getBoundingClientRect?.();
+  const baseX=rect?rect.left+rect.width/2:window.innerWidth/2;
+  const baseY=rect?rect.top+rect.height/2:window.innerHeight/2;
+  
+  for(let i=0;i<12;i++){
+    setTimeout(()=>{
+      const c=document.createElement('div');
+      c.className='conf';
+      c.textContent=picks[Math.floor(Math.random()*picks.length)];
+      c.style.left=(baseX/window.innerWidth*100 + (Math.random()*20-10))+'vw';
+      c.style.top=(baseY/window.innerHeight*100 + (Math.random()*20-10))+'vh';
+      c.style.fontSize=(14+Math.random()*14)+'px';
+      c.style.animationDuration=(.7+Math.random()*.8)+'s';
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),1400);
+    },i*40);
+  }
+}
+</script>
+</body>
+</html>

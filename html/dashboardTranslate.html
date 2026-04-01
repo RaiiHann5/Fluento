@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<title>Fluento • Ultra Stable Translator</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          dark: { bg: '#0f172a', card: '#1e293b', text: '#f1f5f9', sub: '#94a3b8', border: '#334155' }
+        }
+      }
+    }
+  }
+</script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', system-ui, sans-serif; transition: background-color 0.3s, color 0.3s; }
+body.light { background: linear-gradient(145deg, #f0f7ff 0%, #e8f0fe 100%); color: #1e293b; }
+body.dark { background: #0f172a; color: #f1f5f9; }
+.minimal-card { background: #ffffff; border-radius: 2rem; box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.05); transition: background 0.3s; }
+body.dark .minimal-card { background: #1e293b; border: 1px solid #334155; }
+.lang-pill { background: #ffffff; border: 1px solid #e2edff; transition: all 0.2s; cursor: pointer; }
+body.dark .lang-pill { background: #334155; border-color: #475569; color: #f1f5f9; }
+.lang-pill:hover { border-color: #3b82f6; transform: translateY(-2px); }
+.clean-dropdown { background: #ffffff; border: 1px solid #e9eff5; border-radius: 1.25rem; box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1); position: absolute; z-index: 50; max-height: 384px; overflow-y: auto; }
+body.dark .clean-dropdown { background: #1e293b; border-color: #334155; }
+.dropdown-item { padding: 10px 16px; cursor: pointer; transition: background 0.2s; }
+.dropdown-item:hover { background: #f0f7ff; }
+body.dark .dropdown-item:hover { background: #334155; }
+.action-circle { background: #f9fbfe; border: 1px solid #eef2f8; transition: all 0.2s; width: 32px; height: 32px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; }
+body.dark .action-circle { background: #334155; border-color: #475569; color: #94a3b8; }
+.action-circle:hover { background: #eff6ff; border-color: #3b82f6; color: #3b82f6; transform: scale(1.05); }
+body.dark .action-circle:hover { background: #3b82f6; color: #fff; }
+.translate-btn { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+.translate-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(59, 130, 246, 0.35); }
+.history-item { background: #ffffff; border: 1px solid #eef2f8; transition: all 0.2s; border-left: 3px solid transparent; padding: 12px; border-radius: 12px; cursor: pointer; }
+body.dark .history-item { background: #1e293b; border-color: #334155; }
+.history-item:hover { border-left-color: #3b82f6; transform: translateX(4px); }
+@keyframes gentleFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.fade-up { animation: gentleFade 0.2s ease-out; }
+.dict-card { background: #f8fafc; border-radius: 1rem; border: 1px solid #e2e8f0; padding: 12px; }
+body.dark .dict-card { background: #0f172a; border-color: #334155; }
+.lang-category { background: #f8fafc; font-weight: 600; color: #3b82f6; padding: 8px 16px; font-size: 0.7rem; position: sticky; top: 0; }
+body.dark .lang-category { background: #0f172a; }
+textarea:focus { outline: none; }
+.api-status { font-size: 10px; padding: 2px 8px; border-radius: 9999px; }
+.api-status.libre { background: #dcfce7; color: #166534; }
+.api-status.lingva { background: #dbeafe; color: #1e40af; }
+.api-status.mymemory { background: #fef3c7; color: #92400e; }
+.api-status.error { background: #fee2e2; color: #991b1b; }
+body.dark .api-status.libre { background: #166534; color: #dcfce7; }
+body.dark .api-status.lingva { background: #1e40af; color: #dbeafe; }
+body.dark .api-status.mymemory { background: #92400e; color: #fef3c7; }
+body.dark .api-status.error { background: #991b1b; color: #fee2e2; }
+</style>
+</head>
+<body class="light">
+<div class="max-w-6xl mx-auto px-4 py-6 md:py-10 min-h-screen flex flex-col">
+<!-- Header -->
+<div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
+      <i class="fas fa-globe text-white text-lg"></i>
+    </div>
+    <div>
+      <h1 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white">Fluento<span class="text-blue-500">Pro</span></h1>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">5-Layer Fallback • Ultra Stable</p>
+    </div>
+  </div>
+  <div class="flex items-center gap-2">
+    <button onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 shadow-sm">
+      <i class="fas fa-moon text-sm dark:hidden"></i>
+      <i class="fas fa-sun text-sm hidden dark:block text-amber-400"></i>
+    </button>
+    <button onclick="toggleHistory()" class="w-9 h-9 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 shadow-sm">
+      <i class="fas fa-history text-sm"></i>
+    </button>
+    <div class="text-xs text-slate-500 dark:text-slate-400 bg-white/90 dark:bg-slate-800/90 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm">
+      <i class="fas fa-shield-check text-green-400 mr-1"></i> Stable
+    </div>
+  </div>
+</div>
+
+<!-- Main Card -->
+<div class="minimal-card overflow-hidden border border-slate-200/60 dark:border-slate-700 flex-1 flex flex-col">
+  <!-- Language bar -->
+  <div class="px-4 md:px-6 pt-4 pb-2 flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800">
+    <div class="relative flex-1 min-w-[140px]">
+      <div id="srcSelector" class="lang-pill flex items-center gap-3 rounded-full pl-3 pr-4 py-2">
+        <span id="srcFlag" class="text-xl">🇺🇸</span>
+        <div class="flex-1 min-w-0">
+          <div id="srcLangName" class="text-slate-800 dark:text-slate-200 font-semibold text-sm truncate">English</div>
+          <div id="srcLangNative" class="text-slate-400 text-[10px] truncate">English</div>
+        </div>
+        <i class="fas fa-chevron-down text-slate-400 text-xs"></i>
+      </div>
+      <div id="srcDropdown" class="clean-dropdown top-full mt-2 w-72 hidden"></div>
+    </div>
+    
+    <button id="swapBtn" class="w-9 h-9 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-slate-700 transition-all duration-300 hover:rotate-180 shadow-sm">
+      <i class="fas fa-arrows-rotate text-sm"></i>
+    </button>
+    
+    <div class="relative flex-1 min-w-[140px]">
+      <div id="tgtSelector" class="lang-pill flex items-center gap-3 rounded-full pl-3 pr-4 py-2">
+        <span id="tgtFlag" class="text-xl">🇮🇩</span>
+        <div class="flex-1 min-w-0">
+          <div id="tgtLangName" class="text-slate-800 dark:text-slate-200 font-semibold text-sm truncate">Indonesian</div>
+          <div id="tgtLangNative" class="text-slate-400 text-[10px] truncate">Bahasa Indonesia</div>
+        </div>
+        <i class="fas fa-chevron-down text-slate-400 text-xs"></i>
+      </div>
+      <div id="tgtDropdown" class="clean-dropdown top-full mt-2 w-72 right-0 hidden"></div>
+    </div>
+  </div>
+
+  <!-- Two columns -->
+  <div class="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-100 dark:divide-slate-700 flex-1">
+    <!-- SOURCE -->
+    <div class="p-4 md:p-6 flex flex-col">
+      <div class="flex justify-between items-center mb-2">
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400"><i class="far fa-edit mr-1"></i> Source</span>
+        <span id="charCount" class="text-xs text-slate-400 bg-slate-100 dark:bg-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-full">0 / 5000</span>
+      </div>
+      <textarea id="sourceText" rows="6" maxlength="5000" placeholder="Type or paste text..." class="w-full bg-transparent border-0 focus:ring-0 text-slate-700 dark:text-slate-200 text-base resize-none outline-none placeholder:text-slate-300 dark:placeholder:text-slate-600 leading-relaxed flex-1"></textarea>
+      <div class="flex flex-wrap gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-slate-700">
+        <button onclick="pasteClipboard()" class="action-circle" title="Paste"><i class="fas fa-paste text-sm"></i></button>
+        <button onclick="speakSource()" class="action-circle" title="Listen"><i class="fas fa-volume-up text-sm"></i></button>
+        <button onclick="startVoiceInput()" class="action-circle" title="Voice"><i class="fas fa-microphone text-sm"></i></button>
+        <button onclick="clearSourceOnly()" class="action-circle" title="Clear"><i class="fas fa-eraser text-sm"></i></button>
+        <button onclick="copySource()" class="action-circle" title="Copy"><i class="fas fa-copy text-xs"></i></button>
+      </div>
+    </div>
+
+    <!-- TRANSLATION -->
+    <div class="p-4 md:p-6 bg-white dark:bg-slate-800/50 flex flex-col relative">
+      <div class="flex justify-between items-center mb-2">
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400"><i class="fas fa-language mr-1"></i> Translation</span>
+        <div class="flex items-center gap-2">
+          <span id="autoIndicator" class="text-[10px] text-blue-500 hidden bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-full"><i class="fas fa-spinner fa-pulse"></i></span>
+          <span id="apiBadge" class="api-status hidden">API</span>
+        </div>
+      </div>
+      
+      <div id="translatedText" class="text-slate-700 dark:text-slate-200 text-base leading-relaxed min-h-[120px] whitespace-pre-wrap break-words flex-1">✨ Start typing...</div>
+      
+      <!-- Dictionary -->
+      <div id="dictionarySection" class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 hidden">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400"><i class="fas fa-book mr-1"></i> Dictionary</span>
+        </div>
+        <div id="definitionsList" class="space-y-2 max-h-48 overflow-y-auto"></div>
+      </div>
+
+      <div id="outputActions" class="flex flex-wrap justify-between items-center mt-4 pt-3 border-t border-slate-100 dark:border-slate-700 opacity-40 pointer-events-none transition-opacity">
+        <div class="flex gap-2">
+          <button id="favBtn" onclick="toggleFavorite()" class="action-circle"><i class="far fa-star"></i></button>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="copyTranslation()" class="action-circle"><i class="fas fa-copy"></i></button>
+          <button onclick="speakTarget()" class="action-circle"><i class="fas fa-headphones"></i></button>
+        </div>
+      </div>
+      
+      <!-- Error Retry -->
+      <div id="errorRetry" class="hidden absolute inset-0 bg-white/90 dark:bg-slate-800/90 z-10 flex flex-col items-center justify-center text-center p-4">
+        <i class="fas fa-exclamation-triangle text-3xl text-amber-400 mb-2"></i>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mb-3">All services busy. Try again?</p>
+        <button onclick="manualTranslate()" class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600">Retry</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action bar -->
+  <div class="px-4 md:px-6 py-3 border-t border-slate-100 dark:border-slate-700 flex gap-3 bg-slate-50/50 dark:bg-slate-900/50 items-center flex-wrap">
+    <button onclick="resetAll()" class="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-sm font-medium"><i class="fas fa-times-circle"></i> Reset</button>
+    <div class="flex-1"></div>
+    <div class="text-xs text-slate-400 flex items-center gap-3 mr-2">
+      <span><i class="fas fa-bolt text-blue-400"></i> <span id="responseTime">0</span>ms</span>
+      <span><i class="fas fa-history text-blue-400"></i> <span id="historyCount">0</span></span>
+    </div>
+    <button onclick="manualTranslate()" class="translate-btn rounded-lg px-6 py-2 text-white font-medium flex items-center gap-2 shadow-md text-sm"><i class="fas fa-bolt"></i> Translate</button>
+  </div>
+</div>
+
+<!-- History Panel -->
+<div id="historyPanel" class="mt-6 hidden fade-up">
+  <div class="minimal-card p-4 md:p-6 border border-slate-200 dark:border-slate-700">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-slate-700 dark:text-slate-200 font-semibold"><i class="fas fa-history text-blue-400 mr-2"></i> History <span id="historyTotal" class="text-xs font-normal text-slate-400">(0)</span></h3>
+      <button onclick="clearHistory()" class="text-xs text-red-400 hover:text-red-500"><i class="fas fa-trash-alt"></i> Clear</button>
+    </div>
+    <div id="historyList" class="space-y-2 max-h-64 overflow-y-auto"></div>
+    <div id="historyEmpty" class="text-center py-8 text-slate-400 text-sm hidden">No translations yet</div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toastMsg" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 dark:bg-white text-white dark:text-slate-900 px-5 py-3 rounded-full text-sm shadow-lg transition-all duration-300 opacity-0 pointer-events-none z-50"></div>
+</div>
+
+<script>
+// ==================== LANGUAGES ====================
+const LANGUAGES = [
+  { code: 'en', name: 'English', native: 'English', flag: '🇺🇸', region: 'Europe' },
+  { code: 'es', name: 'Spanish', native: 'Español', flag: '🇪🇸', region: 'Europe' },
+  { code: 'fr', name: 'French', native: 'Français', flag: '🇫🇷', region: 'Europe' },
+  { code: 'de', name: 'German', native: 'Deutsch', flag: '🇩🇪', region: 'Europe' },
+  { code: 'it', name: 'Italian', native: 'Italiano', flag: '🇮🇹', region: 'Europe' },
+  { code: 'pt', name: 'Portuguese', native: 'Português', flag: '🇵🇹', region: 'Europe' },
+  { code: 'nl', name: 'Dutch', native: 'Nederlands', flag: '🇳🇱', region: 'Europe' },
+  { code: 'pl', name: 'Polish', native: 'Polski', flag: '🇵🇱', region: 'Europe' },
+  { code: 'ru', name: 'Russian', native: 'Русский', flag: '🇷🇺', region: 'Europe' },
+  { code: 'uk', name: 'Ukrainian', native: 'Українська', flag: '🇺🇦', region: 'Europe' },
+  { code: 'id', name: 'Indonesian', native: 'Bahasa Indonesia', flag: '🇮🇩', region: 'Asia' },
+  { code: 'ms', name: 'Malay', native: 'Melayu', flag: '🇲🇾', region: 'Asia' },
+  { code: 'ja', name: 'Japanese', native: '日本語', flag: '🇯🇵', region: 'Asia' },
+  { code: 'ko', name: 'Korean', native: '한국어', flag: '🇰🇷', region: 'Asia' },
+  { code: 'zh', name: 'Chinese', native: '中文', flag: '🇨🇳', region: 'Asia' },
+  { code: 'th', name: 'Thai', native: 'ไทย', flag: '🇹🇭', region: 'Asia' },
+  { code: 'vi', name: 'Vietnamese', native: 'Tiếng Việt', flag: '🇻🇳', region: 'Asia' },
+  { code: 'hi', name: 'Hindi', native: 'हिन्दी', flag: '🇮🇳', region: 'Asia' },
+  { code: 'ar', name: 'Arabic', native: 'العربية', flag: '🇸🇦', region: 'Middle East' },
+  { code: 'tr', name: 'Turkish', native: 'Türkçe', flag: '🇹🇷', region: 'Middle East' },
+  { code: 'fa', name: 'Persian', native: 'فارسی', flag: '🇮🇷', region: 'Middle East' },
+  { code: 'he', name: 'Hebrew', native: 'עברית', flag: '🇮🇱', region: 'Middle East' },
+  { code: 'bn', name: 'Bengali', native: 'বাংলা', flag: '🇧🇩', region: 'Asia' },
+  { code: 'ur', name: 'Urdu', native: 'اردو', flag: '🇵🇰', region: 'Asia' },
+  { code: 'tl', name: 'Filipino', native: 'Filipino', flag: '🇵🇭', region: 'Asia' },
+  { code: 'sw', name: 'Swahili', native: 'Kiswahili', flag: '🇰🇪', region: 'Africa' },
+  { code: 'sv', name: 'Swedish', native: 'Svenska', flag: '🇸🇪', region: 'Europe' },
+  { code: 'no', name: 'Norwegian', native: 'Norsk', flag: '🇳🇴', region: 'Europe' },
+  { code: 'da', name: 'Danish', native: 'Dansk', flag: '🇩🇰', region: 'Europe' },
+  { code: 'fi', name: 'Finnish', native: 'Suomi', flag: '🇫🇮', region: 'Europe' },
+  { code: 'cs', name: 'Czech', native: 'Čeština', flag: '🇨🇿', region: 'Europe' },
+  { code: 'el', name: 'Greek', native: 'Ελληνικά', flag: '🇬🇷', region: 'Europe' },
+  { code: 'hu', name: 'Hungarian', native: 'Magyar', flag: '🇭🇺', region: 'Europe' },
+  { code: 'ro', name: 'Romanian', native: 'Română', flag: '🇷🇴', region: 'Europe' },
+  { code: 'hr', name: 'Croatian', native: 'Hrvatski', flag: '🇭🇷', region: 'Europe' },
+  { code: 'sr', name: 'Serbian', native: 'Српски', flag: '🇷🇸', region: 'Europe' },
+  { code: 'bg', name: 'Bulgarian', native: 'Български', flag: '🇧🇬', region: 'Europe' },
+  { code: 'sk', name: 'Slovak', native: 'Slovenčina', flag: '🇸🇰', region: 'Europe' },
+  { code: 'sl', name: 'Slovenian', native: 'Slovenščina', flag: '🇸🇮', region: 'Europe' },
+  { code: 'lt', name: 'Lithuanian', native: 'Lietuvių', flag: '🇱🇹', region: 'Europe' },
+  { code: 'lv', name: 'Latvian', native: 'Latviešu', flag: '🇱🇻', region: 'Europe' },
+  { code: 'et', name: 'Estonian', native: 'Eesti', flag: '🇪🇪', region: 'Europe' },
+  { code: 'km', name: 'Khmer', native: 'ភាសាខ្មែរ', flag: '🇰🇭', region: 'Asia' },
+  { code: 'lo', name: 'Lao', native: 'ລາວ', flag: '🇱🇦', region: 'Asia' },
+  { code: 'my', name: 'Burmese', native: 'မြန်မာစာ', flag: '🇲🇲', region: 'Asia' },
+  { code: 'ne', name: 'Nepali', native: 'नेपाली', flag: '🇳🇵', region: 'Asia' },
+  { code: 'si', name: 'Sinhala', native: 'සිංහල', flag: '🇱🇰', region: 'Asia' },
+  { code: 'ta', name: 'Tamil', native: 'தமிழ்', flag: '🇮🇳', region: 'Asia' },
+  { code: 'te', name: 'Telugu', native: 'తెలుగు', flag: '🇮🇳', region: 'Asia' },
+  { code: 'ml', name: 'Malayalam', native: 'മലയാളം', flag: '🇮🇳', region: 'Asia' },
+  { code: 'kn', name: 'Kannada', native: 'ಕನ್ನಡ', flag: '🇮🇳', region: 'Asia' },
+  { code: 'gu', name: 'Gujarati', native: 'ગુજરાતી', flag: '🇮🇳', region: 'Asia' },
+  { code: 'pa', name: 'Punjabi', native: 'ਪੰਜਾਬੀ', flag: '🇮🇳', region: 'Asia' },
+  { code: 'mr', name: 'Marathi', native: 'मराठी', flag: '🇮🇳', region: 'Asia' },
+  { code: 'af', name: 'Afrikaans', native: 'Afrikaans', flag: '🇿🇦', region: 'Africa' },
+  { code: 'sq', name: 'Albanian', native: 'Shqip', flag: '🇦🇱', region: 'Europe' },
+  { code: 'am', name: 'Amharic', native: 'አማርኛ', flag: '🇪🇹', region: 'Africa' },
+  { code: 'az', name: 'Azerbaijani', native: 'Azərbaycan', flag: '🇦🇿', region: 'Asia' },
+  { code: 'eu', name: 'Basque', native: 'Euskara', flag: '🇪🇸', region: 'Europe' },
+  { code: 'be', name: 'Belarusian', native: 'Беларуская', flag: '🇧🇾', region: 'Europe' },
+  { code: 'bs', name: 'Bosnian', native: 'Bosanski', flag: '🇧🇦', region: 'Europe' },
+  { code: 'ca', name: 'Catalan', native: 'Català', flag: '🇪🇸', region: 'Europe' },
+  { code: 'cy', name: 'Welsh', native: 'Cymraeg', flag: '🇬🇧', region: 'Europe' },
+  { code: 'eo', name: 'Esperanto', native: 'Esperanto', flag: '🌍', region: 'Special' },
+  { code: 'fy', name: 'Frisian', native: 'Frysk', flag: '🇳🇱', region: 'Europe' },
+  { code: 'gl', name: 'Galician', native: 'Galego', flag: '🇪🇸', region: 'Europe' },
+  { code: 'ka', name: 'Georgian', native: 'ქართული', flag: '🇬🇪', region: 'Asia' },
+  { code: 'ht', name: 'Haitian Creole', native: 'Kreyòl', flag: '🇭🇹', region: 'Americas' },
+  { code: 'ha', name: 'Hausa', native: 'Hausa', flag: '🇳🇬', region: 'Africa' },
+  { code: 'haw', name: 'Hawaiian', native: 'ʻŌlelo', flag: '🇺🇸', region: 'Americas' },
+  { code: 'hmn', name: 'Hmong', native: 'Hmong', flag: '🇱🇦', region: 'Asia' },
+  { code: 'ig', name: 'Igbo', native: 'Igbo', flag: '🇳🇬', region: 'Africa' },
+  { code: 'ga', name: 'Irish', native: 'Gaeilge', flag: '🇮🇪', region: 'Europe' },
+  { code: 'jw', name: 'Javanese', native: 'Basa Jawa', flag: '🇮🇩', region: 'Asia' },
+  { code: 'ku', name: 'Kurdish', native: 'Kurdî', flag: '🇮🇶', region: 'Middle East' },
+  { code: 'ky', name: 'Kyrgyz', native: 'Кыргызча', flag: '🇰🇬', region: 'Asia' },
+  { code: 'la', name: 'Latin', native: 'Latina', flag: '🇻🇦', region: 'Europe' },
+  { code: 'lb', name: 'Luxembourgish', native: 'Lëtzebuergesch', flag: '🇱🇺', region: 'Europe' },
+  { code: 'mk', name: 'Macedonian', native: 'Македонски', flag: '🇲🇰', region: 'Europe' },
+  { code: 'mg', name: 'Malagasy', native: 'Malagasy', flag: '🇲🇬', region: 'Africa' },
+  { code: 'mt', name: 'Maltese', native: 'Malti', flag: '🇲🇹', region: 'Europe' },
+  { code: 'mi', name: 'Maori', native: 'Māori', flag: '🇳🇿', region: 'Oceania' },
+  { code: 'mn', name: 'Mongolian', native: 'Монгол', flag: '🇲🇳', region: 'Asia' },
+  { code: 'ny', name: 'Chichewa', native: 'Chichewa', flag: '🇲🇼', region: 'Africa' },
+  { code: 'ps', name: 'Pashto', native: 'پښتو', flag: '🇦🇫', region: 'Asia' },
+  { code: 'sm', name: 'Samoan', native: 'Samoan', flag: '🇼🇸', region: 'Oceania' },
+  { code: 'gd', name: 'Scots Gaelic', native: 'Gàidhlig', flag: '🇬🇧', region: 'Europe' },
+  { code: 'st', name: 'Sesotho', native: 'Sesotho', flag: '🇱🇸', region: 'Africa' },
+  { code: 'sn', name: 'Shona', native: 'Shona', flag: '🇿🇼', region: 'Africa' },
+  { code: 'sd', name: 'Sindhi', native: 'سنڌي', flag: '🇵🇰', region: 'Asia' },
+  { code: 'so', name: 'Somali', native: 'Soomaali', flag: '🇸🇴', region: 'Africa' },
+  { code: 'su', name: 'Sundanese', native: 'Basa Sunda', flag: '🇮🇩', region: 'Asia' },
+  { code: 'tg', name: 'Tajik', native: 'Тоҷикӣ', flag: '🇹🇯', region: 'Asia' },
+  { code: 'tt', name: 'Tatar', native: 'Татарча', flag: '🇷🇺', region: 'Europe' },
+  { code: 'tk', name: 'Turkmen', native: 'Türkmençe', flag: '🇹🇲', region: 'Asia' },
+  { code: 'ug', name: 'Uyghur', native: 'ئۇيغۇرچە', flag: '🇨🇳', region: 'Asia' },
+  { code: 'uz', name: 'Uzbek', native: 'Oʻzbek', flag: '🇺🇿', region: 'Asia' },
+  { code: 'xh', name: 'Xhosa', native: 'isiXhosa', flag: '🇿🇦', region: 'Africa' },
+  { code: 'yi', name: 'Yiddish', native: 'ייִדיש', flag: '🇮🇱', region: 'Europe' },
+  { code: 'yo', name: 'Yoruba', native: 'Yorùbá', flag: '🇳🇬', region: 'Africa' },
+  { code: 'zu', name: 'Zulu', native: 'isiZulu', flag: '🇿🇦', region: 'Africa' }
+];
+
+// State
+let sourceLang = LANGUAGES.find(l => l.code === 'en') || LANGUAGES[0];
+let targetLang = LANGUAGES.find(l => l.code === 'id') || LANGUAGES[10];
+let currentTranslation = "";
+let historyData = JSON.parse(localStorage.getItem('fluento_history') || '[]');
+let favorites = JSON.parse(localStorage.getItem('fluento_favorites') || '[]');
+let isDarkMode = localStorage.getItem('fluento_theme') === 'dark';
+
+// Apply Theme
+if (isDarkMode) {
+  document.documentElement.classList.add('dark');
+  document.body.classList.remove('light');
+  document.body.classList.add('dark');
+}
+
+// Group languages
+const grouped = LANGUAGES.reduce((acc, lang) => {
+  if (!acc[lang.region]) acc[lang.region] = [];
+  acc[lang.region].push(lang);
+  return acc;
+}, {});
+
+// ==================== 5-LAYER FALLBACK API ====================
+const API_LAYERS = [
+  // Layer 1: LibreTranslate (multiple instances)
+  { name: 'LibreTranslate', type: 'libre', endpoints: [
+    'https://libretranslate.com/translate',
+    'https://lt.teramix.org/translate',
+    'https://translate.terraprint.co/translate',
+    'https://trans.zillyhuhn.com/translate'
+  ]},
+  // Layer 2: Lingva (Google wrapper)
+  { name: 'Lingva', type: 'lingva', endpoints: [
+    'https://lingva.ml/api/v1',
+    'https://translate.plausibility.cloud/api/v1'
+  ]},
+  // Layer 3: MyMemory (free, no key for small usage)
+  { name: 'MyMemory', type: 'mymemory', endpoints: [
+    'https://api.mymemory.translated.net/get'
+  ]}
+];
+
+async function translateWithLayer(layer, text, src, tgt) {
+  for (let ep of layer.endpoints) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 6000);
+      
+      let res, data;
+      
+      if (layer.type === 'libre') {
+        res = await fetch(ep, {
+          method: 'POST',
+          signal: controller.signal,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ q: text, source: src, target: tgt, format: 'text' })
+        });
+        if (res.ok) {
+          data = await res.json();
+          if (data?.translatedText) return { text: data.translatedText, api: layer.name };
+        }
+      } else if (layer.type === 'lingva') {
+        res = await fetch(`${ep}/${src}/${tgt}/${encodeURIComponent(text)}`, { signal: controller.signal });
+        if (res.ok) {
+          data = await res.json();
+          if (data?.translation) return { text: data.translation, api: layer.name };
+        }
+      } else if (layer.type === 'mymemory') {
+        res = await fetch(`${ep}?q=${encodeURIComponent(text)}&langpair=${src}|${tgt}`, { signal: controller.signal });
+        if (res.ok) {
+          data = await res.json();
+          if (data?.responseData?.translatedText) return { text: data.responseData.translatedText, api: layer.name };
+        }
+      }
+      
+      clearTimeout(timeout);
+    } catch (e) {
+      continue;
+    }
+  }
+  return null;
+}
+
+async function translateTextAPI(text, source, target) {
+  const start = performance.now();
+  
+  // Try each layer in order
+  for (let layer of API_LAYERS) {
+    const result = await translateWithLayer(layer, text, source, target);
+    if (result) {
+      const time = Math.round(performance.now() - start);
+      document.getElementById('responseTime').innerText = time;
+      return result;
+    }
+  }
+  
+  throw new Error("All APIs failed");
+}
+
+// ==================== DICTIONARY ====================
+async function getDefinition(word) {
+  if (!word || word.length < 3) return null;
+  try {
+    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return Array.isArray(data) && data.length > 0 ? data[0] : null;
+  } catch (e) { return null; }
+}
+
+async function renderDefinitions(sourceText, lang) {
+  const panel = document.getElementById('dictionarySection');
+  const list = document.getElementById('definitionsList');
+  
+  if (lang !== 'en') {
+    panel.classList.add('hidden');
+    return;
+  }
+  
+  let words = [...new Set(sourceText.toLowerCase().match(/\b[a-zA-Z]{3,}\b/g) || [])].slice(0, 3);
+  if (words.length === 0) {
+    panel.classList.add('hidden');
+    return;
+  }
+  
+  panel.classList.remove('hidden');
+  list.innerHTML = `<div class="text-slate-400 text-sm"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>`;
+  
+  const promises = words.map(async (word) => {
+    const defData = await getDefinition(word);
+    if (!defData) return '';
+    const meaning = defData.meanings?.[0] || {};
+    const definition = meaning.definitions?.[0] || {};
+    return `
+    <div class="dict-card text-sm">
+      <div class="flex justify-between items-baseline">
+        <span class="font-bold text-slate-800 dark:text-slate-200">${word}</span>
+        <span class="text-[10px] uppercase bg-white dark:bg-slate-800 px-2 py-px rounded text-emerald-600 dark:text-emerald-400 border border-slate-200 dark:border-slate-700">${meaning.partOfSpeech || 'word'}</span>
+      </div>
+      <p class="mt-2 text-slate-700 dark:text-slate-300">${definition.definition || 'No definition'}</p>
+    </div>`;
+  });
+  
+  const html = (await Promise.all(promises)).filter(Boolean).join('');
+  list.innerHTML = html || `<div class="text-slate-400 text-sm text-center">No definitions found</div>`;
+}
+
+// ==================== MAIN TRANSLATION ====================
+async function translateText(text, showIndicator = true) {
+  const errorOverlay = document.getElementById('errorRetry');
+  const outputActions = document.getElementById('outputActions');
+  const apiBadge = document.getElementById('apiBadge');
+  
+  if (!text.trim()) {
+    document.getElementById('translatedText').innerText = "✨ Start typing...";
+    currentTranslation = "";
+    outputActions.style.opacity = "0.4";
+    outputActions.style.pointerEvents = "none";
+    document.getElementById('dictionarySection').classList.add('hidden');
+    errorOverlay.classList.add('hidden');
+    apiBadge.classList.add('hidden');
+    return;
+  }
+  
+  errorOverlay.classList.add('hidden');
+  if (showIndicator) document.getElementById('autoIndicator').classList.remove('hidden');
+  
+  try {
+    const result = await translateTextAPI(text, sourceLang.code, targetLang.code);
+    currentTranslation = result.text;
+    document.getElementById('translatedText').innerText = result.text;
+    document.getElementById('translatedText').classList.add('fade-up');
+    setTimeout(() => document.getElementById('translatedText').classList.remove('fade-up'), 200);
+    
+    await renderDefinitions(text, sourceLang.code);
+    
+    outputActions.style.opacity = "1";
+    outputActions.style.pointerEvents = "auto";
+    
+    // Show which API worked
+    apiBadge.classList.remove('hidden');
+    apiBadge.className = `api-status ${result.api.toLowerCase()}`;
+    apiBadge.innerText = result.api;
+    
+    if (text.trim().length > 3) addToHistory(text, result.text);
+  } catch (err) {
+    errorOverlay.classList.remove('hidden');
+    showToast("⚠️ All services busy. Please retry.");
+  } finally {
+    if (showIndicator) document.getElementById('autoIndicator').classList.add('hidden');
+  }
+}
+
+let debounceTimer;
+function triggerAuto() {
+  if (debounceTimer) clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => translateText(document.getElementById('sourceText').value, true), 150);
+}
+
+// ==================== UI HELPERS ====================
+function renderDropdown(which, filter = "") {
+  const container = document.getElementById(`${which}Dropdown`);
+  let filtered = LANGUAGES;
+  if (filter) {
+    filtered = LANGUAGES.filter(l => l.name.toLowerCase().includes(filter) || l.native.toLowerCase().includes(filter));
+  }
+  let html = '';
+  if (!filter) {
+    for (const [region, langs] of Object.entries(grouped)) {
+      html += `<div class="lang-category"><i class="fas fa-map-marker-alt mr-1"></i>${region}</div>`;
+      html += langs.map(l => `
+      <div class="dropdown-item flex items-center gap-3" data-code="${l.code}">
+        <span class="text-xl">${l.flag}</span>
+        <div>
+          <div class="text-slate-700 dark:text-slate-200 text-sm font-medium">${l.name}</div>
+          <div class="text-slate-400 text-[10px]">${l.native}</div>
+        </div>
+      </div>`).join('');
+    }
+  } else {
+    html = filtered.map(l => `
+    <div class="dropdown-item flex items-center gap-3" data-code="${l.code}">
+      <span class="text-xl">${l.flag}</span>
+      <div>
+        <div class="text-slate-700 dark:text-slate-200 text-sm font-medium">${l.name}</div>
+        <div class="text-slate-400 text-[10px]">${l.native}</div>
+      </div>
+    </div>`).join('');
+  }
+  container.innerHTML = html;
+  container.querySelectorAll('.dropdown-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const code = el.dataset.code;
+      const selected = LANGUAGES.find(l => l.code === code);
+      if (!selected) return;
+      if (which === 'src') {
+        if (selected.code === targetLang.code) { swapLanguages(); closeDropdowns(); return; }
+        sourceLang = selected;
+      } else {
+        if (selected.code === sourceLang.code) { swapLanguages(); closeDropdowns(); return; }
+        targetLang = selected;
+      }
+      saveSettings();
+      updateLangUI();
+      closeDropdowns();
+      showToast(`${selected.name} selected`);
+    });
+  });
+}
+
+function updateLangUI() {
+  document.getElementById('srcFlag').innerText = sourceLang.flag;
+  document.getElementById('srcLangName').innerText = sourceLang.name;
+  document.getElementById('srcLangNative').innerText = sourceLang.native;
+  document.getElementById('tgtFlag').innerText = targetLang.flag;
+  document.getElementById('tgtLangName').innerText = targetLang.name;
+  document.getElementById('tgtLangNative').innerText = targetLang.native;
+  const text = document.getElementById('sourceText').value.trim();
+  if (text) translateText(text, true);
+}
+
+function openDropdown(which) {
+  closeDropdowns();
+  const dropdown = document.getElementById(`${which}Dropdown`);
+  dropdown.classList.remove('hidden');
+  renderDropdown(which, "");
+  const search = document.getElementById(`${which}Search`);
+  if (search) { search.value = ""; search.focus(); }
+}
+
+function closeDropdowns() {
+  document.getElementById('srcDropdown').classList.add('hidden');
+  document.getElementById('tgtDropdown').classList.add('hidden');
+}
+
+function swapLanguages() {
+  [sourceLang, targetLang] = [targetLang, sourceLang];
+  saveSettings();
+  updateLangUI();
+  const srcVal = document.getElementById('sourceText').value;
+  if (currentTranslation) {
+    document.getElementById('sourceText').value = currentTranslation;
+    document.getElementById('translatedText').innerText = srcVal;
+    currentTranslation = srcVal;
+    translateText(document.getElementById('sourceText').value, true);
+  }
+  showToast('Languages swapped');
+}
+
+function updateStats() {
+  const text = document.getElementById('sourceText').value;
+  document.getElementById('charCount').innerText = `${text.length} / 5000`;
+  document.getElementById('historyCount').innerText = historyData.length;
+}
+
+function addToHistory(src, tgt) {
+  if (historyData.length > 0 && historyData[0].src === src && historyData[0].tgt === tgt) return;
+  const item = { src, tgt, srcLang: sourceLang.name, tgtLang: targetLang.name, srcFlag: sourceLang.flag, tgtFlag: targetLang.flag, timestamp: Date.now() };
+  historyData.unshift(item);
+  if (historyData.length > 50) historyData.pop();
+  localStorage.setItem('fluento_history', JSON.stringify(historyData));
+  renderHistory();
+  updateStats();
+}
+
+function renderHistory() {
+  const container = document.getElementById('historyList');
+  const empty = document.getElementById('historyEmpty');
+  document.getElementById('historyTotal').innerText = `(${historyData.length})`;
+  if (!historyData.length) { empty.classList.remove('hidden'); container.innerHTML = ''; return; }
+  empty.classList.add('hidden');
+  container.innerHTML = historyData.slice(0, 12).map((h, idx) => `
+  <div class="history-item" data-idx="${idx}">
+    <div class="flex gap-2 text-xs mb-1">
+      <span>${h.srcFlag}</span><span class="text-slate-400">→</span><span>${h.tgtFlag}</span>
+    </div>
+    <div class="text-sm font-medium text-slate-700 dark:text-slate-200 line-clamp-1">${h.src}</div>
+    <div class="text-xs text-blue-500 mt-px line-clamp-1">${h.tgt}</div>
+  </div>`).join('');
+  container.querySelectorAll('.history-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const h = historyData[el.dataset.idx];
+      document.getElementById('sourceText').value = h.src;
+      document.getElementById('translatedText').innerText = h.tgt;
+      currentTranslation = h.tgt;
+      updateStats();
+      document.getElementById('outputActions').style.opacity = "1";
+      document.getElementById('outputActions').style.pointerEvents = "auto";
+      showToast("Loaded from history");
+      toggleHistory();
+    });
+  });
+}
+
+function deleteHistoryItem(idx) {
+  historyData.splice(idx, 1);
+  localStorage.setItem('fluento_history', JSON.stringify(historyData));
+  renderHistory();
+  updateStats();
+}
+
+function toggleFavorite() {
+  const btn = document.getElementById('favBtn');
+  if (!currentTranslation) return;
+  const exists = favorites.some(f => f.tgt === currentTranslation);
+  if (exists) {
+    favorites = favorites.filter(f => f.tgt !== currentTranslation);
+    btn.querySelector('i').classList.remove('fas', 'text-yellow-500');
+    btn.querySelector('i').classList.add('far');
+    showToast("Removed from favorites");
+  } else {
+    favorites.unshift({ src: document.getElementById('sourceText').value, tgt: currentTranslation, timestamp: Date.now() });
+    if (favorites.length > 20) favorites.pop();
+    localStorage.setItem('fluento_favorites', JSON.stringify(favorites));
+    btn.querySelector('i').classList.remove('far');
+    btn.querySelector('i').classList.add('fas', 'text-yellow-500');
+    showToast("Added to favorites ⭐");
+  }
+}
+
+// ==================== UTILS ====================
+function manualTranslate() {
+  const text = document.getElementById('sourceText').value;
+  if (!text.trim()) return showToast("Enter some text");
+  translateText(text, true);
+}
+
+function copyTranslation() { if (currentTranslation) { navigator.clipboard.writeText(currentTranslation); showToast("Copied!"); } }
+function copySource() { if (document.getElementById('sourceText').value) { navigator.clipboard.writeText(document.getElementById('sourceText').value); showToast("Source copied!"); } }
+function clearSourceOnly() { document.getElementById('sourceText').value = ""; updateStats(); triggerAuto(); }
+function resetAll() { document.getElementById('sourceText').value = ""; document.getElementById('translatedText').innerText = "✨ Start typing..."; currentTranslation = ""; updateStats(); triggerAuto(); }
+
+async function pasteClipboard() {
+  try {
+    const txt = await navigator.clipboard.readText();
+    document.getElementById('sourceText').value = txt;
+    updateStats();
+    triggerAuto();
+    showToast("Pasted!");
+  } catch { showToast("Clipboard denied"); }
+}
+
+function speakSource() { if (document.getElementById('sourceText').value) speakText(document.getElementById('sourceText').value, sourceLang.code); }
+function speakTarget() { if (currentTranslation) speakText(currentTranslation, targetLang.code); }
+function speakText(txt, lang) {
+  const u = new SpeechSynthesisUtterance(txt);
+  u.lang = lang === 'id' ? 'id-ID' : lang;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+
+function startVoiceInput() {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) return showToast("Voice not supported");
+  const rec = new SpeechRec();
+  rec.lang = sourceLang.code;
+  rec.onresult = (e) => {
+    document.getElementById('sourceText').value = e.results[0][0].transcript;
+    updateStats();
+    triggerAuto();
+  };
+  rec.start();
+  showToast("🎤 Listening...");
+}
+
+function exportData() {
+  const data = { history: historyData, favorites: favorites, exported: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `fluento_backup_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  showToast("Exported!");
+}
+
+function clearHistory() {
+  if (confirm("Delete all history?")) {
+    historyData = [];
+    localStorage.removeItem('fluento_history');
+    renderHistory();
+    showToast("History cleared");
+    updateStats();
+  }
+}
+
+function toggleHistory() {
+  const panel = document.getElementById('historyPanel');
+  panel.classList.toggle('hidden');
+  if (!panel.classList.contains('hidden')) renderHistory();
+}
+
+function toggleTheme() {
+  isDarkMode = !isDarkMode;
+  localStorage.setItem('fluento_theme', isDarkMode ? 'dark' : 'light');
+  if (isDarkMode) {
+    document.documentElement.classList.add('dark');
+    document.body.classList.remove('light');
+    document.body.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+    document.body.classList.add('light');
+    document.body.classList.remove('dark');
+  }
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toastMsg');
+  toast.innerText = msg;
+  toast.classList.remove('opacity-0', 'pointer-events-none');
+  setTimeout(() => toast.classList.add('opacity-0', 'pointer-events-none'), 2500);
+}
+
+function saveSettings() {
+  localStorage.setItem('fluento_src', sourceLang.code);
+  localStorage.setItem('fluento_tgt', targetLang.code);
+}
+
+function loadSettings() {
+  const src = localStorage.getItem('fluento_src');
+  const tgt = localStorage.getItem('fluento_tgt');
+  if (src) sourceLang = LANGUAGES.find(l => l.code === src) || sourceLang;
+  if (tgt) targetLang = LANGUAGES.find(l => l.code === tgt) || targetLang;
+}
+
+// ==================== INIT ====================
+document.getElementById('srcSelector').addEventListener('click', () => openDropdown('src'));
+document.getElementById('tgtSelector').addEventListener('click', () => openDropdown('tgt'));
+document.addEventListener('click', e => {
+  if (!e.target.closest('.lang-pill') && !e.target.closest('.clean-dropdown')) closeDropdowns();
+});
+document.getElementById('swapBtn').addEventListener('click', swapLanguages);
+document.getElementById('sourceText').addEventListener('input', () => { updateStats(); triggerAuto(); });
+
+// Boot
+loadSettings();
+updateLangUI();
+renderHistory();
+updateStats();
+</script>
+</body>
+</html>

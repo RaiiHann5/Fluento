@@ -1,291 +1,294 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fluento - Bento Grid</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Afacad -->
-    <link href="https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'afacad': ['"Afacad Flux"', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-        
-        @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.9; transform: scale(1.02); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        
-        .float-animation {
-            animation: float 6s ease-in-out infinite;
-        }
-        
-        .pulse-animation {
-            animation: pulse 4s ease-in-out infinite;
-        }
-        
-        .card-hover {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .card-hover:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 20px 40px -10px rgba(251, 146, 60, 0.3);
-        }
-        
-        .image-zoom {
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .card-hover:hover .image-zoom {
-            transform: scale(1.1);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAQ Section</title>
+  <link href="https://fonts.googleapis.com/css2?family=Afacad:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      font-family: 'Afacad', sans-serif;
+      background: #fff;
+      color: #111;
+    }
+
+    /* ── SECTION ── */
+    .faq-section {
+      width: 100%;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 80px 56px 100px;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    /* ── LEFT ── */
+    .faq-left {
+      position: sticky;
+      top: 40px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #7c5cfc;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #7c5cfc;
+      flex-shrink: 0;
+    }
+
+    .faq-left h2 {
+      font-size: clamp(30px, 4vw, 44px);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      color: #111;
+      margin-bottom: 40px;
+    }
+
+    /* Still have a question card */
+    .still-card {
+      background: #f4f2ff;
+      border-radius: 16px;
+      padding: 28px 28px 28px;
+    }
+
+    .still-card h3 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    .still-card p {
+      font-size: 14px;
+      color: #888;
+      line-height: 1.65;
+      margin-bottom: 24px;
+    }
+
+    .btn-email {
+      display: inline-block;
+      background: #7c5cfc;
+      color: #fff;
+      font-family: 'Afacad', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 11px 24px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-email:hover { background: #6a48f0; transform: translateY(-1px); }
+
+    /* ── RIGHT: FAQ LIST ── */
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .faq-item {
+      background: #f9f9fb;
+      border-radius: 14px;
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+    .faq-item:hover { box-shadow: 0 2px 16px rgba(124,92,252,0.07); }
+
+    .faq-question {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 22px 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      font-family: 'Afacad', sans-serif;
+    }
+
+    .faq-question span {
+      font-size: 16px;
+      font-weight: 500;
+      color: #111;
+      line-height: 1.4;
+    }
+
+    .faq-icon {
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: #ede9ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.3s;
+    }
+
+    .faq-icon svg {
+      width: 14px;
+      height: 14px;
+      stroke: #7c5cfc;
+      fill: none;
+      stroke-width: 2.5;
+      transition: transform 0.3s;
+    }
+
+    .faq-item.open .faq-icon {
+      background: #7c5cfc;
+    }
+    .faq-item.open .faq-icon svg {
+      stroke: #fff;
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+      padding: 0 24px;
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 300px;
+      padding: 0 24px 22px;
+    }
+
+    .faq-answer p {
+      font-size: 14.5px;
+      color: #777;
+      line-height: 1.7;
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 760px) {
+      .faq-section {
+        grid-template-columns: 1fr;
+        padding: 48px 24px 72px;
+        gap: 48px;
+      }
+
+      .faq-left { position: static; }
+    }
+  </style>
 </head>
-<body class="bg-white font-afacad">
-    <div class="max-w-6xl mx-auto px-4 py-12">
-        
-        <!-- HEADER FLUENTO -->
-        <div class="text-center mb-10">
-            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-3 animate-pulse">
-                Why Choose 
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
-                    Fluento?
-                </span>
-            </h2>
-            <p class="text-base md:text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed float-animation">
-                Our commitment to your language journey goes beyond just lessons. Discover the unique
-                features that set us apart and help you become fluent faster.
-            </p>
-        </div>
+<body>
 
-        <!-- BENTO GRID FLUENTO -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            
-            <!-- CARD 1: Interactive Lessons -->
-            <div class="card-hover bg-gradient-to-br from-yellow-300 to-orange-400 rounded-2xl p-5 shadow-lg text-white relative overflow-hidden">
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full"></div>
-                <div class="absolute -left-4 -bottom-4 w-20 h-20 bg-white/10 rounded-full"></div>
-                
-                <div class="relative z-10">
-                    <div class="h-32 w-full mb-3 rounded-xl overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&auto=format&fit=crop" 
-                             alt="Interactive Lessons" 
-                             class="w-full h-full object-cover image-zoom">
-                    </div>
-                    
-                    <div class="flex items-center gap-2 mb-2">
-                        <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
-                            <span class="text-lg">📚</span>
-                        </div>
-                        <h3 class="text-lg font-bold">Interactive Lessons</h3>
-                    </div>
-                    
-                    <p class="text-xs text-white/90 mb-3 leading-relaxed">
-                        Engaging lessons with real-time feedback to help you learn faster and remember longer.
-                    </p>
-                    
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center text-white/90 text-xs font-medium group">
-                            <span>Learn more</span>
-                            <svg class="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </div>
-                        <span class="text-xs bg-white/20 px-2 py-1 rounded-full">🔥 50+ lessons</span>
-                    </div>
-                </div>
-            </div>
+<section class="faq-section">
 
-            <!-- CARD 2: AI-Powered Learning -->
-            <div class="card-hover bg-gradient-to-br from-yellow-300 to-orange-400 rounded-2xl p-5 shadow-lg text-white relative overflow-hidden">
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full"></div>
-                <div class="absolute -left-4 -bottom-4 w-20 h-20 bg-white/10 rounded-full"></div>
-                
-                <div class="relative z-10">
-                    <div class="h-32 w-full mb-3 rounded-xl overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&auto=format&fit=crop" 
-                             alt="AI Learning" 
-                             class="w-full h-full object-cover image-zoom">
-                    </div>
-                    
-                    <div class="flex items-center gap-2 mb-2">
-                        <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
-                            <span class="text-lg">🤖</span>
-                        </div>
-                        <h3 class="text-lg font-bold">AI-Powered Learning</h3>
-                    </div>
-                    
-                    <p class="text-xs text-white/90 mb-3 leading-relaxed">
-                        Personalized lessons adapt to your level and learning style for maximum progress.
-                    </p>
-                    
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center text-white/90 text-xs font-medium group">
-                            <span>Learn more</span>
-                            <svg class="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </div>
-                        <span class="text-xs bg-white/20 px-2 py-1 rounded-full">⚡ Smart AI</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CARD 3: Progress Tracking -->
-            <div class="card-hover bg-gradient-to-br from-yellow-300 to-orange-400 rounded-2xl p-5 shadow-lg text-white relative overflow-hidden">
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full"></div>
-                <div class="absolute -left-4 -bottom-4 w-20 h-20 bg-white/10 rounded-full"></div>
-                
-                <div class="relative z-10">
-                    <div class="h-32 w-full mb-3 rounded-xl overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&auto=format&fit=crop" 
-                             alt="Progress Tracking" 
-                             class="w-full h-full object-cover image-zoom">
-                    </div>
-                    
-                    <div class="flex items-center gap-2 mb-2">
-                        <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
-                            <span class="text-lg">📊</span>
-                        </div>
-                        <h3 class="text-lg font-bold">Progress Tracking</h3>
-                    </div>
-                    
-                    <p class="text-xs text-white/90 mb-3 leading-relaxed">
-                        Monitor your improvement with detailed analytics and personalized insights.
-                    </p>
-                    
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center text-white/90 text-xs font-medium group">
-                            <span>Learn more</span>
-                            <svg class="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </div>
-                        <span class="text-xs bg-white/20 px-2 py-1 rounded-full">📈 Live stats</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CARD 4: Gamified Experience - VERSION GEDE -->
-            <div class="md:col-span-2 card-hover bg-gradient-to-br from-yellow-300 to-orange-400 rounded-2xl p-6 shadow-lg text-white relative overflow-hidden">
-                <div class="absolute -right-10 -top-10 w-48 h-48 bg-white/10 rounded-full"></div>
-                <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full"></div>
-                <div class="absolute right-20 bottom-10 w-20 h-20 bg-white/5 rounded-full"></div>
-                
-                <div class="relative z-10 flex flex-col md:flex-row gap-6 items-center">
-                    <div class="md:w-2/5 h-48 md:h-56 rounded-xl overflow-hidden shadow-xl">
-                        <img src="https://images.unsplash.com/photo-1533228876829-65c94e7b5025?w=600&auto=format&fit=crop" 
-                             alt="Gamified Learning" 
-                             class="w-full h-full object-cover image-zoom">
-                    </div>
-                    
-                    <div class="md:w-3/5">
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                                <span class="text-2xl">🎮</span>
-                            </div>
-                            <div>
-                                <h3 class="text-2xl font-bold">Gamified Experience</h3>
-                                <p class="text-sm text-white/80">Learn while having fun</p>
-                            </div>
-                        </div>
-                        
-                        <p class="text-sm md:text-base text-white/90 mb-4 leading-relaxed">
-                            Earn points, unlock achievements, and compete with friends. Our gamified system 
-                            keeps you motivated and engaged throughout your language learning journey.
-                        </p>
-                        
-                        <div class="grid grid-cols-2 gap-2 mb-4">
-                            <div class="flex items-center gap-1 text-xs bg-white/20 px-2 py-1 rounded-full">
-                                <span>⭐</span> Daily Streaks
-                            </div>
-                            <div class="flex items-center gap-1 text-xs bg-white/20 px-2 py-1 rounded-full">
-                                <span>🏆</span> Achievements
-                            </div>
-                            <div class="flex items-center gap-1 text-xs bg-white/20 px-2 py-1 rounded-full">
-                                <span>👥</span> Leaderboards
-                            </div>
-                            <div class="flex items-center gap-1 text-xs bg-white/20 px-2 py-1 rounded-full">
-                                <span>🎁</span> Rewards
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center text-white text-sm font-medium group">
-                                <span>Start playing</span>
-                                <svg class="w-4 h-4 ml-2 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                                </svg>
-                            </div>
-                            <span class="text-sm bg-white/30 px-4 py-1.5 rounded-full font-semibold backdrop-blur-sm">
-                                🎮 5,000+ players
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CARD 5: Community Support -->
-            <div class="card-hover bg-gradient-to-br from-yellow-300 to-orange-400 rounded-2xl p-5 shadow-lg text-white relative overflow-hidden">
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full"></div>
-                <div class="absolute -left-4 -bottom-4 w-20 h-20 bg-white/10 rounded-full"></div>
-                
-                <div class="relative z-10">
-                    <div class="h-32 w-full mb-3 rounded-xl overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&auto=format&fit=crop" 
-                             alt="Community" 
-                             class="w-full h-full object-cover image-zoom">
-                    </div>
-                    
-                    <div class="flex items-center gap-2 mb-2">
-                        <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
-                            <span class="text-lg">👥</span>
-                        </div>
-                        <h3 class="text-lg font-bold">Community Support</h3>
-                    </div>
-                    
-                    <p class="text-xs text-white/90 mb-3 leading-relaxed">
-                        Join a global community of learners. Practice with native speakers and get help anytime.
-                    </p>
-                    
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center text-white/90 text-xs font-medium group">
-                            <span>Join community</span>
-                            <svg class="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </div>
-                        <span class="text-xs bg-white/20 px-2 py-1 rounded-full">🌍 10k+ members</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- JOIN NOW BUTTON FLUENTO -->
-        <div class="text-center mt-6">
-            <button class="group relative bg-gradient-to-r from-yellow-300 to-orange-400 text-white px-10 py-3 rounded-full text-base font-semibold hover:shadow-xl transition-all duration-300 overflow-hidden">
-                <span class="relative z-10">Start Learning Now</span>
-                <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-            </button>
-            <p class="text-xs text-gray-400 mt-3">Join thousands of learners worldwide 🌱</p>
-        </div>
+  <!-- LEFT -->
+  <div class="faq-left">
+    <div class="badge">
+      <div class="badge-dot"></div>
+      Dataly best SaaS analytics
     </div>
+
+    <h2>Frequently asked questions</h2>
+
+    <div class="still-card">
+      <h3>Still have a questions?</h3>
+      <p>Can't find the answer to your question? Send us an email and we'll get back to you as soon as possible!</p>
+      <a href="mailto:hello@example.com" class="btn-email">Send email</a>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="faq-list">
+
+    <div class="faq-item open">
+      <button class="faq-question" onclick="toggle(this)">
+        <span>What is finance analytics and how can it help my business?</span>
+        <div class="faq-icon">
+          <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+        </div>
+      </button>
+      <div class="faq-answer">
+        <p>Finance analytics helps you understand your financial data better, so you can make smarter decisions, spot trends, and improve your business strategy.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggle(this)">
+        <span>How do I start using your finance analytics platform?</span>
+        <div class="faq-icon">
+          <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+        </div>
+      </button>
+      <div class="faq-answer">
+        <p>Getting started is easy. Simply sign up for an account, connect your data sources, and our platform will automatically generate insights and reports tailored to your business needs.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggle(this)">
+        <span>Is my financial data secure on your platform?</span>
+        <div class="faq-icon">
+          <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+        </div>
+      </button>
+      <div class="faq-answer">
+        <p>Absolutely. We use bank-grade encryption and comply with industry security standards. Your data is stored securely and never shared with third parties without your explicit consent.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggle(this)">
+        <span>Can I integrate your platform with my existing tools?</span>
+        <div class="faq-icon">
+          <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+        </div>
+      </button>
+      <div class="faq-answer">
+        <p>Yes! We support integrations with over 100 popular tools including QuickBooks, Xero, Salesforce, HubSpot, and more. Our API also allows for custom integrations with any system you use.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggle(this)">
+        <span>What kind of support do you offer?</span>
+        <div class="faq-icon">
+          <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+        </div>
+      </button>
+      <div class="faq-answer">
+        <p>We offer 24/7 live chat support, a comprehensive knowledge base, video tutorials, and dedicated account managers for enterprise customers. We're always here to help you succeed.</p>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+<script>
+  function toggle(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+</script>
+
 </body>
 </html>
