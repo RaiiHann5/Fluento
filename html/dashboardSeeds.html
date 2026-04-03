@@ -54,27 +54,21 @@ body{
   transition:width .3s cubic-bezier(.77,0,.18,1);
   animation:slideIn .5s cubic-bezier(.77,0,.18,1) both;
   z-index:100;
-  /* chunky right border */
   border-right:4px solid var(--sidebar-dark);
 }
 
-
-/* top accent stripe */
 #sidebar::before{
   content:'';position:absolute;top:0;left:0;right:0;height:4px;
   background:repeating-linear-gradient(90deg,#58CC02 0,#58CC02 24px,#1CB0F6 24px,#1CB0F6 48px,#FFC800 48px,#FFC800 72px,#FF4B4B 72px,#FF4B4B 96px);
   z-index:2;
 }
 
-/* scroll area */
 #scrollArea{
   flex:1;overflow-y:auto;overflow-x:hidden;
   padding:16px 10px 8px;
   scrollbar-width:none;margin-top:4px;
 }
 #scrollArea::-webkit-scrollbar{display:none}
-
-
 
 /* ── LOGO ── */
 .logo-wrap{
@@ -89,7 +83,6 @@ body{
   transition:transform .2s;
 }
 .logo-bird:hover{transform:rotate(-15deg) scale(1.1)}
-/* SVG bird inline */
 .logo-text-wrap{overflow:hidden;transition:opacity .25s,transform .25s}
 .logo-title{font-family:'Fredoka One',cursive;font-size:22px;color:#fff;line-height:1;letter-spacing:.3px;white-space:nowrap}
 .logo-sub{font-size:11px;font-weight:900;color:rgba(255,255,255,.5);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
@@ -106,7 +99,6 @@ body{
 }
 .nav-item:active{transform:scale(.96)}
 
-/* the chunky button look */
 .nav-btn{
   display:flex;align-items:center;gap:12px;
   width:100%;padding:11px 12px;
@@ -127,8 +119,6 @@ body{
 .nav-item.active .nav-ico-box svg,
 .nav-item.active .nav-ico-box span{filter:brightness(10)}
 
-
-/* icon box — the chunky Duolingo icon feel */
 .nav-ico-box{
   width:36px;height:36px;flex-shrink:0;border-radius:12px;
   display:flex;align-items:center;justify-content:center;
@@ -147,19 +137,15 @@ body{
   transition:opacity .2s;
 }
 
-/* ripple */
 .rip{position:absolute;border-radius:50%;width:20px;height:20px;background:rgba(255,200,0,.5);pointer-events:none;transform:scale(0);animation:ripple .5s ease-out forwards}
 
-/* divider */
 .sdiv{height:2px;background:rgba(255,255,255,.08);margin:8px 4px;border-radius:99px}
 
-/* stagger */
 .nav-item:nth-child(1){animation-delay:.08s}.nav-item:nth-child(2){animation-delay:.13s}
 .nav-item:nth-child(3){animation-delay:.18s}.nav-item:nth-child(4){animation-delay:.23s}
 .nav-item:nth-child(5){animation-delay:.28s}.nav-item:nth-child(6){animation-delay:.33s}
 .nav-item:nth-child(7){animation-delay:.38s}.nav-item:nth-child(8){animation-delay:.43s}
 
-/* section label */
 .slabel{
   font-family:'Fredoka One',cursive;
   font-size:11px;color:rgba(255,255,255,.35);
@@ -182,6 +168,27 @@ body{
   cursor:pointer;
 }
 #xpCard:hover{background:rgba(255,255,255,.16)}
+
+/* ✨ XP Card Clickable Effects */
+#xpCard {
+  cursor: pointer;
+  transition: transform .15s, background .15s, box-shadow .15s;
+}
+#xpCard:hover {
+  background: rgba(255,255,255,.25);
+  transform: translateX(3px);
+}
+#xpCard:hover #xpArrow {
+  transform: translateX(3px);
+}
+#xpCard:active {
+  transform: scale(.98) translateX(0);
+  background: rgba(255,255,255,.3);
+}
+#xpCard:active #xpArrow {
+  transform: scale(1.2);
+}
+
 .xp-inner{display:flex;align-items:center;gap:10px;transition:opacity .2s}
 .xp-avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#FFC800,#FF9600);border:3px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:20px}
 .xp-name{font-family:'Fredoka One',cursive;font-size:14px;color:#fff;line-height:1.1}
@@ -369,14 +376,81 @@ body{
 .set-row:last-child{border-bottom:none}
 .set-label{font-family:'Fredoka One',cursive;font-size:15px;color:#3c3c3c;letter-spacing:.1px}
 .set-hint{font-size:12px;color:#aaa;font-weight:800;margin-top:2px}
-/* Duolingo-style toggle */
 .tog{width:52px;height:30px;border-radius:99px;background:#e0e0e0;border-bottom:3px solid #c8c8c8;position:relative;cursor:pointer;transition:background .2s,border-color .2s;flex-shrink:0}
 .tog.on{background:var(--green);border-color:var(--green-dark)}
 .tog::after{content:'';position:absolute;top:4px;left:4px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.2);transition:transform .25s cubic-bezier(.77,0,.18,1)}
 .tog.on::after{transform:translateX(22px)}
 
-/* confetti */
 .conf{position:fixed;pointer-events:none;font-size:20px;animation:confetti 1.2s ease-in forwards;z-index:9999}
+
+/* ═══════════════════════════════════════════════════════ */
+/* ═══════ RESPONSIVE DESIGN ══════════════════════════════ */
+/* ═══════════════════════════════════════════════════════ */
+
+/* Tablet */
+@media(max-width:1024px){
+  :root{--sw:220px}
+  .logo-title{font-size:20px}
+  .nav-label{font-size:15px}
+  .nav-ico-box{width:32px;height:32px;font-size:17px}
+}
+
+/* Mobile */
+@media(max-width:768px){
+  :root{--sw:72px}
+  #sidebar{width:var(--sw)}
+  #main{margin-left:var(--sw);padding:24px 16px}
+  
+  .logo-text-wrap{opacity:0;transform:translateX(-10px);pointer-events:none}
+  .nav-label{opacity:0;transform:translateX(-10px);pointer-events:none}
+  .slabel{opacity:0;max-height:0;padding:0}
+  .sdiv{opacity:0}
+  
+  .xp-name,.xp-level{display:none}
+  #xpCard{padding:10px;margin:0 6px 12px}
+  .xp-avatar{width:34px;height:34px;font-size:18px}
+  
+  .ph{flex-wrap:wrap}
+  .ptitle{font-size:24px}
+  .ph-ico{width:44px;height:44px;font-size:22px}
+  .psub{margin-left:58px;font-size:13px}
+  
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .scard{padding:16px 12px}
+  .scard-ico{font-size:28px}
+  .scard-val{font-size:26px}
+  
+  .worlds,.games,.word-grid,.badges{grid-template-columns:repeat(2,1fr)}
+  
+  .mission{padding:12px 14px}
+  .mission-name{font-size:14px}
+  .mission-desc{font-size:11px}
+  
+  .ach-row{padding:14px}
+  .ach-name{font-size:15px}
+}
+
+/* Small Mobile */
+@media(max-width:480px){
+  :root{--sw:64px}
+  #main{padding:60px 12px 40px;margin-left:var(--sw)}
+  .back-btn{top:12px;left:12px;padding:8px 12px;font-size:13px}
+  
+  .stats{grid-template-columns:1fr}
+  .worlds,.games,.word-grid,.badges{grid-template-columns:1fr}
+  
+  .ptitle{font-size:22px}
+  .ph-ico{width:40px;height:40px;font-size:20px}
+  
+  #xpCard{padding:8px;margin:0 4px 10px}
+  .xp-avatar{width:30px;height:30px;font-size:16px}
+}
+
+/* Landscape Mobile */
+@media(max-height:600px) and (orientation:landscape){
+  #scrollArea{padding-bottom:4px}
+  #xpCard{margin-bottom:8px}
+}
 </style>
 </head>
 <body>
@@ -387,25 +461,19 @@ body{
   <div id="scrollArea">
     <!-- Logo -->
     <div class="logo-wrap">
-      <!-- chunky owl/bird SVG character -->
       <svg class="logo-bird" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="22" cy="22" r="20" fill="#58CC02"/>
         <circle cx="22" cy="22" r="20" fill="none" stroke="#46A302" stroke-width="3"/>
-        <!-- body shape -->
         <ellipse cx="22" cy="26" rx="13" ry="11" fill="#fff" opacity=".15"/>
-        <!-- eyes -->
         <circle cx="16" cy="20" r="5" fill="#fff"/>
         <circle cx="28" cy="20" r="5" fill="#fff"/>
         <circle cx="17" cy="20" r="2.5" fill="#1a1a1a"/>
         <circle cx="29" cy="20" r="2.5" fill="#1a1a1a"/>
         <circle cx="17.8" cy="19.2" r="1" fill="#fff"/>
         <circle cx="29.8" cy="19.2" r="1" fill="#fff"/>
-        <!-- beak -->
         <path d="M20 24 L22 27 L24 24 Z" fill="#FFC800"/>
-        <!-- eyebrows -->
         <path d="M13 16.5 Q16 14.5 19 16.5" stroke="#46A302" stroke-width="2" stroke-linecap="round" fill="none"/>
         <path d="M25 16.5 Q28 14.5 31 16.5" stroke="#46A302" stroke-width="2" stroke-linecap="round" fill="none"/>
-        <!-- chest -->
         <ellipse cx="22" cy="30" rx="8" ry="6" fill="#89E219" opacity=".6"/>
       </svg>
       <div class="logo-text-wrap">
@@ -457,8 +525,8 @@ body{
     </div>
   </div>
 
-  <!-- XP / avatar card -->
-  <div id="xpCard">
+  <!-- ✨ XP / avatar card - CLICKABLE → PINDAH HALAMAN HTML -->
+  <div id="xpCard" onclick="goToProfile()">
     <div class="xp-inner">
       <div class="xp-avatar">🐱</div>
       <div style="flex:1;overflow:hidden">
@@ -466,6 +534,7 @@ body{
         <div class="xp-level">Level 5 · 680 XP</div>
         <div class="xp-bar-track"><div class="xp-bar-fill"></div></div>
       </div>
+      <div style="font-size:18px;opacity:.8;margin-left:4px;transition:transform .2s" id="xpArrow">→</div>
     </div>
   </div>
 </div>
@@ -758,12 +827,10 @@ body{
 <script>
 const sidebar = document.getElementById('sidebar');
 
-
 function nav(el, pageId){
   document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
   el.classList.add('active');
   showPage(pageId);
-  // ripple
   const btn = el.querySelector('.nav-btn');
   const rip = document.createElement('span');
   rip.className='rip';
@@ -779,11 +846,9 @@ function showPage(id){
 }
 
 function pop(btn){
-  // bounce
   btn.style.transform='scale(.92) translateY(4px)';
   btn.style.boxShadow='0 1px 0 currentColor';
   setTimeout(()=>{btn.style.transform='';btn.style.boxShadow='';},140);
-  // confetti
   const picks=['⭐','🌟','✨','🎉','🎊','🏆'];
   for(let i=0;i<12;i++){
     setTimeout(()=>{
@@ -798,6 +863,32 @@ function pop(btn){
       setTimeout(()=>c.remove(),1400);
     },i*60);
   }
+}
+
+// ✨ Navigasi ke FILE HTML LAIN (literal redirect)
+function goToProfile() {
+  const card = document.getElementById('xpCard');
+  
+  // 1. Efek pop + confetti dulu biar keren
+  pop(card);
+  
+  // 2. Animasi panah
+  const arrow = document.getElementById('xpArrow');
+  if(arrow) {
+    arrow.style.transform = 'translateX(8px) scale(1.3)';
+    setTimeout(() => { arrow.style.transform = ''; }, 200);
+  }
+  
+  // 3. Redirect ke file HTML lain setelah animasi selesai
+  setTimeout(() => {
+    // 🔥 GANTI 'profile.html' dengan nama file tujuanmu!
+    window.location.href = 'profilePageSeeds.html';
+    
+    // Contoh lain:
+    // window.location.href = 'dashboard.html';
+    // window.location.href = './pages/my-profile.html';
+    // window.location.href = 'https://example.com/profile';
+  }, 300);
 }
 
 // Wobble icon on nav hover
