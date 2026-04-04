@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Fluento Kids – Mini Games</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        fredoka: ['"Fredoka One"', 'cursive'],
+        nunito: ['Nunito', 'sans-serif'],
+      },
+      colors: {
+        green:  { DEFAULT: '#58CC02', dark: '#46A302', light: '#89E219' },
+        blue:   { DEFAULT: '#1CB0F6', dark: '#0A8FCC' },
+        yellow: { DEFAULT: '#FFC800', dark: '#E5A100' },
+        red:    { DEFAULT: '#FF4B4B', dark: '#CC3B3B' },
+        purple: '#CE82FF',
+        orange: '#FF9600',
+        sidebar:'#235390',
+        'sidebar-dark':'#1A3D6B',
+        'game-card': '#F9FAFB',
+      },
+      keyframes: {
+        slideIn:    { from:{ opacity:'0', transform:'translateX(-32px)' }, to:{ opacity:'1', transform:'none' } },
+        popIn:      { '0%':{ opacity:'0', transform:'scale(0.5)' }, '60%':{ transform:'scale(1.12)' }, '100%':{ opacity:'1', transform:'scale(1)' } },
+        floatY:     { '0%,100%':{ transform:'translateY(0px)' }, '50%':{ transform:'translateY(-6px)' } },
+        pageIn:     { from:{ opacity:'0', transform:'translateY(16px)' }, to:{ opacity:'1', transform:'none' } },
+        grow:       { from:{ width:'0' }, to:{ width:'var(--tw-bar-w)' } },
+        bounce2:    { '0%,100%':{ transform:'translateY(0)' }, '40%':{ transform:'translateY(-8px)' }, '60%':{ transform:'translateY(-4px)' } },
+        confetti:   { '0%':{ transform:'translateY(0) rotate(0deg)', opacity:'1' }, '100%':{ transform:'translateY(120px) rotate(720deg)', opacity:'0' } },
+        flameDance: { '0%,100%':{ transform:'scaleY(1) rotate(-3deg)' }, '50%':{ transform:'scaleY(1.08) rotate(3deg)' } },
+        pulseGlow:  { '0%,100%':{ boxShadow:'0 0 0 0 rgba(88,204,2,.4)' }, '50%':{ boxShadow:'0 0 0 12px rgba(88,204,2,0)' } },
+        ringExpand: { '0%':{ transform:'scale(.6)', opacity:'1' }, '100%':{ transform:'scale(1.5)', opacity:'0' } },
+        bounceDot:  { '0%,100%':{ transform:'translateY(0)' }, '40%':{ transform:'translateY(-8px)' }, '60%':{ transform:'translateY(-4px)' } },
+        wiggle:     { '0%,100%':{ transform:'rotate(0deg)' }, '25%':{ transform:'rotate(5deg)' }, '75%':{ transform:'rotate(-5deg)' } },
+        cardHover:  { '0%':{ transform:'translateY(0) scale(1)' }, '100%':{ transform:'translateY(-8px) scale(1.02)' } },
+        shimmer:    { '0%':{ backgroundPosition:'-200% 0' }, '100%':{ backgroundPosition:'200% 0' } },
+      },
+      animation: {
+        slideIn:    'slideIn .5s cubic-bezier(.77,0,.18,1) both',
+        popIn:      'popIn .6s cubic-bezier(.77,0,.18,1) both',
+        floatY:     'floatY 2.8s ease-in-out infinite',
+        pageIn:     'pageIn .35s cubic-bezier(.77,0,.18,1) both',
+        grow:       'grow 1s .2s ease both',
+        bounce2:    'bounce2 1.2s ease-in-out infinite',
+        confetti:   'confetti 1.2s ease-in forwards',
+        flameDance: 'flameDance 1.4s ease-in-out infinite',
+        pulseGlow:  'pulseGlow 1.6s ease-in-out infinite',
+        ringExpand: 'ringExpand 1.4s ease-out infinite',
+        bounceDot:  'bounceDot 1.4s ease-in-out infinite',
+        wiggle:     'wiggle .4s ease-in-out',
+        cardHover:  'cardHover .2s ease forwards',
+        shimmer:    'shimmer 2s ease infinite',
+      },
+    }
+  }
+}
+</script>
+<style>
+  /* WHITE THEME - Background putih bersih dengan gradien soft */
+  body { font-family: 'Nunito', sans-serif; background: linear-gradient(135deg, #F0F4FF 0%, #E8EEFF 100%); min-height: 100vh; }
+  
+  #sidebar::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: repeating-linear-gradient(90deg,#58CC02 0,#58CC02 24px,#1CB0F6 24px,#1CB0F6 48px,#FFC800 48px,#FFC800 72px,#FF4B4B 72px,#FF4B4B 96px);
+    z-index: 2;
+  }
+  #sideScroll::-webkit-scrollbar { display: none; }
+  #sideScroll { scrollbar-width: none; }
+  .conf { position: fixed; pointer-events: none; font-size: 20px; animation: confetti 1.2s ease-in forwards; z-index: 9999; }
+  .xp-bar-fill { animation: grow .8s .8s ease both; }
+  
+  /* game card styles */
+  .game-card {
+    background: white;
+    transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  }
+  .game-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+    transition: left 0.5s;
+  }
+  .game-card:hover::before {
+    left: 100%;
+  }
+  .game-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15);
+  }
+  .badge-new {
+    animation: pulseGlow 1.6s ease-in-out infinite;
+  }
+  .game-icon {
+    filter: drop-shadow(0 8px 12px rgba(0,0,0,0.1));
+  }
+  .category-chip {
+    transition: all 0.2s;
+    background: white !important;
+    color: #4B5563 !important;
+    border: 2px solid #E5E7EB !important;
+  }
+  .category-chip.active {
+    background: #58CC02 !important;
+    color: white !important;
+    border-color: #46A302 !important;
+    transform: scale(1.05);
+  }
+  /* floating particles */
+  .particle {
+    position: fixed;
+    pointer-events: none;
+    opacity: 0.4;
+    animation: floatY 6s ease-in-out infinite;
+  }
+  
+  /* Sidebar tetap warna biru tua seperti semula */
+  #sidebar {
+    background: #235390;
+    border-right: 4px solid #1A3D6B;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR (TETAP WARNA BIRU TUA) ═══ -->
+<div id="sidebar" class="fixed top-0 left-0 h-screen w-[248px] bg-sidebar flex flex-col animate-slideIn z-[100] border-r-4 border-sidebar-dark">
+  <div id="sideScroll" class="flex-1 overflow-y-auto overflow-x-hidden px-[10px] pb-2 pt-4 mt-1">
+    <div class="flex items-center gap-[10px] px-2 pb-[18px] pt-[10px] animate-popIn [animation-delay:.1s]">
+      <svg class="w-11 h-11 flex-shrink-0 animate-floatY cursor-pointer hover:rotate-[-15deg] hover:scale-110 transition-transform" viewBox="0 0 44 44" fill="none">
+        <circle cx="22" cy="22" r="20" fill="#58CC02"/>
+        <circle cx="22" cy="22" r="20" fill="none" stroke="#46A302" stroke-width="3"/>
+        <ellipse cx="22" cy="26" rx="13" ry="11" fill="#fff" opacity=".15"/>
+        <circle cx="16" cy="20" r="5" fill="#fff"/>
+        <circle cx="28" cy="20" r="5" fill="#fff"/>
+        <circle cx="17" cy="20" r="2.5" fill="#1a1a1a"/>
+        <circle cx="29" cy="20" r="2.5" fill="#1a1a1a"/>
+        <circle cx="17.8" cy="19.2" r="1" fill="#fff"/>
+        <circle cx="29.8" cy="19.2" r="1" fill="#fff"/>
+        <path d="M20 24 L22 27 L24 24 Z" fill="#FFC800"/>
+        <path d="M13 16.5 Q16 14.5 19 16.5" stroke="#46A302" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <path d="M25 16.5 Q28 14.5 31 16.5" stroke="#46A302" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <ellipse cx="22" cy="30" rx="8" ry="6" fill="#89E219" opacity=".6"/>
+      </svg>
+      <div><div class="font-fredoka text-[22px] text-white leading-none">Fluento</div><div class="text-[11px] font-black text-white/50 tracking-wide">for Kids ✨</div></div>
+    </div>
+    <div class="font-fredoka text-[11px] text-white/35 tracking-[.12em] uppercase px-[10px] pb-1 pt-[10px]">Learn</div>
+    <div class="mb-1 cursor-pointer relative rounded-2xl transition-transform active:scale-95" onclick="navGo('home')"><div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15]"><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[.12] text-[19px]">🏠</div><span class="font-fredoka text-[17px]">Home</span></div></div>
+    <div class="mb-1 cursor-pointer relative rounded-2xl transition-transform active:scale-95" onclick="navGo('lesson')"><div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15]"><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[.12] text-[19px]">🗺️</div><span class="font-fredoka text-[17px]">Lesson</span></div></div>
+    <div class="mb-1 cursor-pointer relative rounded-2xl transition-transform active:scale-95" onclick="navGo('minigames')"><div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white text-sidebar border-b-[3px] border-[#bcd1f0] shadow-[0_2px_0_#a0bce8]"><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-green border-b-[3px] border-green-dark text-[19px]">🎮</div><span class="font-fredoka text-[17px]">Mini Games</span></div></div>
+    <div class="mb-1 cursor-pointer relative rounded-2xl transition-transform active:scale-95" onclick="navGo('streak')"><div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15]"><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[.12] text-[19px]">🔥</div><span class="font-fredoka text-[17px]">Streak</span></div></div>
+    <div class="h-[2px] bg-white/[.08] my-2 mx-1 rounded-full"></div>
+    <div class="font-fredoka text-[11px] text-white/35 tracking-[.12em] uppercase px-[10px] pb-1 pt-[10px]">My Stuff</div>
+    <div class="mb-1 cursor-pointer relative rounded-2xl transition-transform active:scale-95" onclick="navGo('achievements')"><div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15]"><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[.12] text-[19px]">🏆</div><span class="font-fredoka text-[17px]">Achievements</span></div></div>
+    <div class="mb-1 cursor-pointer relative rounded-2xl transition-transform active:scale-95" onclick="navGo('settings')"><div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15]"><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[.12] text-[19px]">⚙️</div><span class="font-fredoka text-[17px]">Settings</span></div></div>
+  </div>
+  <div id="xpCard" onclick="fireConf()" class="mx-[10px] mb-[14px] bg-white/[.1] rounded-[18px] border-2 border-white/[.15] border-b-4 border-b-black/20 p-[13px_12px] flex-shrink-0 animate-popIn cursor-pointer transition-all hover:bg-white/25 active:scale-[.98]">
+    <div class="flex items-center gap-[10px]"><div class="w-[38px] h-[38px] rounded-full bg-gradient-to-br from-[#FFC800] to-[#FF9600] border-[3px] border-white/30 flex items-center justify-center text-[20px]">🐱</div><div class="flex-1"><div class="font-fredoka text-[14px] text-white">Mia ⭐</div><div class="text-[11px] text-white/60 font-black">Level 5 · 680 XP</div><div class="h-[6px] bg-white/[.15] rounded-full overflow-hidden mt-[5px]"><div class="xp-bar-fill h-full rounded-full bg-gradient-to-r from-green to-green-light" style="width:68%"></div></div></div><div class="text-[18px] opacity-80">→</div></div>
+  </div>
+</div>
+
+<!-- ═══ MAIN MINI GAMES PAGE (White Theme) ═══ -->
+<div class="ml-[248px] min-h-screen px-10 py-9 animate-pageIn relative">
+  
+  <!-- Decorative floating elements -->
+  <div class="absolute top-20 left-10 text-6xl opacity-5 animate-floatY pointer-events-none">🎮</div>
+  <div class="absolute bottom-20 right-10 text-7xl opacity-5 animate-floatY pointer-events-none" style="animation-delay: 2s;">⭐</div>
+  
+  <!-- Header -->
+  <div class="flex items-center gap-4 mb-2">
+    <div class="w-16 h-16 rounded-[28px] bg-gradient-to-br from-yellow to-orange flex items-center justify-center text-4xl shadow-lg animate-bounce2">🎮</div>
+    <div>
+      <div class="font-fredoka text-[38px] text-gray-800 drop-shadow-sm tracking-wide">Mini Games!</div>
+      <div class="text-[14px] font-black text-gray-500 mt-1">Play, learn, and earn awesome rewards 🎁</div>
+    </div>
+  </div>
+  
+  <!-- Category Filter -->
+  <div class="flex flex-wrap gap-3 mt-6 mb-8">
+    <button data-cat="all" class="category-chip active px-5 py-2 rounded-full font-fredoka transition-all hover:scale-105">✨ All Games</button>
+    <button data-cat="vocab" class="category-chip px-5 py-2 rounded-full font-fredoka transition-all hover:scale-105">📚 Vocabulary</button>
+    <button data-cat="listening" class="category-chip px-5 py-2 rounded-full font-fredoka transition-all hover:scale-105">🎧 Listening</button>
+    <button data-cat="speaking" class="category-chip px-5 py-2 rounded-full font-fredoka transition-all hover:scale-105">🗣️ Speaking</button>
+    <button data-cat="puzzle" class="category-chip px-5 py-2 rounded-full font-fredoka transition-all hover:scale-105">🧩 Puzzle</button>
+    <button data-cat="memory" class="category-chip px-5 py-2 rounded-full font-fredoka transition-all hover:scale-105">🧠 Memory</button>
+  </div>
+  
+  <!-- Games Grid -->
+  <div id="gamesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <!-- Games akan di inject via JS -->
+  </div>
+  
+  <!-- Weekly Challenge Banner -->
+  <div class="mt-10 bg-gradient-to-r from-green-400 via-blue-400 to-purple-400 rounded-2xl p-5 flex items-center justify-between flex-wrap gap-4 shadow-xl border-b-4 border-green-600 cursor-pointer hover:-translate-y-1 transition-all" onclick="claimWeeklyReward()">
+    <div class="flex items-center gap-4">
+      <div class="text-5xl animate-floatY">🏆</div>
+      <div>
+        <div class="font-fredoka text-xl text-white">Weekly Challenge!</div>
+        <div class="text-sm text-white/90">Play 5 games this week → 🎁 150 XP + 🎲 Mystery Chest</div>
+        <div class="flex gap-1 mt-2"><div class="w-8 h-2 bg-white/30 rounded-full overflow-hidden"><div class="w-3/5 h-full bg-yellow rounded-full"></div></div><span class="text-xs text-white font-black">3/5 played</span></div>
+      </div>
+    </div>
+    <button class="bg-white text-green-600 font-fredoka px-6 py-2 rounded-full shadow-md border-b-3 border-gray-200 active:translate-y-[2px] transition-all hover:bg-gray-50">Claim 🎁</button>
+  </div>
+  
+  <!-- Coming Soon teaser -->
+  <div class="mt-8 text-center">
+    <div class="inline-block bg-white/80 backdrop-blur-sm rounded-full px-6 py-2 shadow-sm border border-gray-200">
+      <span class="text-gray-500 text-sm font-black">✨ More games coming every week! ✨</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  // GAME DATA
+  const games = [
+    { id: 1, name: "Word Match Mania", icon: "📖", category: "vocab", xp: 45, difficulty: "easy", color: "from-green-400 to-green-600", bgColor: "#58CC02", played: true, highScore: 120, new: false, desc: "Match words with pictures!" },
+    { id: 2, name: "Listen & Click", icon: "🎧", category: "listening", xp: 50, difficulty: "easy", color: "from-blue-400 to-blue-600", bgColor: "#1CB0F6", played: true, highScore: 95, new: false, desc: "Hear the word, tap the right image!" },
+    { id: 3, name: "Speak It Loud!", icon: "🗣️", category: "speaking", xp: 60, difficulty: "medium", color: "from-purple-400 to-purple-600", bgColor: "#CE82FF", played: false, highScore: 0, new: true, desc: "Practice pronunciation with mic!" },
+    { id: 4, name: "Puzzle Pairs", icon: "🧩", category: "puzzle", xp: 40, difficulty: "easy", color: "from-yellow-400 to-yellow-600", bgColor: "#FFC800", played: false, highScore: 0, new: false, desc: "Drag and drop puzzle pieces!" },
+    { id: 5, name: "Memory Flip", icon: "🧠", category: "memory", xp: 55, difficulty: "medium", color: "from-pink-400 to-pink-600", bgColor: "#FF6B9D", played: true, highScore: 8, new: false, desc: "Find matching pairs!" },
+    { id: 6, name: "Vocabulary Race", icon: "🏃", category: "vocab", xp: 65, difficulty: "hard", color: "from-red-400 to-red-600", bgColor: "#FF4B4B", played: false, highScore: 0, new: true, desc: "Fast tapping word quiz!" },
+    { id: 7, name: "Animal Sounds", icon: "🐮", category: "listening", xp: 40, difficulty: "easy", color: "from-orange-400 to-orange-600", bgColor: "#FF9600", played: false, highScore: 0, new: false, desc: "Guess the animal by sound!" },
+    { id: 8, name: "Spell & Win", icon: "✍️", category: "vocab", xp: 55, difficulty: "medium", color: "from-teal-400 to-teal-600", bgColor: "#14B8A6", played: false, highScore: 0, new: false, desc: "Spell words correctly!" },
+    { id: 9, name: "Story Sequencing", icon: "📚", category: "puzzle", xp: 70, difficulty: "hard", color: "from-indigo-400 to-indigo-600", bgColor: "#6366F1", played: false, highScore: 0, new: true, desc: "Put story pictures in order!" },
+    { id: 10, name: "Rhyme Time", icon: "🎵", category: "listening", xp: 45, difficulty: "easy", color: "from-rose-400 to-rose-600", bgColor: "#F43F5E", played: false, highScore: 0, new: false, desc: "Find rhyming words!" },
+    { id: 11, name: "Bubble Pop", icon: "🫧", category: "vocab", xp: 50, difficulty: "easy", color: "from-cyan-400 to-cyan-600", bgColor: "#06B6D4", played: false, highScore: 0, new: false, desc: "Pop bubbles with correct answers!" },
+    { id: 12, name: "Grammar Garden", icon: "🌻", category: "memory", xp: 60, difficulty: "medium", color: "from-lime-400 to-lime-600", bgColor: "#84CC16", played: false, highScore: 0, new: false, desc: "Learn grammar with fun!" }
+  ];
+  
+  let currentCategory = "all";
+  
+  function renderGames() {
+    const grid = document.getElementById('gamesGrid');
+    const filteredGames = currentCategory === "all" ? games : games.filter(g => g.category === currentCategory);
+    
+    grid.innerHTML = '';
+    
+    filteredGames.forEach((game, idx) => {
+      const card = document.createElement('div');
+      card.className = `game-card rounded-2xl overflow-hidden cursor-pointer animate-popIn shadow-md`;
+      card.style.animationDelay = `${idx * 0.05}s`;
+      
+      // difficulty badge color
+      const diffColor = game.difficulty === 'easy' ? 'bg-green' : (game.difficulty === 'medium' ? 'bg-yellow text-black' : 'bg-red');
+      
+      card.innerHTML = `
+        <div class="bg-gradient-to-br ${game.color} p-5 text-center relative">
+          ${game.new ? '<div class="absolute top-2 right-2 bg-yellow text-red-dark text-xs font-black px-2 py-1 rounded-full animate-bounce2">NEW!</div>' : ''}
+          <div class="text-7xl mb-2 game-icon animate-floatY">${game.icon}</div>
+          <div class="font-fredoka text-xl text-white drop-shadow-md">${game.name}</div>
+          <div class="inline-block ${diffColor} text-white text-xs font-black px-2 py-0.5 rounded-full mt-2 shadow-md">${game.difficulty}</div>
+        </div>
+        <div class="p-4 bg-white">
+          <div class="text-xs text-gray-500 font-black uppercase tracking-wide">${game.category} • ${game.xp} XP</div>
+          <div class="text-sm text-gray-600 mt-1 font-bold">${game.desc}</div>
+          ${game.played ? `<div class="mt-2 flex items-center gap-2 text-xs"><span class="text-yellow-600">🏆 Best: ${game.highScore} pts</span></div>` : '<div class="mt-2 text-xs text-green-600">✨ Not played yet</div>'}
+          <button class="play-btn w-full mt-3 bg-gradient-to-r from-green to-green-dark text-white font-fredoka py-2 rounded-xl border-b-3 border-green-800/20 active:translate-y-[1px] transition-all hover:brightness-110 shadow-md">Play Now 🎮</button>
+        </div>
+      `;
+      
+      const playBtn = card.querySelector('.play-btn');
+      playBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        startGame(game);
+      });
+      
+      card.addEventListener('click', () => startGame(game));
+      grid.appendChild(card);
+    });
+    
+    if(filteredGames.length === 0) {
+      grid.innerHTML = `<div class="col-span-full text-center py-12 bg-white/80 backdrop-blur-sm rounded-2xl shadow-md border border-gray-200">
+        <div class="text-6xl mb-3">🎮</div>
+        <div class="font-fredoka text-xl text-gray-600">No games in this category yet!</div>
+        <div class="text-gray-400">Try another filter 🌟</div>
+      </div>`;
+    }
+  }
+  
+  function startGame(game) {
+    fireConf();
+    // Show game selection modal / alert (simulasi)
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[200] animate-pageIn';
+    modal.innerHTML = `
+      <div class="bg-white rounded-3xl max-w-md w-full mx-4 p-6 text-center shadow-2xl border-t-8 border-green-500">
+        <div class="text-7xl mb-3 animate-bounce2">${game.icon}</div>
+        <div class="font-fredoka text-2xl text-gray-800">${game.name}</div>
+        <div class="text-gray-500 text-sm mt-1">⭐ ${game.xp} XP · ${game.difficulty} difficulty</div>
+        <div class="my-4 p-3 bg-gradient-to-r ${game.color} rounded-xl text-white">
+          <p class="font-black">🎮 Get ready to play!</p>
+          <p class="text-sm mt-1">${game.desc}</p>
+        </div>
+        <div class="flex gap-3">
+          <button id="startGameBtn" class="flex-1 bg-green text-white font-fredoka py-3 rounded-xl border-b-3 border-green-dark active:translate-y-[1px]">Start Game 🚀</button>
+          <button id="cancelGameBtn" class="flex-1 bg-gray-200 text-gray-600 font-fredoka py-3 rounded-xl border-b-3 border-gray-300 active:translate-y-[1px]">Maybe Later</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    
+    document.getElementById('startGameBtn').addEventListener('click', () => {
+      modal.remove();
+      showGameLauncher(game);
+    });
+    document.getElementById('cancelGameBtn').addEventListener('click', () => modal.remove());
+  }
+  
+  function showGameLauncher(game) {
+    // Simulasi memulai game
+    const launcher = document.createElement('div');
+    launcher.className = 'fixed inset-0 bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center z-[200] animate-pageIn';
+    launcher.innerHTML = `
+      <div class="text-center p-8 bg-white/10 backdrop-blur-sm rounded-3xl">
+        <div class="text-8xl mb-4 animate-bounce2">${game.icon}</div>
+        <div class="font-fredoka text-3xl text-white mb-2">${game.name}</div>
+        <div class="text-white/80 text-lg">Loading awesome game...</div>
+        <div class="w-64 h-2 bg-white/20 rounded-full mt-6 overflow-hidden"><div class="w-full h-full bg-yellow animate-[shimmer_1s_ease_infinite] rounded-full" style="width: 0%; animation: grow 1.5s forwards;"></div></div>
+        <p class="text-white/60 text-sm mt-4">(Demo mode: You earned +${game.xp} XP!)</p>
+      </div>
+    `;
+    document.body.appendChild(launcher);
+    
+    setTimeout(() => {
+      launcher.remove();
+      fireConf();
+      showFloatingMessage(`🎉 Great job! +${game.xp} XP from ${game.name}! 🎉`, '#58CC02');
+      // update XP bar
+      const xpBar = document.querySelector('#xpCard .xp-bar-fill');
+      let currentW = parseFloat(xpBar?.style.width) || 68;
+      let newW = Math.min(100, currentW + (game.xp / 1000) * 100);
+      if(xpBar) xpBar.style.width = `${newW}%`;
+      
+      // mark as played
+      game.played = true;
+      game.highScore = Math.max(game.highScore, Math.floor(Math.random() * 100) + 50);
+      renderGames();
+    }, 1800);
+  }
+  
+  function claimWeeklyReward() {
+    fireConf();
+    showFloatingMessage('🎁 Weekly reward claimed! +150 XP + Mystery Chest! 🎁', '#FFC800');
+    const xpBar = document.querySelector('#xpCard .xp-bar-fill');
+    let currentW = parseFloat(xpBar?.style.width) || 68;
+    let newW = Math.min(100, currentW + 12);
+    if(xpBar) xpBar.style.width = `${newW}%`;
+  }
+  
+  function showFloatingMessage(msg, bgColor) {
+    const toast = document.createElement('div');
+    toast.className = 'fixed bottom-8 left-1/2 -translate-x-1/2 text-white font-fredoka px-6 py-3 rounded-full shadow-xl z-[300] animate-popIn';
+    toast.style.background = bgColor;
+    toast.innerText = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+  }
+  
+  function fireConf() {
+    const icons = ['🎮', '⭐', '🌟', '✨', '🎉', '🏆', '🎈', '🕹️', '🎯', '💎'];
+    for(let i = 0; i < 18; i++) {
+      setTimeout(() => {
+        const c = document.createElement('div');
+        c.className = 'conf';
+        c.textContent = icons[Math.floor(Math.random() * icons.length)];
+        c.style.left = (5 + Math.random() * 80) + 'vw';
+        c.style.top = (5 + Math.random() * 60) + 'vh';
+        c.style.fontSize = (14 + Math.random() * 20) + 'px';
+        c.style.animationDuration = (0.6 + Math.random() * 1) + 's';
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 1500);
+      }, i * 45);
+    }
+  }
+  
+  function navGo(page) {
+    fireConf();
+    setTimeout(() => {
+      const map = { home: 'index.html', lesson: 'lesson-page.html', minigames: '#', streak: 'streak-page.html', achievements: 'achievements-tailwind.html', settings: 'settings.html' };
+      window.location.href = map[page] || 'index.html';
+    }, 250);
+  }
+  
+  // Category filter event
+  document.querySelectorAll('.category-chip').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      document.querySelectorAll('.category-chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentCategory = btn.getAttribute('data-cat');
+      renderGames();
+    });
+  });
+  
+  renderGames();
+</script>
+</body>
+</html>

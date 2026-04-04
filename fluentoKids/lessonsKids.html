@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Fluento Kids – Lesson</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        fredoka: ['"Fredoka One"', 'cursive'],
+        nunito: ['Nunito', 'sans-serif'],
+      },
+      colors: {
+        green:  { DEFAULT: '#58CC02', dark: '#46A302', light: '#89E219' },
+        blue:   { DEFAULT: '#1CB0F6', dark: '#0A8FCC' },
+        yellow: { DEFAULT: '#FFC800', dark: '#E5A100' },
+        red:    { DEFAULT: '#FF4B4B', dark: '#CC3B3B' },
+        purple: '#CE82FF',
+        orange: '#FF9600',
+        sidebar:'#235390',
+        'sidebar-dark':'#1A3D6B',
+      },
+      keyframes: {
+        slideIn:    { from:{ opacity:'0', transform:'translateX(-32px)' }, to:{ opacity:'1', transform:'none' } },
+        popIn:      { '0%':{ opacity:'0', transform:'scale(0.5)' }, '60%':{ transform:'scale(1.12)' }, '100%':{ opacity:'1', transform:'scale(1)' } },
+        floatY:     { '0%,100%':{ transform:'translateY(0px)' }, '50%':{ transform:'translateY(-6px)' } },
+        pageIn:     { from:{ opacity:'0', transform:'translateY(16px)' }, to:{ opacity:'1', transform:'none' } },
+        ripple:     { from:{ transform:'scale(0)', opacity:'.5' }, to:{ transform:'scale(8)', opacity:'0' } },
+        grow:       { from:{ width:'0' }, to:{ width:'var(--tw-bar-w)' } },
+        bounce2:    { '0%,100%':{ transform:'translateY(0)' }, '40%':{ transform:'translateY(-8px)' }, '60%':{ transform:'translateY(-4px)' } },
+        confetti:   { '0%':{ transform:'translateY(0) rotate(0deg)', opacity:'1' }, '100%':{ transform:'translateY(120px) rotate(720deg)', opacity:'0' } },
+        flameDance: { '0%,100%':{ transform:'scaleY(1) rotate(-3deg)' }, '50%':{ transform:'scaleY(1.08) rotate(3deg)' } },
+        pulseGlow:  { '0%,100%':{ boxShadow:'0 0 0 0 rgba(255,200,0,.4)' }, '50%':{ boxShadow:'0 0 0 12px rgba(255,200,0,0)' } },
+        starPop:    { '0%':{ transform:'scale(0) rotate(-20deg)' }, '70%':{ transform:'scale(1.2) rotate(5deg)' }, '100%':{ transform:'scale(1) rotate(0deg)' } },
+        ringExpand: { '0%':{ transform:'scale(.6)', opacity:'1' }, '100%':{ transform:'scale(1.5)', opacity:'0' } },
+        bounceDot:  { '0%,100%':{ transform:'translateY(0)' }, '40%':{ transform:'translateY(-8px)' }, '60%':{ transform:'translateY(-4px)' } },
+        wiggle:     { '0%,100%':{ transform:'rotate(0deg)' }, '25%':{ transform:'rotate(3deg)' }, '75%':{ transform:'rotate(-3deg)' } },
+        pathPop:    { from:{ strokeDashoffset:'240' }, to:{ strokeDashoffset:'0' } },
+      },
+      animation: {
+        slideIn:    'slideIn .5s cubic-bezier(.77,0,.18,1) both',
+        popIn:      'popIn .6s cubic-bezier(.77,0,.18,1) both',
+        floatY:     'floatY 2.8s ease-in-out infinite',
+        pageIn:     'pageIn .35s cubic-bezier(.77,0,.18,1) both',
+        ripple:     'ripple .5s ease-out forwards',
+        grow:       'grow 1s .2s ease both',
+        bounce2:    'bounce2 1.2s ease-in-out infinite',
+        confetti:   'confetti 1.2s ease-in forwards',
+        flameDance: 'flameDance 1.4s ease-in-out infinite',
+        pulseGlow:  'pulseGlow 1.6s ease-in-out infinite',
+        starPop:    'starPop .35s cubic-bezier(.77,0,.18,1) both',
+        ringExpand: 'ringExpand 1.4s ease-out infinite',
+        bounceDot:  'bounceDot 1.4s ease-in-out infinite',
+        wiggle:     'wiggle .4s ease-in-out',
+        pathPop:    'pathPop .8s cubic-bezier(0.4, 0, 0.2, 1) forwards',
+      },
+    }
+  }
+}
+</script>
+<style>
+  body { font-family: 'Nunito', sans-serif; background: #F7F7F7; overflow-x: hidden; }
+  #sidebar::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: repeating-linear-gradient(90deg,#58CC02 0,#58CC02 24px,#1CB0F6 24px,#1CB0F6 48px,#FFC800 48px,#FFC800 72px,#FF4B4B 72px,#FF4B4B 96px);
+    z-index: 2;
+  }
+  #sideScroll::-webkit-scrollbar { display: none; }
+  #sideScroll { scrollbar-width: none; }
+  .conf { position: fixed; pointer-events: none; font-size: 20px; animation: confetti 1.2s ease-in forwards; z-index: 9999; }
+  .xp-bar-fill { animation: grow .8s .8s ease both; }
+  .lesson-card {
+    transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  }
+  .lesson-card.completed {
+    background: #E9F9E6 !important;
+    border-left-color: #58CC02 !important;
+  }
+  .lock-overlay {
+    backdrop-filter: blur(1.5px);
+  }
+  .path-dash {
+    stroke-dasharray: 240;
+    stroke-dashoffset: 240;
+  }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ═══ SIDEBAR (Identik dengan streak page) ═══ -->
+<div id="sidebar" class="fixed top-0 left-0 h-screen w-[248px] bg-sidebar flex flex-col animate-slideIn z-[100] border-r-4 border-sidebar-dark" style="position:fixed;">
+  <div id="sideScroll" class="flex-1 overflow-y-auto overflow-x-hidden px-[10px] pb-2 pt-4 mt-1">
+    <div class="flex items-center gap-[10px] px-2 pb-[18px] pt-[10px] animate-popIn [animation-delay:.1s]">
+      <svg class="w-11 h-11 flex-shrink-0 animate-floatY cursor-pointer hover:rotate-[-15deg] hover:scale-110 transition-transform" viewBox="0 0 44 44" fill="none">
+        <circle cx="22" cy="22" r="20" fill="#58CC02"/>
+        <circle cx="22" cy="22" r="20" fill="none" stroke="#46A302" stroke-width="3"/>
+        <ellipse cx="22" cy="26" rx="13" ry="11" fill="#fff" opacity=".15"/>
+        <circle cx="16" cy="20" r="5" fill="#fff"/>
+        <circle cx="28" cy="20" r="5" fill="#fff"/>
+        <circle cx="17" cy="20" r="2.5" fill="#1a1a1a"/>
+        <circle cx="29" cy="20" r="2.5" fill="#1a1a1a"/>
+        <circle cx="17.8" cy="19.2" r="1" fill="#fff"/>
+        <circle cx="29.8" cy="19.2" r="1" fill="#fff"/>
+        <path d="M20 24 L22 27 L24 24 Z" fill="#FFC800"/>
+        <path d="M13 16.5 Q16 14.5 19 16.5" stroke="#46A302" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <path d="M25 16.5 Q28 14.5 31 16.5" stroke="#46A302" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <ellipse cx="22" cy="30" rx="8" ry="6" fill="#89E219" opacity=".6"/>
+      </svg>
+      <div><div class="font-fredoka text-[22px] text-white leading-none">Fluento</div><div class="text-[11px] font-black text-white/50 tracking-wide">for Kids ✨</div></div>
+    </div>
+    <div class="font-fredoka text-[11px] text-white/35 tracking-[.12em] uppercase px-[10px] pb-1 pt-[10px]">Learn</div>
+    <div class="mb-1 cursor-pointer relative rounded-2xl transition-transform active:scale-95" onclick="navGo('home')"><div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15]"><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[.12] text-[19px]">🏠</div><span class="font-fredoka text-[17px]">Home</span></div></div>
+    <div class="mb-1 cursor-pointer relative rounded-2xl transition-transform active:scale-95" onclick="navGo('lesson')"><div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white text-sidebar border-b-[3px] border-[#bcd1f0] shadow-[0_2px_0_#a0bce8]"><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-green border-b-[3px] border-green-dark text-[19px]">🗺️</div><span class="font-fredoka text-[17px]">Lesson</span></div></div>
+    <div class="mb-1 cursor-pointer relative rounded-2xl transition-transform active:scale-95" onclick="navGo('minigames')"><div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15]"><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[.12] text-[19px]">🎮</div><span class="font-fredoka text-[17px]">Mini Games</span></div></div>
+    <div class="mb-1 cursor-pointer relative rounded-2xl transition-transform active:scale-95" onclick="navGo('streak')"><div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15]"><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[.12] text-[19px]">🔥</div><span class="font-fredoka text-[17px]">Streak</span></div></div>
+    <div class="h-[2px] bg-white/[.08] my-2 mx-1 rounded-full"></div>
+    <div class="font-fredoka text-[11px] text-white/35 tracking-[.12em] uppercase px-[10px] pb-1 pt-[10px]">My Stuff</div>
+    <div class="mb-1 cursor-pointer relative rounded-2xl transition-transform active:scale-95" onclick="navGo('achievements')"><div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15]"><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[.12] text-[19px]">🏆</div><span class="font-fredoka text-[17px]">Achievements</span></div></div>
+    <div class="mb-1 cursor-pointer relative rounded-2xl transition-transform active:scale-95" onclick="navGo('settings')"><div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15]"><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[.12] text-[19px]">⚙️</div><span class="font-fredoka text-[17px]">Settings</span></div></div>
+  </div>
+  <div id="xpCard" onclick="fireConf()" class="mx-[10px] mb-[14px] bg-white/[.1] rounded-[18px] border-2 border-white/[.15] border-b-4 border-b-black/20 p-[13px_12px] flex-shrink-0 animate-popIn cursor-pointer transition-all hover:bg-white/25 active:scale-[.98]">
+    <div class="flex items-center gap-[10px]"><div class="w-[38px] h-[38px] rounded-full bg-gradient-to-br from-[#FFC800] to-[#FF9600] border-[3px] border-white/30 flex items-center justify-center text-[20px]">🐱</div><div class="flex-1"><div class="font-fredoka text-[14px] text-white">Mia ⭐</div><div class="text-[11px] text-white/60 font-black">Level 5 · 680 XP</div><div class="h-[6px] bg-white/[.15] rounded-full overflow-hidden mt-[5px]"><div class="xp-bar-fill h-full rounded-full bg-gradient-to-r from-green to-green-light" style="width:68%"></div></div></div><div class="text-[18px] opacity-80">→</div></div>
+  </div>
+</div>
+
+<!-- ═══ MAIN LESSON PAGE ═══ -->
+<div class="ml-[248px] min-h-screen px-10 py-9 animate-pageIn">
+  <!-- Header -->
+  <div class="flex items-center gap-[14px] mb-1">
+    <div class="w-14 h-14 rounded-[20px] flex items-center justify-center text-[28px] border-b-4 border-[#cc3b00] shadow-[0_4px_0_rgba(0,0,0,.12)] bg-gradient-to-br from-[#1CB0F6] to-[#0A8FCC]">🗺️</div>
+    <div class="font-fredoka text-[32px] text-[#3c3c3c]">Learning Path</div>
+  </div>
+  <div class="text-[14px] text-[#afafaf] font-black mb-7 ml-[70px] tracking-[.02em]">Complete lessons, earn stars & become a language hero! 🚀</div>
+
+  <!-- Unit Progress Overview -->
+  <div class="bg-white rounded-[24px] p-[18px_24px] mb-6 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] flex items-center justify-between flex-wrap gap-3 animate-pageIn [animation-delay:.1s]">
+    <div class="flex items-center gap-3"><span class="text-3xl">🏆</span><div><div class="font-fredoka text-lg">Unit 1: Animal Friends</div><div class="text-xs font-black text-green-dark">🐣 4/8 lessons completed</div></div></div>
+    <div class="flex items-center gap-2 bg-[#f4f4f4] rounded-full px-4 py-2"><span class="text-yellow-dark text-xl">⭐</span><span class="font-fredoka text-lg">142</span><span class="text-xs font-black text-gray-500">total XP</span></div>
+  </div>
+
+  <!-- Interactive Lesson Map (Path) -->
+  <div class="relative mb-10">
+    <div class="absolute left-[36px] top-12 bottom-12 w-1 bg-gradient-to-b from-green-light via-yellow to-purple rounded-full opacity-30" style="height: calc(100% - 96px);"></div>
+    <div id="lessonsContainer" class="flex flex-col gap-7 relative z-10">
+      <!-- Lesson cards will be injected via JS -->
+    </div>
+  </div>
+
+  <!-- Daily Challenge Bonus -->
+  <div class="mt-6 bg-gradient-to-r from-orange to-[#FF4B4B] rounded-[24px] p-[16px_24px] border-b-[5px] border-red-dark shadow-[0_6px_0_#cc3b00] flex items-center gap-5 cursor-pointer hover:-translate-y-1 transition-transform active:translate-y-[2px] animate-pageIn [animation-delay:.4s]" onclick="claimDailyBonus()">
+    <div class="text-5xl animate-bounce2">📅</div>
+    <div class="flex-1"><div class="font-fredoka text-xl text-white">Daily Challenge</div><div class="text-white/90 text-sm font-black">Learn 1 lesson today → +30 bonus XP + 🧊 Streak Freeze</div></div>
+    <button class="bg-white text-red-dark font-fredoka px-5 py-2 rounded-xl border-b-[3px] border-gray-300 active:translate-y-[2px]">Claim 🎁</button>
+  </div>
+</div>
+
+<script>
+  // ------ LESSON DATA ------
+  const lessons = [
+    { id:1, title:"🐶 Pets & Friends", xp:40, icon:"🐕", type:"vocab", completed:true,  locked:false, stars:3 },
+    { id:2, title:"🐱 Cat & Dog", xp:45, icon:"🐈", type:"listening", completed:true, locked:false, stars:3 },
+    { id:3, title:"🦜 Bird & Fish", xp:50, icon:"🐟", type:"speaking", completed:true, locked:false, stars:2 },
+    { id:4, title:"🐰 Rabbit Time", xp:55, icon:"🐇", type:"quiz", completed:false, locked:false, stars:0 },
+    { id:5, title:"🦁 Wild Animals", xp:60, icon:"🦁", type:"story", completed:false, locked:true, stars:0 },
+    { id:6, title:"🐒 Jungle Fun", xp:65, icon:"🐒", type:"vocab", completed:false, locked:true, stars:0 },
+    { id:7, title:"🐧 Polar Pals", xp:70, icon:"🐧", type:"listening", completed:false, locked:true, stars:0 },
+    { id:8, title:"🎉 Unit Champion", xp:100, icon:"🏆", type:"boss", completed:false, locked:true, stars:0 }
+  ];
+
+  // unlock logic: lesson 5 unlocks after completing lesson 4, etc.
+  function updateLocks() {
+    let lastCompletedIdx = -1;
+    for(let i=0; i<lessons.length; i++) {
+      if(lessons[i].completed) lastCompletedIdx = i;
+      else break;
+    }
+    for(let i=0; i<lessons.length; i++) {
+      if(i <= lastCompletedIdx+1) lessons[i].locked = false;
+      else lessons[i].locked = true;
+    }
+    // khusus lesson pertama jika tidak ada completed
+    if(lastCompletedIdx === -1) lessons[0].locked = false;
+  }
+  updateLocks();
+
+  // Render lessons into DOM
+  function renderLessons() {
+    const container = document.getElementById('lessonsContainer');
+    container.innerHTML = '';
+    lessons.forEach((lesson, idx) => {
+      const isCompleted = lesson.completed;
+      const isLocked = lesson.locked;
+      const isNext = (!isCompleted && !isLocked);
+      const starsEarned = lesson.stars || 0;
+      
+      const cardDiv = document.createElement('div');
+      cardDiv.className = `lesson-card relative flex items-center gap-5 bg-white rounded-[28px] p-[12px_20px] pr-6 border-l-[12px] ${isCompleted ? 'border-l-green completed' : (isLocked ? 'border-l-gray-300' : 'border-l-yellow')} shadow-[0_6px_0_#e2e2e2] transition-all duration-200 cursor-pointer hover:shadow-[0_8px_0_#d0d0d0] hover:-translate-y-1 active:translate-y-[2px] active:shadow-[0_2px_0_#d0d0d0] animate-popIn`;
+      cardDiv.style.animationDelay = `${idx * 0.05}s`;
+      
+      // Icon circle with animation
+      const iconCircle = document.createElement('div');
+      iconCircle.className = `w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-inner border-3 ${isCompleted ? 'bg-green-light border-green-dark' : (isLocked ? 'bg-gray-200 border-gray-300' : 'bg-yellow border-yellow-dark')} transition-transform group-hover:scale-105`;
+      iconCircle.innerHTML = isLocked ? '🔒' : lesson.icon;
+      
+      // Info block
+      const infoDiv = document.createElement('div');
+      infoDiv.className = 'flex-1';
+      infoDiv.innerHTML = `
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="font-fredoka text-xl text-gray-800">${lesson.title}</span>
+          <span class="text-[11px] font-black px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 uppercase">${lesson.type}</span>
+          ${isCompleted ? '<span class="text-green-dark text-sm font-black">✓ Completed</span>' : (isLocked ? '<span class="text-gray-400 text-sm">🔒 Complete previous lesson</span>' : '<span class="text-yellow-dark animate-pulseGlow text-sm">⭐ Ready!</span>')}
+        </div>
+        <div class="flex items-center gap-3 mt-1">
+          <div class="flex items-center gap-1"><span class="text-green-dark">⭐</span><span class="font-fredoka text-sm">${lesson.xp} XP</span></div>
+          ${!isLocked && !isCompleted ? `<div class="flex items-center gap-1"><span class="text-yellow-dark">🌟</span><span class="text-xs font-black">+${Math.floor(lesson.xp*0.2)} bonus if perfect</span></div>` : ''}
+          ${isCompleted ? `<div class="flex gap-0.5 ml-2">${Array(3).fill().map((_,i)=> `<span class="text-yellow text-base">${i<starsEarned ? '★' : '☆'}</span>`).join('')}</div>` : ''}
+        </div>
+      `;
+      
+      // Right button / action
+      const actionBtn = document.createElement('div');
+      if(isCompleted) {
+        actionBtn.className = 'bg-green-light text-green-dark rounded-full w-11 h-11 flex items-center justify-center text-2xl border-b-[3px] border-green-dark shadow-md';
+        actionBtn.innerHTML = '✓';
+      } else if(isLocked) {
+        actionBtn.className = 'bg-gray-200 text-gray-400 rounded-full w-11 h-11 flex items-center justify-center text-xl border-b-[3px] border-gray-300';
+        actionBtn.innerHTML = '🔒';
+      } else {
+        actionBtn.className = 'bg-yellow text-[#5c3a00] rounded-full w-11 h-11 flex items-center justify-center text-xl border-b-[3px] border-yellow-dark shadow-md animate-bounce2 cursor-pointer hover:scale-110 transition-transform';
+        actionBtn.innerHTML = '▶️';
+      }
+      
+      cardDiv.appendChild(iconCircle);
+      cardDiv.appendChild(infoDiv);
+      cardDiv.appendChild(actionBtn);
+      
+      // Click handler untuk memulai lesson
+      cardDiv.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if(!isLocked && !isCompleted) startLesson(lesson.id);
+        else if(isLocked) {
+          fireConf();
+          showMessage(`🔐 Complete the previous lesson first!`, '#FFC800');
+        }
+        else if(isCompleted) showMessage(`🏅 Great! You already mastered ${lesson.title}`, '#58CC02');
+      });
+      
+      container.appendChild(cardDiv);
+    });
+  }
+  
+  // Function start lesson (simulasi interaksi)
+  function startLesson(lessonId) {
+    const lesson = lessons.find(l => l.id === lessonId);
+    if(!lesson || lesson.completed) return;
+    fireConf();
+    // Simulasi popup belajar
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-[200] animate-pageIn';
+    overlay.innerHTML = `
+      <div class="bg-white w-[90%] max-w-md rounded-[36px] p-6 text-center border-b-[6px] border-gray-200 shadow-2xl transform transition-all">
+        <div class="text-7xl mb-2 animate-bounce2">${lesson.icon}</div>
+        <div class="font-fredoka text-2xl text-sidebar">${lesson.title}</div>
+        <div class="text-gray-500 text-sm mt-1">⭐ ${lesson.xp} XP to earn</div>
+        <div class="my-4 bg-gray-100 rounded-2xl p-3 text-left">
+          <p class="font-black">🎧 Let's learn ${lesson.icon} vocabulary!</p>
+          <div class="flex gap-2 mt-2"><span class="bg-green-light px-3 py-1 rounded-full text-xs">🐕 dog</span><span class="bg-green-light px-3 py-1 rounded-full text-xs">🐱 cat</span><span class="bg-green-light px-3 py-1 rounded-full text-xs">🐟 fish</span></div>
+        </div>
+        <button id="completeLessonBtn" class="bg-green text-white font-fredoka text-lg w-full py-3 rounded-2xl border-b-[4px] border-green-dark active:translate-y-[2px] transition-all">Complete & Earn XP 🎉</button>
+        <button id="closeLessonBtn" class="mt-2 text-gray-400 text-sm underline">Cancel</button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    document.getElementById('completeLessonBtn').addEventListener('click', () => {
+      finishLesson(lessonId);
+      overlay.remove();
+    });
+    document.getElementById('closeLessonBtn').addEventListener('click', () => overlay.remove());
+  }
+  
+  function finishLesson(lessonId) {
+    const lesson = lessons.find(l => l.id === lessonId);
+    if(!lesson || lesson.completed) return;
+    lesson.completed = true;
+    lesson.stars = 3;
+    // tambah XP ke global (simulasi)
+    let currentXP = 680;
+    let newXP = currentXP + lesson.xp;
+    // update tampilan xp bar di sidebar
+    const xpBar = document.querySelector('#xpCard .xp-bar-fill');
+    if(xpBar) {
+      let percent = Math.min(100, (newXP / 1000) * 100);
+      xpBar.style.width = `${percent}%`;
+    }
+    // update level dummy
+    const levelDiv = document.querySelector('#xpCard .font-fredoka.text-white');
+    if(levelDiv && newXP >= 800) levelDiv.innerHTML = 'Mia ⭐⭐';
+    // re-render locks & lessons
+    updateLocks();
+    renderLessons();
+    // massive celebration
+    for(let i=0;i<30;i++) setTimeout(()=>fireConf(), i*40);
+    showMessage(`🎉 Amazing! You earned ${lesson.xp} XP and 3 stars! 🎉`, '#FFC800');
+    // update XP card XP value
+    const xpText = document.querySelector('#xpCard .text-white\\/60');
+    if(xpText) xpText.innerText = `Level ${newXP>=800?6:5} · ${newXP} XP`;
+  }
+  
+  function claimDailyBonus() {
+    fireConf();
+    showMessage('🎁 +30 XP & 1 Streak Freeze added! Keep going!', '#1CB0F6');
+  }
+  
+  function showMessage(msg, bgColor) {
+    const toast = document.createElement('div');
+    toast.className = 'fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white font-fredoka px-6 py-3 rounded-full shadow-xl z-[300] animate-popIn';
+    toast.style.background = bgColor;
+    toast.innerText = msg;
+    document.body.appendChild(toast);
+    setTimeout(()=>toast.remove(), 2200);
+  }
+  
+  function fireConf() {
+    const picks=['⭐','🌟','✨','🎉','🏅','🎈','🔥','🦄','🍎','📚'];
+    for(let i=0;i<18;i++){
+      setTimeout(()=>{
+        const c=document.createElement('div');
+        c.className='conf';
+        c.textContent=picks[Math.floor(Math.random()*picks.length)];
+        c.style.left=(5+Math.random()*80)+'vw';
+        c.style.top=(5+Math.random()*50)+'vh';
+        c.style.fontSize=(14+Math.random()*20)+'px';
+        c.style.animationDuration=(.6+Math.random()*1)+'s';
+        document.body.appendChild(c);
+        setTimeout(()=>c.remove(),1500);
+      },i*45);
+    }
+  }
+  
+  function navGo(page) {
+    fireConf();
+    setTimeout(()=>{
+      if(page === 'streak') window.location.href = 'streak-page.html';
+      else if(page === 'lesson') window.location.href = '#';
+      else if(page === 'home') window.location.href = 'index.html';
+      else if(page === 'minigames') window.location.href = 'minigames.html';
+      else if(page === 'achievements') window.location.href = 'achievements-tailwind.html';
+      else if(page === 'settings') window.location.href = 'settings.html';
+      else window.location.href = 'index.html';
+    },280);
+  }
+  
+  renderLessons();
+  
+  // tambahan efek untuk path line
+  const stylePath = document.createElement('style');
+  stylePath.textContent = `.lesson-card:hover .w-16 { transform: scale(1.05); transition: 0.1s; }`;
+  document.head.appendChild(stylePath);
+</script>
+</body>
+</html>

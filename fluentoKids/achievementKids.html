@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Fluento Kids – Achievements</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        fredoka: ['"Fredoka One"', 'cursive'],
+        nunito: ['Nunito', 'sans-serif'],
+      },
+      colors: {
+        green: { DEFAULT: '#58CC02', dark: '#46A302', light: '#89E219' },
+        blue:  { DEFAULT: '#1CB0F6', dark: '#0A8FCC' },
+        yellow:{ DEFAULT: '#FFC800', dark: '#E5A100' },
+        red:   { DEFAULT: '#FF4B4B', dark: '#CC3B3B' },
+        purple:'#CE82FF',
+        orange:'#FF9600',
+        sidebar:'#235390',
+        'sidebar-dark':'#1A3D6B',
+      },
+      keyframes: {
+        slideIn:  { from:{ opacity:'0', transform:'translateX(-32px)' }, to:{ opacity:'1', transform:'none' } },
+        popIn:    { '0%':{ opacity:'0', transform:'scale(0.5)' }, '60%':{ transform:'scale(1.12)' }, '100%':{ opacity:'1', transform:'scale(1)' } },
+        floatY:   { '0%,100%':{ transform:'translateY(0px)' }, '50%':{ transform:'translateY(-6px)' } },
+        pageIn:   { from:{ opacity:'0', transform:'translateY(16px)' }, to:{ opacity:'1', transform:'none' } },
+        ripple:   { from:{ transform:'scale(0)', opacity:'.5' }, to:{ transform:'scale(8)', opacity:'0' } },
+        grow:     { from:{ width:'0' }, to:{ width:'var(--tw-bar-w)' } },
+        bounce2:  { '0%,100%':{ transform:'translateY(0)' }, '40%':{ transform:'translateY(-8px)' }, '60%':{ transform:'translateY(-4px)' } },
+        confetti: { '0%':{ transform:'translateY(0) rotate(0deg)', opacity:'1' }, '100%':{ transform:'translateY(120px) rotate(720deg)', opacity:'0' } },
+        shimmer:  { '0%':{ left:'-100%' }, '100%':{ left:'100%' } },
+        starSpin: { '0%':{ transform:'rotate(0deg) scale(1)' }, '50%':{ transform:'rotate(180deg) scale(1.15)' }, '100%':{ transform:'rotate(360deg) scale(1)' } },
+        pulseRing:{ '0%,100%':{ boxShadow:'0 0 0 0 rgba(255,200,0,.5)' }, '50%':{ boxShadow:'0 0 0 10px rgba(255,200,0,0)' } },
+        nudge:    { '0%,100%':{ transform:'translateX(0)' }, '30%':{ transform:'translateX(-3px)' }, '70%':{ transform:'translateX(3px)' } },
+      },
+      animation: {
+        slideIn:   'slideIn .5s cubic-bezier(.77,0,.18,1) both',
+        popIn:     'popIn .6s cubic-bezier(.77,0,.18,1) both',
+        floatY:    'floatY 2.8s ease-in-out infinite',
+        pageIn:    'pageIn .35s cubic-bezier(.77,0,.18,1) both',
+        ripple:    'ripple .5s ease-out forwards',
+        grow:      'grow 1s .2s ease both',
+        bounce2:   'bounce2 1.2s ease-in-out infinite',
+        confetti:  'confetti 1.2s ease-in forwards',
+        shimmer:   'shimmer 3s 1s ease-in-out infinite',
+        starSpin:  'starSpin 8s linear infinite',
+        pulseRing: 'pulseRing 1.4s ease-in-out infinite',
+        nudge:     'nudge .35s ease',
+      },
+    }
+  }
+}
+</script>
+<style>
+  body { font-family: 'Nunito', sans-serif; }
+  .font-fredoka { font-family: 'Fredoka One', cursive; }
+
+  /* sidebar rainbow top bar */
+  #sidebar::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: repeating-linear-gradient(90deg,#58CC02 0,#58CC02 24px,#1CB0F6 24px,#1CB0F6 48px,#FFC800 48px,#FFC800 72px,#FF4B4B 72px,#FF4B4B 96px);
+    z-index: 2;
+  }
+
+  /* shimmer on unlocked badges */
+  .badge-shimmer::after {
+    content: '';
+    position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+    background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,.45) 50%, transparent 60%);
+    animation: shimmer 3s 1s ease-in-out infinite;
+  }
+  /* shimmer on completed rows */
+  .row-shimmer::after {
+    content: '';
+    position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+    background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,.3) 50%, transparent 60%);
+    animation: shimmer 4s 2s ease-in-out infinite;
+  }
+
+  /* bar fill grow animation */
+  .bar-fill { animation: grow 1s .2s ease both; }
+
+  /* xp bar grow */
+  .xp-bar-fill { animation: grow .8s .8s ease both; }
+
+  /* hero trophy spin */
+  .hero-star-spin::before {
+    content: '🏆';
+    font-size: 130px;
+    position: absolute; right: -12px; top: -22px;
+    opacity: .1; pointer-events: none;
+    animation: starSpin 8s linear infinite;
+  }
+
+  /* scrollbar hide */
+  #sideScroll::-webkit-scrollbar { display: none; }
+  #sideScroll { scrollbar-width: none; }
+
+  /* confetti */
+  .conf { position: fixed; pointer-events: none; font-size: 20px; animation: confetti 1.2s ease-in forwards; z-index: 9999; }
+</style>
+</head>
+<body class="bg-[#F7F7F7] min-h-screen">
+
+<!-- ═══ SIDEBAR ═══ -->
+<div id="sidebar" class="fixed top-0 left-0 h-screen w-[248px] bg-sidebar flex flex-col animate-slideIn z-[100] border-r-4 border-sidebar-dark [animation-delay:0s]" style="position:fixed;">
+
+  <div id="sideScroll" class="flex-1 overflow-y-auto overflow-x-hidden px-[10px] pb-2 pt-4 mt-1">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-[10px] px-2 pb-[18px] pt-[10px] animate-popIn [animation-delay:.1s]">
+      <svg class="w-11 h-11 flex-shrink-0 animate-floatY cursor-pointer hover:rotate-[-15deg] hover:scale-110 transition-transform" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="22" cy="22" r="20" fill="#58CC02"/>
+        <circle cx="22" cy="22" r="20" fill="none" stroke="#46A302" stroke-width="3"/>
+        <ellipse cx="22" cy="26" rx="13" ry="11" fill="#fff" opacity=".15"/>
+        <circle cx="16" cy="20" r="5" fill="#fff"/>
+        <circle cx="28" cy="20" r="5" fill="#fff"/>
+        <circle cx="17" cy="20" r="2.5" fill="#1a1a1a"/>
+        <circle cx="29" cy="20" r="2.5" fill="#1a1a1a"/>
+        <circle cx="17.8" cy="19.2" r="1" fill="#fff"/>
+        <circle cx="29.8" cy="19.2" r="1" fill="#fff"/>
+        <path d="M20 24 L22 27 L24 24 Z" fill="#FFC800"/>
+        <path d="M13 16.5 Q16 14.5 19 16.5" stroke="#46A302" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <path d="M25 16.5 Q28 14.5 31 16.5" stroke="#46A302" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <ellipse cx="22" cy="30" rx="8" ry="6" fill="#89E219" opacity=".6"/>
+      </svg>
+      <div class="overflow-hidden">
+        <div class="font-fredoka text-[22px] text-white leading-none tracking-[.3px] whitespace-nowrap">Fluento</div>
+        <div class="text-[11px] font-black text-white/50 tracking-[.08em] uppercase whitespace-nowrap">for Kids ✨</div>
+      </div>
+    </div>
+
+    <!-- Section Label -->
+    <div class="font-fredoka text-[11px] text-white/35 tracking-[.12em] uppercase px-[10px] pb-1 pt-[10px] whitespace-nowrap">Learn</div>
+
+    <!-- Nav Items -->
+    <div class="nav-item mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.08s]" onclick="navGo('home')">
+      <div class="nav-btn flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 transition-all text-white/75 hover:bg-white/[.15] hover:text-white">
+        <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-white/[.12] border-b-[3px] border-black/20 text-[19px] transition-transform hover:rotate-[-8deg] hover:scale-110">🏠</div>
+        <span class="font-fredoka text-[17px] tracking-[.2px] whitespace-nowrap">Home</span>
+      </div>
+    </div>
+
+    <div class="nav-item mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.13s]" onclick="navGo('lesson')">
+      <div class="nav-btn flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 transition-all text-white/75 hover:bg-white/[.15] hover:text-white">
+        <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-white/[.12] border-b-[3px] border-black/20 text-[19px]">🗺️</div>
+        <span class="font-fredoka text-[17px] tracking-[.2px] whitespace-nowrap">Lesson</span>
+      </div>
+    </div>
+
+    <div class="nav-item mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.18s]" onclick="navGo('minigames')">
+      <div class="nav-btn flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 transition-all text-white/75 hover:bg-white/[.15] hover:text-white">
+        <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-white/[.12] border-b-[3px] border-black/20 text-[19px]">🎮</div>
+        <span class="font-fredoka text-[17px] tracking-[.2px] whitespace-nowrap">Mini Games</span>
+      </div>
+    </div>
+
+    <div class="nav-item mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.23s]" onclick="navGo('streak')">
+      <div class="nav-btn flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 transition-all text-white/75 hover:bg-white/[.15] hover:text-white">
+        <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-white/[.12] border-b-[3px] border-black/20 text-[19px]">🔥</div>
+        <span class="font-fredoka text-[17px] tracking-[.2px] whitespace-nowrap">Streak</span>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="h-[2px] bg-white/[.08] my-2 mx-1 rounded-full"></div>
+    <div class="font-fredoka text-[11px] text-white/35 tracking-[.12em] uppercase px-[10px] pb-1 pt-[10px] whitespace-nowrap">My Stuff</div>
+
+    <!-- Active: Achievements -->
+    <div class="nav-item mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.28s]">
+      <div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white text-sidebar border-b-[3px] border-[#bcd1f0] shadow-[0_2px_0_#a0bce8]">
+        <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-green border-b-[3px] border-green-dark text-[19px]">🏆</div>
+        <span class="font-fredoka text-[17px] tracking-[.2px] whitespace-nowrap">Achievements</span>
+      </div>
+    </div>
+
+    <div class="nav-item mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.33s]" onclick="navGo('settings')">
+      <div class="nav-btn flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 transition-all text-white/75 hover:bg-white/[.15] hover:text-white">
+        <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-white/[.12] border-b-[3px] border-black/20 text-[19px]">⚙️</div>
+        <span class="font-fredoka text-[17px] tracking-[.2px] whitespace-nowrap">Settings</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- XP Card -->
+  <div id="xpCard" onclick="fireConf()" class="mx-[10px] mb-[14px] bg-white/[.1] rounded-[18px] border-2 border-white/[.15] border-b-4 border-b-black/20 p-[13px_12px] flex-shrink-0 animate-popIn [animation-delay:.6s] cursor-pointer transition-all hover:bg-white/25 hover:translate-x-[3px] active:scale-[.98]">
+    <div class="flex items-center gap-[10px]">
+      <div class="w-[38px] h-[38px] rounded-full flex-shrink-0 bg-gradient-to-br from-[#FFC800] to-[#FF9600] border-[3px] border-white/30 flex items-center justify-center text-[20px]">🐱</div>
+      <div class="flex-1 overflow-hidden">
+        <div class="font-fredoka text-[14px] text-white leading-[1.1]">Mia ⭐</div>
+        <div class="text-[11px] text-white/60 font-black mt-[1px]">Level 5 · 680 XP</div>
+        <div class="h-[6px] bg-white/[.15] rounded-full overflow-hidden mt-[5px]">
+          <div class="xp-bar-fill h-full rounded-full bg-gradient-to-r from-green to-green-light" style="--tw-bar-w:68%; width:68%;"></div>
+        </div>
+      </div>
+      <div id="xpArrow" class="text-[18px] opacity-80 ml-1 transition-transform">→</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div class="ml-[248px] min-h-screen px-10 py-9 animate-pageIn">
+
+  <!-- Header -->
+  <div class="flex items-center gap-[14px] mb-1">
+    <div class="w-14 h-14 rounded-[20px] flex items-center justify-center text-[28px] flex-shrink-0 border-b-4 border-black/15 shadow-[0_4px_0_rgba(0,0,0,.12)] bg-gradient-to-br from-[#FFC800] to-[#FF9600]">🏆</div>
+    <div class="font-fredoka text-[32px] text-[#3c3c3c] tracking-[.2px]">Achievements! 🌟</div>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="flex gap-2 mb-5 flex-wrap">
+    <button class="ftab font-fredoka text-[15px] px-5 py-[9px] rounded-full border-none cursor-pointer bg-[#FFC800] text-[#5c3a00] border-b-[3px] border-[#E5A100] shadow-[0_3px_0_#E5A100] transition-all tracking-[.1px] hover:-translate-y-[2px] active:translate-y-[2px] active:border-b active:shadow-none" onclick="filterTab(this,'all')">✨ All</button>
+    <button class="ftab font-fredoka text-[15px] px-5 py-[9px] rounded-full border-none cursor-pointer bg-white text-[#aaa] border-b-[3px] border-[#e0e0e0] shadow-[0_3px_0_#e8e8e8] transition-all tracking-[.1px] hover:-translate-y-[2px] hover:bg-[#f0f0f0] active:translate-y-[2px] active:border-b active:shadow-none" onclick="filterTab(this,'earned')">🎖️ Earned</button>
+    <button class="ftab font-fredoka text-[15px] px-5 py-[9px] rounded-full border-none cursor-pointer bg-white text-[#aaa] border-b-[3px] border-[#e0e0e0] shadow-[0_3px_0_#e8e8e8] transition-all tracking-[.1px] hover:-translate-y-[2px] hover:bg-[#f0f0f0] active:translate-y-[2px] active:border-b active:shadow-none" onclick="filterTab(this,'progress')">⚡ In Progress</button>
+    <button class="ftab font-fredoka text-[15px] px-5 py-[9px] rounded-full border-none cursor-pointer bg-white text-[#aaa] border-b-[3px] border-[#e0e0e0] shadow-[0_3px_0_#e8e8e8] transition-all tracking-[.1px] hover:-translate-y-[2px] hover:bg-[#f0f0f0] active:translate-y-[2px] active:border-b active:shadow-none" onclick="filterTab(this,'locked')">🔒 Locked</button>
+  </div>
+
+  <!-- Badges Section Header -->
+  <div class="flex items-center gap-[10px] mb-[14px] mt-1">
+    <div class="w-9 h-9 rounded-xl flex items-center justify-center text-[18px] border-b-[3px] flex-shrink-0 bg-[#fff3cd] border-b-[#e5c800]">🎖️</div>
+    <div class="font-fredoka text-[18px] text-[#3c3c3c] tracking-[.2px]">My Badges</div>
+    <div class="text-[12px] font-black text-[#bbb] ml-1">7 / 10 earned</div>
+  </div>
+
+  <!-- Badge Grid -->
+  <div id="badgeGrid" class="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4 mb-7">
+
+    <!-- Earned badges -->
+    <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all hover:-translate-y-[5px] hover:scale-[1.02] hover:shadow-[0_10px_0_#e0e0e0] active:translate-y-[2px] active:border-b-[2px] badge-shimmer" data-filter="earned">
+      <div class="absolute top-3 right-3 font-fredoka text-[10px] bg-red text-white px-2 py-[3px] rounded-full animate-bounce2 z-[2]">NEW!</div>
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 border-black/10 animate-floatY bg-gradient-to-br from-[#FFF3CD] to-[#FFE066] border-b-[#c89900]">🌟</div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">First Star</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Completed your very first lesson!</div>
+      <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#FFC800] text-[#5c3a00] border-b-[#E5A100]">Earned! ⭐</div>
+    </div>
+
+    <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all hover:-translate-y-[5px] hover:scale-[1.02] hover:shadow-[0_10px_0_#e0e0e0] active:translate-y-[2px] active:border-b-[2px] badge-shimmer" data-filter="earned">
+      <div class="absolute top-3 right-3 font-fredoka text-[10px] bg-red text-white px-2 py-[3px] rounded-full animate-bounce2 z-[2]">NEW!</div>
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 animate-floatY bg-gradient-to-br from-[#FFE5D4] to-[#FFB380] border-b-[#cc5500]">🔥</div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">On Fire!</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Kept a 5-day learning streak!</div>
+      <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#FF9600] text-white border-b-[#cc7700]">Earned! 🔥</div>
+    </div>
+
+    <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all hover:-translate-y-[5px] hover:scale-[1.02] hover:shadow-[0_10px_0_#e0e0e0] active:translate-y-[2px] active:border-b-[2px] badge-shimmer" data-filter="earned">
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 animate-floatY bg-gradient-to-br from-[#FFE5D4] to-[#FFAD66] border-b-[#cc7700]">🦁</div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Lion Heart</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Never gave up — 10 lessons done!</div>
+      <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#FF9600] text-white border-b-[#cc7700]">Earned! 💪</div>
+    </div>
+
+    <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all hover:-translate-y-[5px] hover:scale-[1.02] hover:shadow-[0_10px_0_#e0e0e0] active:translate-y-[2px] active:border-b-[2px] badge-shimmer" data-filter="earned">
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 animate-floatY bg-gradient-to-br from-[#E8D5FF] to-[#C580FF] border-b-[#9040d4]">🎵</div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Music Star</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Sang along 3 times!</div>
+      <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#CE82FF] text-white border-b-[#a45fd4]">Earned! 🎤</div>
+    </div>
+
+    <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all hover:-translate-y-[5px] hover:scale-[1.02] hover:shadow-[0_10px_0_#e0e0e0] active:translate-y-[2px] active:border-b-[2px] badge-shimmer" data-filter="earned">
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 animate-floatY bg-gradient-to-br from-[#D4F5D4] to-[#80E080] border-b-[#46a302]">🐾</div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Animal Expert</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Learned all Animal Kingdom words!</div>
+      <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#58CC02] text-white border-b-[#46A302]">Earned! 🐾</div>
+    </div>
+
+    <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all hover:-translate-y-[5px] hover:scale-[1.02] hover:shadow-[0_10px_0_#e0e0e0] active:translate-y-[2px] active:border-b-[2px] badge-shimmer" data-filter="earned">
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 animate-floatY bg-gradient-to-br from-[#D1F0FF] to-[#66CCFF] border-b-[#0a8fcc]">💯</div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Perfect!</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Got 100% on a quiz!</div>
+      <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#1CB0F6] text-white border-b-[#0A8FCC]">Earned! 💯</div>
+    </div>
+
+    <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all hover:-translate-y-[5px] hover:scale-[1.02] hover:shadow-[0_10px_0_#e0e0e0] active:translate-y-[2px] active:border-b-[2px] badge-shimmer" data-filter="earned">
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 animate-floatY bg-gradient-to-br from-[#FFF3CD] to-[#FFD966] border-b-[#c89900]">📚</div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Bookworm</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Read through 3 full word lists!</div>
+      <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#FFC800] text-[#5c3a00] border-b-[#E5A100]">Earned! 📖</div>
+    </div>
+
+    <!-- Locked badges -->
+    <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all opacity-45 grayscale-[.8] hover:-translate-y-[2px] hover:scale-100" data-filter="locked">
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 bg-[#f0f0f0] border-b-[#c8c8c8]">🚀</div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Rocket Kid</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Explore the Outer Space world</div>
+      <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#e0e0e0] text-[#aaa] border-b-[#c8c8c8]">Locked 🔒</div>
+    </div>
+
+    <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all opacity-45 grayscale-[.8] hover:-translate-y-[2px] hover:scale-100" data-filter="locked">
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 bg-[#f0f0f0] border-b-[#c8c8c8]">🌈</div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Rainbow</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Complete Colors &amp; Shapes world</div>
+      <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#e0e0e0] text-[#aaa] border-b-[#c8c8c8]">Locked 🔒</div>
+    </div>
+
+    <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all opacity-45 grayscale-[.8] hover:-translate-y-[2px] hover:scale-100" data-filter="locked">
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 bg-[#f0f0f0] border-b-[#c8c8c8]">👑</div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Champion</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Reach Level 10 to unlock!</div>
+      <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#e0e0e0] text-[#aaa] border-b-[#c8c8c8]">Locked 🔒</div>
+    </div>
+
+  </div>
+
+  <!-- Progress Challenges Header -->
+  <div class="flex items-center gap-[10px] mb-[14px] mt-1">
+    <div class="w-9 h-9 rounded-xl flex items-center justify-center text-[18px] border-b-[3px] flex-shrink-0 bg-[#d4f5d4] border-b-[#46a302]">📈</div>
+    <div class="font-fredoka text-[18px] text-[#3c3c3c] tracking-[.2px]">Progress Challenges</div>
+    <div class="text-[12px] font-black text-[#bbb] ml-1">5 active</div>
+  </div>
+
+  <!-- Achievement List -->
+  <div class="flex flex-col gap-3 mb-7" id="achList">
+
+    <!-- Completed -->
+    <div class="ach-row relative overflow-hidden bg-white rounded-[20px] p-[18px_20px] flex items-center gap-4 border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-[#58CC02] row-shimmer" data-filter="earned" onclick="popRow(this)">
+      <div class="text-[38px] flex-shrink-0">🔥</div>
+      <div class="flex-1 min-w-0">
+        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Streak Star!</div>
+        <div class="text-[12px] text-[#aaa] font-black mt-[3px]">Keep a 5-day learning streak</div>
+        <div class="mt-[9px]">
+          <div class="h-[9px] bg-[#f0f0f0] rounded-full overflow-hidden">
+            <div class="bar-fill h-full rounded-full bg-gradient-to-r from-[#FF9600] to-[#FF6B00]" style="--tw-bar-w:100%; width:100%;"></div>
+          </div>
+          <div class="text-[11px] font-black text-[#bbb] mt-1">5 / 5 days ✓</div>
+        </div>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <div class="font-fredoka text-[18px] text-[#E5A100]">+100 ⭐</div>
+        <div class="text-[11px] font-black mt-[3px] uppercase tracking-[.06em] text-[#46A302]">Done! ✓</div>
+      </div>
+    </div>
+
+    <div class="ach-row relative overflow-hidden bg-white rounded-[20px] p-[18px_20px] flex items-center gap-4 border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-[#58CC02] row-shimmer" data-filter="earned" onclick="popRow(this)">
+      <div class="text-[38px] flex-shrink-0">💬</div>
+      <div class="flex-1 min-w-0">
+        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Word Wizard!</div>
+        <div class="text-[12px] text-[#aaa] font-black mt-[3px]">Learn 84 words</div>
+        <div class="mt-[9px]">
+          <div class="h-[9px] bg-[#f0f0f0] rounded-full overflow-hidden">
+            <div class="bar-fill h-full rounded-full bg-gradient-to-r from-[#58CC02] to-[#89E219]" style="--tw-bar-w:100%; width:100%;"></div>
+          </div>
+          <div class="text-[11px] font-black text-[#bbb] mt-1">84 / 84 words ✓</div>
+        </div>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <div class="font-fredoka text-[18px] text-[#E5A100]">+200 ⭐</div>
+        <div class="text-[11px] font-black mt-[3px] uppercase tracking-[.06em] text-[#46A302]">Done! ✓</div>
+      </div>
+    </div>
+
+    <div class="ach-row relative overflow-hidden bg-white rounded-[20px] p-[18px_20px] flex items-center gap-4 border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-[#58CC02] row-shimmer" data-filter="earned" onclick="popRow(this)">
+      <div class="text-[38px] flex-shrink-0">🎵</div>
+      <div class="flex-1 min-w-0">
+        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Sing It!</div>
+        <div class="text-[12px] text-[#aaa] font-black mt-[3px]">Complete 3 sing-along lessons</div>
+        <div class="mt-[9px]">
+          <div class="h-[9px] bg-[#f0f0f0] rounded-full overflow-hidden">
+            <div class="bar-fill h-full rounded-full bg-gradient-to-r from-[#1CB0F6] to-[#CE82FF]" style="--tw-bar-w:100%; width:100%;"></div>
+          </div>
+          <div class="text-[11px] font-black text-[#bbb] mt-1">3 / 3 lessons ✓</div>
+        </div>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <div class="font-fredoka text-[18px] text-[#E5A100]">+50 ⭐</div>
+        <div class="text-[11px] font-black mt-[3px] uppercase tracking-[.06em] text-[#46A302]">Done! ✓</div>
+      </div>
+    </div>
+
+    <!-- In Progress -->
+    <div class="ach-row relative overflow-hidden bg-white rounded-[20px] p-[18px_20px] flex items-center gap-4 border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-[#FFC800]" data-filter="progress" onclick="popRow(this)">
+      <div class="text-[38px] flex-shrink-0">🚀</div>
+      <div class="flex-1 min-w-0">
+        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Speed Racer!</div>
+        <div class="text-[12px] text-[#aaa] font-black mt-[3px]">Win 5 speed quizzes</div>
+        <div class="mt-[9px]">
+          <div class="h-[9px] bg-[#f0f0f0] rounded-full overflow-hidden">
+            <div class="bar-fill h-full rounded-full bg-gradient-to-r from-[#FFC800] to-[#FF9600]" style="--tw-bar-w:40%; width:40%;"></div>
+          </div>
+          <div class="text-[11px] font-black text-[#bbb] mt-1">2 / 5 quizzes — almost there! 💪</div>
+        </div>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <div class="font-fredoka text-[18px] text-[#E5A100]">+150 ⭐</div>
+        <div class="text-[11px] font-black mt-[3px] uppercase tracking-[.06em] text-[#E5A100]">In Progress</div>
+      </div>
+    </div>
+
+    <div class="ach-row relative overflow-hidden bg-white rounded-[20px] p-[18px_20px] flex items-center gap-4 border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-[#FFC800]" data-filter="progress" onclick="popRow(this)">
+      <div class="text-[38px] flex-shrink-0">🌍</div>
+      <div class="flex-1 min-w-0">
+        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">World Explorer!</div>
+        <div class="text-[12px] text-[#aaa] font-black mt-[3px]">Explore all 6 worlds</div>
+        <div class="mt-[9px]">
+          <div class="h-[9px] bg-[#f0f0f0] rounded-full overflow-hidden">
+            <div class="bar-fill h-full rounded-full bg-gradient-to-r from-[#1CB0F6] to-[#58CC02]" style="--tw-bar-w:50%; width:50%;"></div>
+          </div>
+          <div class="text-[11px] font-black text-[#bbb] mt-1">3 / 6 worlds explored 🗺️</div>
+        </div>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <div class="font-fredoka text-[18px] text-[#E5A100]">+300 ⭐</div>
+        <div class="text-[11px] font-black mt-[3px] uppercase tracking-[.06em] text-[#E5A100]">In Progress</div>
+      </div>
+    </div>
+
+    <div class="ach-row relative overflow-hidden bg-white rounded-[20px] p-[18px_20px] flex items-center gap-4 border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-[#FFC800]" data-filter="progress" onclick="popRow(this)">
+      <div class="text-[38px] flex-shrink-0">🧩</div>
+      <div class="flex-1 min-w-0">
+        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Puzzle Master!</div>
+        <div class="text-[12px] text-[#aaa] font-black mt-[3px]">Complete 10 word puzzles</div>
+        <div class="mt-[9px]">
+          <div class="h-[9px] bg-[#f0f0f0] rounded-full overflow-hidden">
+            <div class="bar-fill h-full rounded-full bg-gradient-to-r from-[#CE82FF] to-[#1CB0F6]" style="--tw-bar-w:70%; width:70%;"></div>
+          </div>
+          <div class="text-[11px] font-black text-[#bbb] mt-1">7 / 10 puzzles done!</div>
+        </div>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <div class="font-fredoka text-[18px] text-[#E5A100]">+120 ⭐</div>
+        <div class="text-[11px] font-black mt-[3px] uppercase tracking-[.06em] text-[#E5A100]">In Progress</div>
+      </div>
+    </div>
+
+    <!-- Locked -->
+    <div class="ach-row relative overflow-hidden bg-white rounded-[20px] p-[18px_20px] flex items-center gap-4 border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-[#e0e0e0] opacity-55" data-filter="locked">
+      <div class="text-[38px] flex-shrink-0">💎</div>
+      <div class="flex-1 min-w-0">
+        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Diamond Learner!</div>
+        <div class="text-[12px] text-[#aaa] font-black mt-[3px]">Reach a 30-day streak</div>
+        <div class="mt-[9px]">
+          <div class="h-[9px] bg-[#f0f0f0] rounded-full overflow-hidden">
+            <div class="bar-fill h-full rounded-full bg-[#e0e0e0]" style="--tw-bar-w:17%; width:17%;"></div>
+          </div>
+          <div class="text-[11px] font-black text-[#bbb] mt-1">5 / 30 days</div>
+        </div>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <div class="font-fredoka text-[18px] text-[#ccc]">+500 ⭐</div>
+        <div class="text-[11px] font-black mt-[3px] uppercase tracking-[.06em] text-[#ccc]">Locked 🔒</div>
+      </div>
+    </div>
+
+    <div class="ach-row relative overflow-hidden bg-white rounded-[20px] p-[18px_20px] flex items-center gap-4 border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-[#e0e0e0] opacity-55" data-filter="locked">
+      <div class="text-[38px] flex-shrink-0">👑</div>
+      <div class="flex-1 min-w-0">
+        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Streak Legend!</div>
+        <div class="text-[12px] text-[#aaa] font-black mt-[3px]">The ultimate 100-day streak</div>
+        <div class="mt-[9px]">
+          <div class="h-[9px] bg-[#f0f0f0] rounded-full overflow-hidden">
+            <div class="bar-fill h-full rounded-full bg-[#e0e0e0]" style="--tw-bar-w:5%; width:5%;"></div>
+          </div>
+          <div class="text-[11px] font-black text-[#bbb] mt-1">5 / 100 days</div>
+        </div>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <div class="font-fredoka text-[18px] text-[#ccc]">+1000 ⭐</div>
+        <div class="text-[11px] font-black mt-[3px] uppercase tracking-[.06em] text-[#ccc]">Locked 🔒</div>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /main -->
+
+<script>
+function navGo(page){
+  const map={home:'index.html',lesson:'index.html',minigames:'index.html',streak:'streak.html',settings:'index.html'};
+  fireConf();
+  setTimeout(()=>{ window.location.href = map[page]||'index.html'; },300);
+}
+
+function filterTab(btn, filter){
+  document.querySelectorAll('.ftab').forEach(b=>{
+    b.classList.remove('bg-[#FFC800]','text-[#5c3a00]','border-[#E5A100]','shadow-[0_3px_0_#E5A100]');
+    b.classList.add('bg-white','text-[#aaa]','border-[#e0e0e0]','shadow-[0_3px_0_#e8e8e8]');
+  });
+  btn.classList.remove('bg-white','text-[#aaa]','border-[#e0e0e0]','shadow-[0_3px_0_#e8e8e8]');
+  btn.classList.add('bg-[#FFC800]','text-[#5c3a00]','border-[#E5A100]','shadow-[0_3px_0_#E5A100]');
+
+  document.querySelectorAll('#badgeGrid .badge-card').forEach(c=>{
+    c.style.display = (filter==='all' || c.dataset.filter===filter) ? '' : 'none';
+  });
+  document.querySelectorAll('#achList .ach-row').forEach(r=>{
+    r.style.display = (filter==='all' || r.dataset.filter===filter) ? '' : 'none';
+  });
+}
+
+function popRow(el){
+  el.style.transform='translateX(10px)';
+  setTimeout(()=>el.style.transform='',200);
+  fireConf();
+}
+
+function fireConf(){
+  const picks=['🏆','⭐','🌟','✨','🎉','🎊','🏅'];
+  for(let i=0;i<14;i++){
+    setTimeout(()=>{
+      const c=document.createElement('div');
+      c.className='conf';
+      c.textContent=picks[Math.floor(Math.random()*picks.length)];
+      c.style.left=(10+Math.random()*70)+'vw';
+      c.style.top=(10+Math.random()*40)+'vh';
+      c.style.fontSize=(14+Math.random()*18)+'px';
+      c.style.animationDuration=(.6+Math.random()*.8)+'s';
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),1500);
+    },i*55);
+  }
+}
+</script>
+</body>
+</html>

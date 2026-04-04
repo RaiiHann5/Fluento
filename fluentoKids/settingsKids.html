@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Fluento Kids – Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        fredoka: ['"Fredoka One"', 'cursive'],
+        nunito: ['Nunito', 'sans-serif'],
+      },
+      colors: {
+        green:  { DEFAULT: '#58CC02', dark: '#46A302', light: '#89E219' },
+        blue:   { DEFAULT: '#1CB0F6', dark: '#0A8FCC' },
+        yellow: { DEFAULT: '#FFC800', dark: '#E5A100' },
+        red:    { DEFAULT: '#FF4B4B', dark: '#CC3B3B' },
+        purple: '#CE82FF',
+        orange: '#FF9600',
+        sidebar:'#235390',
+        'sidebar-dark':'#1A3D6B',
+      },
+      keyframes: {
+        slideIn:    { from:{ opacity:'0', transform:'translateX(-32px)' }, to:{ opacity:'1', transform:'none' } },
+        popIn:      { '0%':{ opacity:'0', transform:'scale(0.5)' }, '60%':{ transform:'scale(1.12)' }, '100%':{ opacity:'1', transform:'scale(1)' } },
+        floatY:     { '0%,100%':{ transform:'translateY(0px)' }, '50%':{ transform:'translateY(-6px)' } },
+        pageIn:     { from:{ opacity:'0', transform:'translateY(16px)' }, to:{ opacity:'1', transform:'none' } },
+        bounce2:    { '0%,100%':{ transform:'translateY(0)' }, '40%':{ transform:'translateY(-8px)' }, '60%':{ transform:'translateY(-4px)' } },
+        confetti:   { '0%':{ transform:'translateY(0) rotate(0deg)', opacity:'1' }, '100%':{ transform:'translateY(120px) rotate(720deg)', opacity:'0' } },
+        shimmer:    { '0%':{ backgroundPosition:'-200% 0' }, '100%':{ backgroundPosition:'200% 0' } },
+        switchOn:   { '0%':{ transform:'translateX(0)' }, '100%':{ transform:'translateX(20px)' } },
+        switchOff:  { '0%':{ transform:'translateX(20px)' }, '100%':{ transform:'translateX(0)' } },
+      },
+      animation: {
+        slideIn:    'slideIn .5s cubic-bezier(.77,0,.18,1) both',
+        popIn:      'popIn .6s cubic-bezier(.77,0,.18,1) both',
+        floatY:     'floatY 2.8s ease-in-out infinite',
+        pageIn:     'pageIn .35s cubic-bezier(.77,0,.18,1) both',
+        bounce2:    'bounce2 1.2s ease-in-out infinite',
+        confetti:   'confetti 1.2s ease-in forwards',
+        shimmer:    'shimmer 2s ease infinite',
+        switchOn:   'switchOn .2s ease forwards',
+        switchOff:  'switchOff .2s ease forwards',
+      },
+    }
+  }
+}
+</script>
+<style>
+  body { font-family: 'Nunito', sans-serif; background: linear-gradient(135deg, #F0F4FF 0%, #E8EEFF 100%); min-height: 100vh; }
+  
+  #sidebar::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: repeating-linear-gradient(90deg,#58CC02 0,#58CC02 24px,#1CB0F6 24px,#1CB0F6 48px,#FFC800 48px,#FFC800 72px,#FF4B4B 72px,#FF4B4B 96px);
+    z-index: 2;
+  }
+  #sideScroll::-webkit-scrollbar { display: none; }
+  #sideScroll { scrollbar-width: none; }
+  .conf { position: fixed; pointer-events: none; font-size: 20px; animation: confetti 1.2s ease-in forwards; z-index: 9999; }
+  .xp-bar-fill { animation: grow .8s .8s ease both; }
+  
+  /* Toggle Switch Style */
+  .toggle-checkbox:checked {
+    right: 0;
+    border-color: #58CC02;
+  }
+  .toggle-checkbox:checked + .toggle-label {
+    background-color: #58CC02;
+  }
+  
+  /* Settings Card */
+  .settings-card {
+    transition: all 0.3s ease;
+  }
+  .settings-card:hover {
+    transform: translateX(4px);
+  }
+  
+  /* Sidebar tetap biru tua */
+  #sidebar {
+    background: #235390;
+    border-right: 4px solid #1A3D6B;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR (BIRU TUA) ═══ -->
+<div id="sidebar" class="fixed top-0 left-0 h-screen w-[248px] bg-sidebar flex flex-col animate-slideIn z-[100] border-r-4 border-sidebar-dark">
+  <div id="sideScroll" class="flex-1 overflow-y-auto overflow-x-hidden px-[10px] pb-2 pt-4 mt-1">
+    <div class="flex items-center gap-[10px] px-2 pb-[18px] pt-[10px] animate-popIn [animation-delay:.1s]">
+      <svg class="w-11 h-11 flex-shrink-0 animate-floatY cursor-pointer hover:rotate-[-15deg] hover:scale-110 transition-transform" viewBox="0 0 44 44" fill="none">
+        <circle cx="22" cy="22" r="20" fill="#58CC02"/>
+        <circle cx="22" cy="22" r="20" fill="none" stroke="#46A302" stroke-width="3"/>
+        <ellipse cx="22" cy="26" rx="13" ry="11" fill="#fff" opacity=".15"/>
+        <circle cx="16" cy="20" r="5" fill="#fff"/>
+        <circle cx="28" cy="20" r="5" fill="#fff"/>
+        <circle cx="17" cy="20" r="2.5" fill="#1a1a1a"/>
+        <circle cx="29" cy="20" r="2.5" fill="#1a1a1a"/>
+        <circle cx="17.8" cy="19.2" r="1" fill="#fff"/>
+        <circle cx="29.8" cy="19.2" r="1" fill="#fff"/>
+        <path d="M20 24 L22 27 L24 24 Z" fill="#FFC800"/>
+        <path d="M13 16.5 Q16 14.5 19 16.5" stroke="#46A302" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <path d="M25 16.5 Q28 14.5 31 16.5" stroke="#46A302" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <ellipse cx="22" cy="30" rx="8" ry="6" fill="#89E219" opacity=".6"/>
+      </svg>
+      <div><div class="font-fredoka text-[22px] text-white leading-none">Fluento</div><div class="text-[11px] font-black text-white/50 tracking-wide">for Kids ✨</div></div>
+    </div>
+    <div class="font-fredoka text-[11px] text-white/35 tracking-[.12em] uppercase px-[10px] pb-1 pt-[10px]">Learn</div>
+    <div class="mb-1 cursor-pointer relative rounded-2xl transition-transform active:scale-95" onclick="navGo('home')"><div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15]"><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[.12] text-[19px]">🏠</div><span class="font-fredoka text-[17px]">Home</span></div></div>
+    <div class="mb-1 cursor-pointer relative rounded-2xl transition-transform active:scale-95" onclick="navGo('lesson')"><div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15]"><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[.12] text-[19px]">🗺️</div><span class="font-fredoka text-[17px]">Lesson</span></div></div>
+    <div class="mb-1 cursor-pointer relative rounded-2xl transition-transform active:scale-95" onclick="navGo('minigames')"><div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15]"><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[.12] text-[19px]">🎮</div><span class="font-fredoka text-[17px]">Mini Games</span></div></div>
+    <div class="mb-1 cursor-pointer relative rounded-2xl transition-transform active:scale-95" onclick="navGo('streak')"><div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15]"><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[.12] text-[19px]">🔥</div><span class="font-fredoka text-[17px]">Streak</span></div></div>
+    <div class="h-[2px] bg-white/[.08] my-2 mx-1 rounded-full"></div>
+    <div class="font-fredoka text-[11px] text-white/35 tracking-[.12em] uppercase px-[10px] pb-1 pt-[10px]">My Stuff</div>
+    <div class="mb-1 cursor-pointer relative rounded-2xl transition-transform active:scale-95" onclick="navGo('achievements')"><div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15]"><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/[.12] text-[19px]">🏆</div><span class="font-fredoka text-[17px]">Achievements</span></div></div>
+    <div class="mb-1 cursor-pointer relative rounded-2xl transition-transform active:scale-95" onclick="navGo('settings')"><div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white text-sidebar border-b-[3px] border-[#bcd1f0] shadow-[0_2px_0_#a0bce8]"><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-green border-b-[3px] border-green-dark text-[19px]">⚙️</div><span class="font-fredoka text-[17px]">Settings</span></div></div>
+  </div>
+  <div id="xpCard" onclick="fireConf()" class="mx-[10px] mb-[14px] bg-white/[.1] rounded-[18px] border-2 border-white/[.15] border-b-4 border-b-black/20 p-[13px_12px] flex-shrink-0 animate-popIn cursor-pointer transition-all hover:bg-white/25 active:scale-[.98]">
+    <div class="flex items-center gap-[10px]"><div class="w-[38px] h-[38px] rounded-full bg-gradient-to-br from-[#FFC800] to-[#FF9600] border-[3px] border-white/30 flex items-center justify-center text-[20px]">🐱</div><div class="flex-1"><div class="font-fredoka text-[14px] text-white">Mia ⭐</div><div class="text-[11px] text-white/60 font-black">Level 5 · 680 XP</div><div class="h-[6px] bg-white/[.15] rounded-full overflow-hidden mt-[5px]"><div class="xp-bar-fill h-full rounded-full bg-gradient-to-r from-green to-green-light" style="width:68%"></div></div></div><div class="text-[18px] opacity-80">→</div></div>
+  </div>
+</div>
+
+<!-- ═══ MAIN SETTINGS PAGE (White Theme) ═══ -->
+<div class="ml-[248px] min-h-screen px-10 py-9 animate-pageIn relative">
+  
+  <!-- Decorative floating elements -->
+  <div class="absolute top-20 left-10 text-6xl opacity-5 animate-floatY pointer-events-none">⚙️</div>
+  <div class="absolute bottom-20 right-10 text-7xl opacity-5 animate-floatY pointer-events-none" style="animation-delay: 2s;">🔧</div>
+  
+  <!-- Header -->
+  <div class="flex items-center gap-4 mb-2">
+    <div class="w-16 h-16 rounded-[28px] bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center text-4xl shadow-lg animate-bounce2">⚙️</div>
+    <div>
+      <div class="font-fredoka text-[38px] text-gray-800 drop-shadow-sm tracking-wide">Settings</div>
+      <div class="text-[14px] font-black text-gray-500 mt-1">Customize your learning experience 🎨</div>
+    </div>
+  </div>
+  
+  <!-- Settings Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+    
+    <!-- Profile Section -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden animate-popIn">
+      <div class="bg-gradient-to-r from-green to-green-dark px-6 py-4">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">👤</span>
+          <h2 class="font-fredoka text-xl text-white">Profile Settings</h2>
+        </div>
+      </div>
+      <div class="p-6 space-y-5">
+        <div class="flex items-center gap-4">
+          <div class="w-20 h-20 rounded-full bg-gradient-to-br from-yellow to-orange flex items-center justify-center text-4xl border-4 border-white shadow-md">🐱</div>
+          <div class="flex-1">
+            <label class="block text-gray-700 font-fredoka mb-1">Avatar Name</label>
+            <input type="text" value="Mia" class="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-green focus:outline-none transition-colors font-nunito">
+          </div>
+        </div>
+        <div>
+          <label class="block text-gray-700 font-fredoka mb-1">Display Name</label>
+          <input type="text" value="Mia Starling" class="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-green focus:outline-none transition-colors">
+        </div>
+        <div>
+          <label class="block text-gray-700 font-fredoka mb-1">Email Address</label>
+          <input type="email" value="mia@fluento.com" class="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-green focus:outline-none transition-colors">
+        </div>
+        <button onclick="saveSettings()" class="w-full bg-green text-white font-fredoka py-2 rounded-xl border-b-3 border-green-dark active:translate-y-[1px] transition-all hover:brightness-110">Save Profile ✨</button>
+      </div>
+    </div>
+    
+    <!-- Preferences Section -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden animate-popIn [animation-delay:.1s]">
+      <div class="bg-gradient-to-r from-blue to-blue-dark px-6 py-4">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">🎨</span>
+          <h2 class="font-fredoka text-xl text-white">Preferences</h2>
+        </div>
+      </div>
+      <div class="p-6 space-y-5">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-fredoka text-gray-800">Sound Effects</div>
+            <div class="text-sm text-gray-500">Play sounds during games</div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="soundToggle" class="sr-only peer" checked>
+            <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green transition-all duration-300"></div>
+            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 peer-checked:translate-x-5"></div>
+          </label>
+        </div>
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-fredoka text-gray-800">Music Background</div>
+            <div class="text-sm text-gray-500">Relaxing music while learning</div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="musicToggle" class="sr-only peer">
+            <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green transition-all duration-300"></div>
+            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 peer-checked:translate-x-5"></div>
+          </label>
+        </div>
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-fredoka text-gray-800">Daily Reminder</div>
+            <div class="text-sm text-gray-500">Get notified to play daily</div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="reminderToggle" class="sr-only peer" checked>
+            <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green transition-all duration-300"></div>
+            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 peer-checked:translate-x-5"></div>
+          </label>
+        </div>
+        <div>
+          <label class="block text-gray-700 font-fredoka mb-2">Language Level</label>
+          <select class="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-green focus:outline-none">
+            <option>Beginner (A1)</option>
+            <option selected>Elementary (A2)</option>
+            <option>Intermediate (B1)</option>
+            <option>Upper Intermediate (B2)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Game Settings -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden animate-popIn [animation-delay:.2s]">
+      <div class="bg-gradient-to-r from-purple to-pink-500 px-6 py-4">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">🎮</span>
+          <h2 class="font-fredoka text-xl text-white">Game Settings</h2>
+        </div>
+      </div>
+      <div class="p-6 space-y-5">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-fredoka text-gray-800">Difficulty Mode</div>
+            <div class="text-sm text-gray-500">Adaptive difficulty for games</div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="adaptiveToggle" class="sr-only peer" checked>
+            <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green transition-all duration-300"></div>
+            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 peer-checked:translate-x-5"></div>
+          </label>
+        </div>
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-fredoka text-gray-800">Show Hints</div>
+            <div class="text-sm text-gray-500">Display hints during games</div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="hintsToggle" class="sr-only peer" checked>
+            <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green transition-all duration-300"></div>
+            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 peer-checked:translate-x-5"></div>
+          </label>
+        </div>
+        <div>
+          <label class="block text-gray-700 font-fredoka mb-2">Timer Speed</label>
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-gray-500">Slow</span>
+            <input type="range" min="0" max="100" value="50" class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green">
+            <span class="text-sm text-gray-500">Fast</span>
+          </div>
+        </div>
+        <div>
+          <label class="block text-gray-700 font-fredoka mb-2">Questions per Game</label>
+          <div class="flex gap-2">
+            <button class="qty-btn px-4 py-1 bg-gray-100 rounded-xl font-fredoka text-gray-600 hover:bg-gray-200 transition">5</button>
+            <button class="qty-btn px-4 py-1 bg-green text-white rounded-xl font-fredoka transition">10</button>
+            <button class="qty-btn px-4 py-1 bg-gray-100 rounded-xl font-fredoka text-gray-600 hover:bg-gray-200 transition">15</button>
+            <button class="qty-btn px-4 py-1 bg-gray-100 rounded-xl font-fredoka text-gray-600 hover:bg-gray-200 transition">20</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Parental Controls -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden animate-popIn [animation-delay:.3s]">
+      <div class="bg-gradient-to-r from-red to-red-dark px-6 py-4">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">🛡️</span>
+          <h2 class="font-fredoka text-xl text-white">Parental Controls</h2>
+        </div>
+      </div>
+      <div class="p-6 space-y-5">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-fredoka text-gray-800">Restricted Mode</div>
+            <div class="text-sm text-gray-500">Limit access to certain features</div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="restrictedToggle" class="sr-only peer">
+            <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green transition-all duration-300"></div>
+            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 peer-checked:translate-x-5"></div>
+          </label>
+        </div>
+        <div>
+          <label class="block text-gray-700 font-fredoka mb-1">Daily Time Limit (minutes)</label>
+          <select class="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-green focus:outline-none">
+            <option>No Limit</option>
+            <option>30 minutes</option>
+            <option selected>60 minutes</option>
+            <option>90 minutes</option>
+            <option>120 minutes</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-gray-700 font-fredoka mb-1">Parent PIN</label>
+          <input type="password" placeholder="Set 4-digit PIN" class="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-green focus:outline-none">
+        </div>
+        <button onclick="saveParentalSettings()" class="w-full bg-red text-white font-fredoka py-2 rounded-xl border-b-3 border-red-dark active:translate-y-[1px] transition-all hover:brightness-110">Save Parental Settings 🔒</button>
+      </div>
+    </div>
+    
+    <!-- Account & Data -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden animate-popIn [animation-delay:.4s] lg:col-span-2">
+      <div class="bg-gradient-to-r from-gray-600 to-gray-800 px-6 py-4">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">📊</span>
+          <h2 class="font-fredoka text-xl text-white">Account & Data</h2>
+        </div>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <button onclick="resetProgress()" class="flex items-center justify-center gap-2 bg-yellow text-gray-800 font-fredoka py-3 rounded-xl border-b-3 border-yellow-dark active:translate-y-[1px] transition-all hover:brightness-105">
+            🔄 Reset Progress
+          </button>
+          <button onclick="exportData()" class="flex items-center justify-center gap-2 bg-blue text-white font-fredoka py-3 rounded-xl border-b-3 border-blue-dark active:translate-y-[1px] transition-all hover:brightness-105">
+            📥 Export Data
+          </button>
+          <button onclick="deleteAccount()" class="flex items-center justify-center gap-2 bg-red text-white font-fredoka py-3 rounded-xl border-b-3 border-red-dark active:translate-y-[1px] transition-all hover:brightness-105">
+            🗑️ Delete Account
+          </button>
+        </div>
+        <div class="mt-4 text-center text-xs text-gray-400">
+          Last sync: Today, 10:32 AM
+        </div>
+      </div>
+    </div>
+    
+    <!-- About Section -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden animate-popIn [animation-delay:.5s] lg:col-span-2">
+      <div class="bg-gradient-to-r from-green to-green-dark px-6 py-4">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">ℹ️</span>
+          <h2 class="font-fredoka text-xl text-white">About Fluento Kids</h2>
+        </div>
+      </div>
+      <div class="p-6 text-center">
+        <div class="font-fredoka text-2xl text-gray-800">Fluento Kids ✨</div>
+        <div class="text-gray-500 mt-1">Version 2.5.0 · Build 2026</div>
+        <div class="text-sm text-gray-400 mt-3 max-w-md mx-auto">
+          Making language learning fun for kids around the world. 
+          Learn English through play with our mini games and interactive lessons!
+        </div>
+        <div class="flex justify-center gap-6 mt-5">
+          <span class="text-gray-400 text-sm">📧 hello@fluento.com</span>
+          <span class="text-gray-400 text-sm">🌐 www.fluento.com</span>
+        </div>
+        <div class="mt-4 pt-3 border-t border-gray-100 text-xs text-gray-400">
+          © 2026 Fluento Kids. All rights reserved. 🎮
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- Save All Settings Button -->
+  <div class="mt-8 text-center">
+    <button onclick="saveAllSettings()" class="bg-gradient-to-r from-green to-green-dark text-white font-fredoka px-8 py-3 rounded-full shadow-lg border-b-3 border-green-800/30 active:translate-y-[1px] transition-all hover:scale-105">
+      💾 Save All Settings
+    </button>
+  </div>
+  
+</div>
+
+<script>
+  function fireConf() {
+    const icons = ['⚙️', '⭐', '🌟', '✨', '🎉', '🔧', '🎮', '💾', '✅', '💎'];
+    for(let i = 0; i < 12; i++) {
+      setTimeout(() => {
+        const c = document.createElement('div');
+        c.className = 'conf';
+        c.textContent = icons[Math.floor(Math.random() * icons.length)];
+        c.style.left = (5 + Math.random() * 80) + 'vw';
+        c.style.top = (5 + Math.random() * 60) + 'vh';
+        c.style.fontSize = (14 + Math.random() * 20) + 'px';
+        c.style.animationDuration = (0.6 + Math.random() * 1) + 's';
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 1500);
+      }, i * 45);
+    }
+  }
+  
+  function showFloatingMessage(msg, bgColor) {
+    const toast = document.createElement('div');
+    toast.className = 'fixed bottom-8 left-1/2 -translate-x-1/2 text-white font-fredoka px-6 py-3 rounded-full shadow-xl z-[300] animate-popIn';
+    toast.style.background = bgColor;
+    toast.innerText = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+  }
+  
+  function saveSettings() {
+    fireConf();
+    showFloatingMessage('✅ Profile saved successfully!', '#58CC02');
+  }
+  
+  function saveParentalSettings() {
+    fireConf();
+    showFloatingMessage('🔒 Parental settings updated!', '#FF4B4B');
+  }
+  
+  function saveAllSettings() {
+    fireConf();
+    showFloatingMessage('💾 All settings have been saved! ✨', '#1CB0F6');
+  }
+  
+  function resetProgress() {
+    if(confirm('⚠️ Are you sure? This will reset all your game progress and achievements!')) {
+      fireConf();
+      showFloatingMessage('🔄 Progress has been reset', '#FFC800');
+    }
+  }
+  
+  function exportData() {
+    fireConf();
+    showFloatingMessage('📥 Your data has been exported!', '#CE82FF');
+  }
+  
+  function deleteAccount() {
+    if(confirm('⚠️ DANGER: This action cannot be undone! Are you sure you want to delete your account?')) {
+      fireConf();
+      showFloatingMessage('🗑️ Account deletion requested', '#FF4B4B');
+    }
+  }
+  
+  function navGo(page) {
+    fireConf();
+    setTimeout(() => {
+      const map = { 
+        home: 'index.html', 
+        lesson: 'lesson-page.html', 
+        minigames: 'minigames-page.html', 
+        streak: 'streak-page.html', 
+        achievements: 'achievements-tailwind.html', 
+        settings: '#' 
+      };
+      if(page === 'settings') return;
+      window.location.href = map[page] || 'index.html';
+    }, 250);
+  }
+  
+  // Question quantity buttons
+  document.querySelectorAll('.qty-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.qty-btn').forEach(b => {
+        b.classList.remove('bg-green', 'text-white');
+        b.classList.add('bg-gray-100', 'text-gray-600');
+      });
+      this.classList.remove('bg-gray-100', 'text-gray-600');
+      this.classList.add('bg-green', 'text-white');
+    });
+  });
+</script>
+</body>
+</html>

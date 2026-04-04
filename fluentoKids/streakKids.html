@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Fluento Kids – Streak</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        fredoka: ['"Fredoka One"', 'cursive'],
+        nunito: ['Nunito', 'sans-serif'],
+      },
+      colors: {
+        green:  { DEFAULT: '#58CC02', dark: '#46A302', light: '#89E219' },
+        blue:   { DEFAULT: '#1CB0F6', dark: '#0A8FCC' },
+        yellow: { DEFAULT: '#FFC800', dark: '#E5A100' },
+        red:    { DEFAULT: '#FF4B4B', dark: '#CC3B3B' },
+        purple: '#CE82FF',
+        orange: '#FF9600',
+        sidebar:'#235390',
+        'sidebar-dark':'#1A3D6B',
+      },
+      keyframes: {
+        slideIn:    { from:{ opacity:'0', transform:'translateX(-32px)' }, to:{ opacity:'1', transform:'none' } },
+        popIn:      { '0%':{ opacity:'0', transform:'scale(0.5)' }, '60%':{ transform:'scale(1.12)' }, '100%':{ opacity:'1', transform:'scale(1)' } },
+        floatY:     { '0%,100%':{ transform:'translateY(0px)' }, '50%':{ transform:'translateY(-6px)' } },
+        pageIn:     { from:{ opacity:'0', transform:'translateY(16px)' }, to:{ opacity:'1', transform:'none' } },
+        ripple:     { from:{ transform:'scale(0)', opacity:'.5' }, to:{ transform:'scale(8)', opacity:'0' } },
+        grow:       { from:{ width:'0' }, to:{ width:'var(--tw-bar-w)' } },
+        bounce2:    { '0%,100%':{ transform:'translateY(0)' }, '40%':{ transform:'translateY(-8px)' }, '60%':{ transform:'translateY(-4px)' } },
+        confetti:   { '0%':{ transform:'translateY(0) rotate(0deg)', opacity:'1' }, '100%':{ transform:'translateY(120px) rotate(720deg)', opacity:'0' } },
+        flameDance: { '0%,100%':{ transform:'scaleY(1) rotate(-3deg)' }, '50%':{ transform:'scaleY(1.08) rotate(3deg)' } },
+        pulseGlow:  { '0%,100%':{ boxShadow:'0 0 0 0 rgba(255,200,0,.4)' }, '50%':{ boxShadow:'0 0 0 12px rgba(255,200,0,0)' } },
+        countUp:    { from:{ opacity:'0', transform:'translateY(10px) scale(.8)' }, to:{ opacity:'1', transform:'none' } },
+        starPop:    { '0%':{ transform:'scale(0) rotate(-20deg)' }, '70%':{ transform:'scale(1.2) rotate(5deg)' }, '100%':{ transform:'scale(1) rotate(0deg)' } },
+        ringExpand: { '0%':{ transform:'scale(.6)', opacity:'1' }, '100%':{ transform:'scale(1.5)', opacity:'0' } },
+        bounceDot:  { '0%,100%':{ transform:'translateY(0)' }, '40%':{ transform:'translateY(-8px)' }, '60%':{ transform:'translateY(-4px)' } },
+      },
+      animation: {
+        slideIn:    'slideIn .5s cubic-bezier(.77,0,.18,1) both',
+        popIn:      'popIn .6s cubic-bezier(.77,0,.18,1) both',
+        floatY:     'floatY 2.8s ease-in-out infinite',
+        pageIn:     'pageIn .35s cubic-bezier(.77,0,.18,1) both',
+        ripple:     'ripple .5s ease-out forwards',
+        grow:       'grow 1s .2s ease both',
+        bounce2:    'bounce2 1.2s ease-in-out infinite',
+        confetti:   'confetti 1.2s ease-in forwards',
+        flameDance: 'flameDance 1.4s ease-in-out infinite',
+        flameSlow:  'flameDance 1.8s ease-in-out infinite',
+        pulseGlow:  'pulseGlow 1.6s ease-in-out infinite',
+        countUp:    'countUp .5s .3s cubic-bezier(.77,0,.18,1) both',
+        starPop:    'starPop .35s cubic-bezier(.77,0,.18,1) both',
+        ringExpand: 'ringExpand 1.4s ease-out infinite',
+        bounceDot:  'bounceDot 1.4s ease-in-out infinite',
+      },
+    }
+  }
+}
+</script>
+<style>
+  body { font-family: 'Nunito', sans-serif; }
+  /* sidebar rainbow stripe */
+  #sidebar::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: repeating-linear-gradient(90deg,#58CC02 0,#58CC02 24px,#1CB0F6 24px,#1CB0F6 48px,#FFC800 48px,#FFC800 72px,#FF4B4B 72px,#FF4B4B 96px);
+    z-index: 2;
+  }
+  /* streak hero background flame */
+  .streak-hero::before {
+    content: '🔥'; font-size: 120px;
+    position: absolute; right: -10px; top: -20px; opacity: .12; pointer-events: none;
+    animation: flameDance 1.8s ease-in-out infinite;
+  }
+  .streak-hero::after {
+    content: ''; position: absolute; bottom: -30px; left: -30px;
+    width: 120px; height: 120px; background: rgba(255,255,255,.08);
+    border-radius: 50%; pointer-events: none;
+  }
+  /* freeze card bg ice */
+  .freeze-card::after {
+    content: '🧊'; font-size: 80px;
+    position: absolute; right: -8px; bottom: -16px; opacity: .15; pointer-events: none;
+  }
+  /* today ring pulse */
+  .wdot-today::after {
+    content: ''; position: absolute; inset: -4px; border-radius: 50%;
+    border: 3px solid #58CC02;
+    animation: ringExpand 1.4s ease-out infinite;
+  }
+  /* missed cross */
+  .wdot-missed::before { content: '✕'; position: absolute; font-size: 14px; color: #ff9999; font-weight: 900; }
+  /* xp bar grow */
+  .xp-bar-fill { animation: grow .8s .8s ease both; }
+  /* bar fill */
+  .bar-fill { animation: grow 1s .3s ease both; }
+  /* confetti */
+  .conf { position: fixed; pointer-events: none; font-size: 20px; animation: confetti 1.2s ease-in forwards; z-index: 9999; }
+  /* scrollbar hide */
+  #sideScroll::-webkit-scrollbar { display: none; }
+  #sideScroll { scrollbar-width: none; }
+</style>
+</head>
+<body class="bg-[#F7F7F7] min-h-screen">
+
+<!-- ═══ SIDEBAR ═══ -->
+<div id="sidebar" class="fixed top-0 left-0 h-screen w-[248px] bg-sidebar flex flex-col animate-slideIn z-[100] border-r-4 border-sidebar-dark" style="position:fixed;">
+
+  <div id="sideScroll" class="flex-1 overflow-y-auto overflow-x-hidden px-[10px] pb-2 pt-4 mt-1">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-[10px] px-2 pb-[18px] pt-[10px] animate-popIn [animation-delay:.1s]">
+      <svg class="w-11 h-11 flex-shrink-0 animate-floatY cursor-pointer hover:rotate-[-15deg] hover:scale-110 transition-transform" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="22" cy="22" r="20" fill="#58CC02"/>
+        <circle cx="22" cy="22" r="20" fill="none" stroke="#46A302" stroke-width="3"/>
+        <ellipse cx="22" cy="26" rx="13" ry="11" fill="#fff" opacity=".15"/>
+        <circle cx="16" cy="20" r="5" fill="#fff"/>
+        <circle cx="28" cy="20" r="5" fill="#fff"/>
+        <circle cx="17" cy="20" r="2.5" fill="#1a1a1a"/>
+        <circle cx="29" cy="20" r="2.5" fill="#1a1a1a"/>
+        <circle cx="17.8" cy="19.2" r="1" fill="#fff"/>
+        <circle cx="29.8" cy="19.2" r="1" fill="#fff"/>
+        <path d="M20 24 L22 27 L24 24 Z" fill="#FFC800"/>
+        <path d="M13 16.5 Q16 14.5 19 16.5" stroke="#46A302" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <path d="M25 16.5 Q28 14.5 31 16.5" stroke="#46A302" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <ellipse cx="22" cy="30" rx="8" ry="6" fill="#89E219" opacity=".6"/>
+      </svg>
+      <div class="overflow-hidden">
+        <div class="font-fredoka text-[22px] text-white leading-none tracking-[.3px] whitespace-nowrap">Fluento</div>
+        <div class="text-[11px] font-black text-white/50 tracking-[.08em] uppercase whitespace-nowrap">for Kids ✨</div>
+      </div>
+    </div>
+
+    <!-- Section: Learn -->
+    <div class="font-fredoka text-[11px] text-white/35 tracking-[.12em] uppercase px-[10px] pb-1 pt-[10px]">Learn</div>
+
+    <div class="mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.08s]" onclick="navGo('home')">
+      <div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15] hover:text-white transition-all">
+        <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-white/[.12] border-b-[3px] border-black/20 text-[19px] hover:rotate-[-8deg] hover:scale-110 transition-transform">🏠</div>
+        <span class="font-fredoka text-[17px] whitespace-nowrap">Home</span>
+      </div>
+    </div>
+
+    <div class="mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.13s]" onclick="navGo('lesson')">
+      <div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15] hover:text-white transition-all">
+        <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-white/[.12] border-b-[3px] border-black/20 text-[19px]">🗺️</div>
+        <span class="font-fredoka text-[17px] whitespace-nowrap">Lesson</span>
+      </div>
+    </div>
+
+    <div class="mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.18s]" onclick="navGo('minigames')">
+      <div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15] hover:text-white transition-all">
+        <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-white/[.12] border-b-[3px] border-black/20 text-[19px]">🎮</div>
+        <span class="font-fredoka text-[17px] whitespace-nowrap">Mini Games</span>
+      </div>
+    </div>
+
+    <!-- Active: Streak -->
+    <div class="mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.23s]">
+      <div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white text-sidebar border-b-[3px] border-[#bcd1f0] shadow-[0_2px_0_#a0bce8]">
+        <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-green border-b-[3px] border-green-dark text-[19px]">🔥</div>
+        <span class="font-fredoka text-[17px] whitespace-nowrap">Streak</span>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="h-[2px] bg-white/[.08] my-2 mx-1 rounded-full"></div>
+    <div class="font-fredoka text-[11px] text-white/35 tracking-[.12em] uppercase px-[10px] pb-1 pt-[10px]">My Stuff</div>
+
+    <div class="mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.28s]" onclick="navGo('achievements')">
+      <div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15] hover:text-white transition-all">
+        <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-white/[.12] border-b-[3px] border-black/20 text-[19px]">🏆</div>
+        <span class="font-fredoka text-[17px] whitespace-nowrap">Achievements</span>
+      </div>
+    </div>
+
+    <div class="mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.33s]" onclick="navGo('settings')">
+      <div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15] hover:text-white transition-all">
+        <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-white/[.12] border-b-[3px] border-black/20 text-[19px]">⚙️</div>
+        <span class="font-fredoka text-[17px] whitespace-nowrap">Settings</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- XP Card -->
+  <div id="xpCard" onclick="fireConf()" class="mx-[10px] mb-[14px] bg-white/[.1] rounded-[18px] border-2 border-white/[.15] border-b-4 border-b-black/20 p-[13px_12px] flex-shrink-0 animate-popIn [animation-delay:.6s] cursor-pointer transition-all hover:bg-white/25 hover:translate-x-[3px] active:scale-[.98]">
+    <div class="flex items-center gap-[10px]">
+      <div class="w-[38px] h-[38px] rounded-full flex-shrink-0 bg-gradient-to-br from-[#FFC800] to-[#FF9600] border-[3px] border-white/30 flex items-center justify-center text-[20px]">🐱</div>
+      <div class="flex-1 overflow-hidden">
+        <div class="font-fredoka text-[14px] text-white leading-[1.1]">Mia ⭐</div>
+        <div class="text-[11px] text-white/60 font-black mt-[1px]">Level 5 · 680 XP</div>
+        <div class="h-[6px] bg-white/[.15] rounded-full overflow-hidden mt-[5px]">
+          <div class="xp-bar-fill h-full rounded-full bg-gradient-to-r from-green to-green-light" style="--tw-bar-w:68%; width:68%;"></div>
+        </div>
+      </div>
+      <div id="xpArrow" class="text-[18px] opacity-80 ml-1 transition-transform">→</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div class="ml-[248px] min-h-screen px-10 py-9 animate-pageIn">
+
+  <!-- Header -->
+  <div class="flex items-center gap-[14px] mb-1">
+    <div class="w-14 h-14 rounded-[20px] flex items-center justify-center text-[28px] flex-shrink-0 border-b-4 border-[#cc3b00] shadow-[0_4px_0_rgba(0,0,0,.12)] bg-gradient-to-br from-[#FF6B00] to-[#FF4B4B]">🔥</div>
+    <div class="font-fredoka text-[32px] text-[#3c3c3c] tracking-[.2px]">My Streak! 🔥</div>
+  </div>
+  <div class="text-[14px] text-[#afafaf] font-black mb-7 ml-[70px] tracking-[.02em]">Keep learning every day — don't break the chain! 💪</div>
+
+  <!-- ─── STREAK HERO ─── -->
+  <div class="streak-hero relative overflow-hidden bg-gradient-to-br from-[#FF6B00] via-[#FF4B4B] to-[#FF9600] rounded-[28px] p-[30px_28px] mb-[22px] border-b-[6px] border-[#cc3b00] shadow-[0_6px_0_rgba(204,59,0,.3)] flex items-center gap-6 animate-popIn [animation-delay:.15s] cursor-pointer transition-transform hover:-translate-y-1 active:translate-y-[3px] active:border-b-[2px]" onclick="fireConf()">
+    <div class="text-[72px] flex-shrink-0 animate-flameDance [filter:drop-shadow(0_4px_12px_rgba(255,100,0,.6))] relative z-[1]">🔥</div>
+    <div class="flex-1 relative z-[1]">
+      <div class="font-fredoka text-[72px] text-white leading-none [text-shadow:0_4px_0_rgba(0,0,0,.2)] animate-countUp">5</div>
+      <div class="font-fredoka text-[22px] text-white/90 tracking-[.2px] -mt-1">Day Streak!</div>
+      <div class="text-[13px] font-black text-white/70 mt-[6px]">You're on fire! Keep going Mia 🚀</div>
+    </div>
+    <div class="flex-shrink-0 relative z-[1] bg-white/20 border-[3px] border-white/35 rounded-[20px] px-[18px] py-[14px] text-center backdrop-blur-sm">
+      <div class="font-fredoka text-[28px] text-white">🏅 12</div>
+      <div class="text-[11px] font-black text-white/70 uppercase tracking-[.08em] mt-[2px]">Best Ever</div>
+    </div>
+  </div>
+
+  <!-- ─── THIS WEEK ─── -->
+  <div class="bg-white rounded-[24px] p-[22px_24px] mb-[22px] border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] animate-pageIn [animation-delay:.2s]">
+    <div class="font-fredoka text-[18px] text-[#3c3c3c] tracking-[.2px]">📅 This Week</div>
+    <div class="flex gap-[10px] mt-[14px]">
+
+      <!-- Mon -->
+      <div class="flex-1 flex flex-col items-center gap-[6px]">
+        <div class="wdot relative w-12 h-12 rounded-full flex items-center justify-center text-[20px] cursor-pointer hover:scale-110 transition-transform animate-starPop bg-[#FFC800] border-[3px] border-[#E5A100] shadow-[0_3px_0_#E5A100]">⭐</div>
+        <div class="text-[12px] font-black text-[#bbb]">Mon</div>
+        <div class="text-[11px] font-black text-[#E5A100]">+40</div>
+      </div>
+      <!-- Tue -->
+      <div class="flex-1 flex flex-col items-center gap-[6px]">
+        <div class="wdot relative w-12 h-12 rounded-full flex items-center justify-center text-[20px] cursor-pointer hover:scale-110 transition-transform animate-starPop bg-[#FFC800] border-[3px] border-[#E5A100] shadow-[0_3px_0_#E5A100]">⭐</div>
+        <div class="text-[12px] font-black text-[#bbb]">Tue</div>
+        <div class="text-[11px] font-black text-[#E5A100]">+55</div>
+      </div>
+      <!-- Wed -->
+      <div class="flex-1 flex flex-col items-center gap-[6px]">
+        <div class="wdot relative w-12 h-12 rounded-full flex items-center justify-center text-[20px] cursor-pointer hover:scale-110 transition-transform animate-starPop bg-[#FFC800] border-[3px] border-[#E5A100] shadow-[0_3px_0_#E5A100]">⭐</div>
+        <div class="text-[12px] font-black text-[#bbb]">Wed</div>
+        <div class="text-[11px] font-black text-[#E5A100]">+30</div>
+      </div>
+      <!-- Thu -->
+      <div class="flex-1 flex flex-col items-center gap-[6px]">
+        <div class="wdot relative w-12 h-12 rounded-full flex items-center justify-center text-[20px] cursor-pointer hover:scale-110 transition-transform animate-starPop bg-[#FFC800] border-[3px] border-[#E5A100] shadow-[0_3px_0_#E5A100]">⭐</div>
+        <div class="text-[12px] font-black text-[#bbb]">Thu</div>
+        <div class="text-[11px] font-black text-[#E5A100]">+45</div>
+      </div>
+      <!-- Fri (today) -->
+      <div class="flex-1 flex flex-col items-center gap-[6px]">
+        <div class="wdot-today relative w-12 h-12 rounded-full flex items-center justify-center text-[20px] cursor-pointer hover:scale-110 transition-transform animate-bounceDot bg-green border-[3px] border-green-dark shadow-[0_3px_0_#46A302]">🌟</div>
+        <div class="text-[12px] font-black text-green-dark">Fri</div>
+        <div class="text-[11px] font-black text-green-dark">Today!</div>
+      </div>
+      <!-- Sat -->
+      <div class="flex-1 flex flex-col items-center gap-[6px]">
+        <div class="relative w-12 h-12 rounded-full flex items-center justify-center text-[20px] cursor-pointer hover:scale-110 transition-transform bg-[#f4f4f4] border-[3px] border-[#e8e8e8] opacity-40">○</div>
+        <div class="text-[12px] font-black text-[#bbb]">Sat</div>
+        <div class="text-[11px] font-black text-[#aaa]">–</div>
+      </div>
+      <!-- Sun -->
+      <div class="flex-1 flex flex-col items-center gap-[6px]">
+        <div class="relative w-12 h-12 rounded-full flex items-center justify-center text-[20px] cursor-pointer hover:scale-110 transition-transform bg-[#f4f4f4] border-[3px] border-[#e8e8e8] opacity-40">○</div>
+        <div class="text-[12px] font-black text-[#bbb]">Sun</div>
+        <div class="text-[11px] font-black text-[#aaa]">–</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── STREAK STATS ─── -->
+  <div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-[14px] mb-[22px] animate-pageIn [animation-delay:.3s]">
+    <div class="rounded-[20px] p-[18px_16px] border-b-[5px] border-black/10 shadow-[0_4px_0_rgba(0,0,0,.08)] cursor-pointer transition-transform hover:-translate-y-1 active:translate-y-[2px] active:border-b-[2px] bg-[#FF6B00] relative overflow-hidden">
+      <span class="text-[28px] block mb-[6px] animate-floatY">🔥</span>
+      <div class="text-[11px] font-black uppercase tracking-[.08em] text-black/40">Current</div>
+      <div class="font-fredoka text-[30px] text-white leading-none mt-[2px]">5</div>
+      <div class="text-[12px] font-black text-white/70 mt-[2px]">days in a row</div>
+    </div>
+    <div class="rounded-[20px] p-[18px_16px] border-b-[5px] border-black/10 shadow-[0_4px_0_rgba(0,0,0,.08)] cursor-pointer transition-transform hover:-translate-y-1 active:translate-y-[2px] active:border-b-[2px] bg-[#FFC800] relative overflow-hidden">
+      <span class="text-[28px] block mb-[6px] animate-floatY [animation-delay:.4s]">🏅</span>
+      <div class="text-[11px] font-black uppercase tracking-[.08em] text-black/40">Best Ever</div>
+      <div class="font-fredoka text-[30px] text-[#5c3a00] leading-none mt-[2px]">12</div>
+      <div class="text-[12px] font-black text-[rgba(92,58,0,.6)] mt-[2px]">your record!</div>
+    </div>
+    <div class="rounded-[20px] p-[18px_16px] border-b-[5px] border-black/10 shadow-[0_4px_0_rgba(0,0,0,.08)] cursor-pointer transition-transform hover:-translate-y-1 active:translate-y-[2px] active:border-b-[2px] bg-green relative overflow-hidden">
+      <span class="text-[28px] block mb-[6px] animate-floatY [animation-delay:.8s]">📅</span>
+      <div class="text-[11px] font-black uppercase tracking-[.08em] text-black/40">This Month</div>
+      <div class="font-fredoka text-[30px] text-white leading-none mt-[2px]">18</div>
+      <div class="text-[12px] font-black text-white/70 mt-[2px]">days learned</div>
+    </div>
+  </div>
+
+  <!-- ─── MONTHLY HEATMAP ─── -->
+  <div class="bg-white rounded-[24px] p-[22px_24px] mb-[22px] border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] animate-pageIn [animation-delay:.25s]">
+    <div class="flex items-center justify-between mb-[14px]">
+      <div class="font-fredoka text-[18px] text-[#3c3c3c]">📊 <span id="hmMonthLabel">April 2026</span></div>
+      <div class="flex gap-2">
+        <button onclick="prevMonth()" class="w-[34px] h-[34px] rounded-xl border-none cursor-pointer bg-[#f4f4f4] text-[15px] border-b-[3px] border-[#e0e0e0] flex items-center justify-center font-fredoka text-[#3c3c3c] transition-all hover:bg-[#e8e8e8] hover:-translate-y-[2px] active:translate-y-[2px] active:border-b">‹</button>
+        <button onclick="nextMonth()" id="btnNext" class="w-[34px] h-[34px] rounded-xl border-none cursor-pointer bg-[#f4f4f4] text-[15px] border-b-[3px] border-[#e0e0e0] flex items-center justify-center font-fredoka text-[#3c3c3c] transition-all hover:bg-[#e8e8e8] hover:-translate-y-[2px] active:translate-y-[2px] active:border-b">›</button>
+      </div>
+    </div>
+    <div class="grid grid-cols-7 gap-[5px] mb-[5px]">
+      <div class="font-fredoka text-[11px] text-[#bbb] text-center uppercase">Sun</div>
+      <div class="font-fredoka text-[11px] text-[#bbb] text-center uppercase">Mon</div>
+      <div class="font-fredoka text-[11px] text-[#bbb] text-center uppercase">Tue</div>
+      <div class="font-fredoka text-[11px] text-[#bbb] text-center uppercase">Wed</div>
+      <div class="font-fredoka text-[11px] text-[#bbb] text-center uppercase">Thu</div>
+      <div class="font-fredoka text-[11px] text-[#bbb] text-center uppercase">Fri</div>
+      <div class="font-fredoka text-[11px] text-[#bbb] text-center uppercase">Sat</div>
+    </div>
+    <div class="grid grid-cols-7 gap-[5px]" id="heatmapGrid"></div>
+    <div class="flex items-center gap-2 mt-3 flex-wrap">
+      <div class="flex items-center gap-[5px]"><div class="w-[14px] h-[14px] rounded-[5px] bg-[#f4f4f4] border border-[#e0e0e0]"></div><div class="text-[11px] font-black text-[#aaa]">No lesson</div></div>
+      <div class="flex items-center gap-[5px]"><div class="w-[14px] h-[14px] rounded-[5px] bg-[#FF9600]"></div><div class="text-[11px] font-black text-[#aaa]">Learned 🔥</div></div>
+    </div>
+  </div>
+
+  <!-- ─── STREAK FREEZE ─── -->
+  <div class="freeze-card relative overflow-hidden bg-gradient-to-br from-[#1CB0F6] to-[#CE82FF] rounded-[24px] p-[22px_24px] mb-[22px] border-b-[5px] border-[#0a8fcc] shadow-[0_5px_0_rgba(10,143,204,.3)] flex items-center gap-[18px] cursor-pointer transition-transform hover:-translate-y-[3px] active:translate-y-[2px] active:border-b-[2px] animate-pageIn [animation-delay:.35s]" onclick="useFreeze(this)">
+    <div class="text-[52px] flex-shrink-0 animate-floatY [filter:drop-shadow(0_4px_8px_rgba(0,0,0,.2))]">🧊</div>
+    <div class="flex-1 relative z-[1]">
+      <div class="font-fredoka text-[20px] text-white tracking-[.2px]">Streak Shield 🛡️</div>
+      <div class="text-[13px] font-black text-white/80 mt-1 leading-[1.5]">Miss a day? No problem!<br/>Your shields will protect your streak!</div>
+      <div class="flex gap-2 mt-[10px]">
+        <div class="w-9 h-9 rounded-xl bg-white/25 border-2 border-white/40 flex items-center justify-center text-[18px] transition-transform hover:scale-115 cursor-pointer">🛡️</div>
+        <div class="w-9 h-9 rounded-xl bg-white/25 border-2 border-white/40 flex items-center justify-center text-[18px] transition-transform hover:scale-115 cursor-pointer">🛡️</div>
+        <div class="w-9 h-9 rounded-xl bg-black/15 border-2 border-white/15 flex items-center justify-center text-[18px] grayscale-[.8] opacity-50 cursor-pointer">🛡️</div>
+        <div class="w-9 h-9 rounded-xl bg-black/15 border-2 border-white/15 flex items-center justify-center text-[18px] grayscale-[.8] opacity-50 cursor-pointer">🛡️</div>
+        <div class="w-9 h-9 rounded-xl bg-black/15 border-2 border-white/15 flex items-center justify-center text-[18px] grayscale-[.8] opacity-50 cursor-pointer">🛡️</div>
+      </div>
+    </div>
+    <button id="shieldBtn" onclick="event.stopPropagation();getShield()" class="font-fredoka text-[14px] bg-white text-[#0a8fcc] border-none rounded-[14px] px-[18px] py-[10px] cursor-pointer flex-shrink-0 border-b-[3px] border-[#b0d0f0] shadow-[0_3px_0_#b0d0f0] transition-all hover:brightness-105 active:translate-y-[2px] active:shadow-[0_1px_0_#b0d0f0] active:border-b relative z-[1]">Get More! 🧊</button>
+  </div>
+
+  <!-- ─── MILESTONES ─── -->
+  <div class="font-fredoka text-[18px] text-[#3c3c3c] mb-3 tracking-[.2px]">🏆 Streak Milestones</div>
+  <div class="flex flex-col gap-[10px] mb-[22px] animate-pageIn [animation-delay:.4s]">
+
+    <!-- Achieved -->
+    <div class="relative bg-white rounded-[18px] p-[16px_20px] flex items-center gap-[14px] border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-green">
+      <div class="text-[32px] flex-shrink-0 animate-floatY">🌱</div>
+      <div class="flex-1">
+        <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">First Steps!</div>
+        <div class="text-[12px] text-[#aaa] font-black mt-[2px]">Keep a 3-day streak</div>
+        <div class="h-[7px] bg-[#f0f0f0] rounded-full overflow-hidden mt-[7px]">
+          <div class="bar-fill h-full rounded-full bg-green" style="--tw-bar-w:100%; width:100%;"></div>
+        </div>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <div class="font-fredoka text-[18px] text-[#3c3c3c]">3 days</div>
+        <div class="text-[12px] font-black text-yellow-dark mt-[2px]">+50 ⭐</div>
+      </div>
+      <div class="w-8 h-8 rounded-full flex items-center justify-center text-[16px] flex-shrink-0 bg-green text-white border-b-[3px] border-green-dark shadow-[0_2px_0_#46A302]">✓</div>
+    </div>
+
+    <div class="relative bg-white rounded-[18px] p-[16px_20px] flex items-center gap-[14px] border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-green">
+      <div class="text-[32px] flex-shrink-0 animate-floatY [animation-delay:.3s]">🔥</div>
+      <div class="flex-1">
+        <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">On Fire!</div>
+        <div class="text-[12px] text-[#aaa] font-black mt-[2px]">Reach a 5-day streak — You did it! 🎉</div>
+        <div class="h-[7px] bg-[#f0f0f0] rounded-full overflow-hidden mt-[7px]">
+          <div class="bar-fill h-full rounded-full bg-green" style="--tw-bar-w:100%; width:100%;"></div>
+        </div>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <div class="font-fredoka text-[18px] text-[#3c3c3c]">5 days</div>
+        <div class="text-[12px] font-black text-yellow-dark mt-[2px]">+100 ⭐</div>
+      </div>
+      <div class="w-8 h-8 rounded-full flex items-center justify-center text-[16px] flex-shrink-0 bg-green text-white border-b-[3px] border-green-dark shadow-[0_2px_0_#46A302]">✓</div>
+    </div>
+
+    <!-- Next up -->
+    <div class="relative bg-[#fffdf0] rounded-[18px] p-[16px_20px] flex items-center gap-[14px] border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-yellow">
+      <div class="text-[32px] flex-shrink-0 animate-floatY [animation-delay:.6s]">⚡</div>
+      <div class="flex-1">
+        <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Super Streak!</div>
+        <div class="text-[12px] text-[#aaa] font-black mt-[2px]">Almost there! 5 more days to go!</div>
+        <div class="h-[7px] bg-[#f0f0f0] rounded-full overflow-hidden mt-[7px]">
+          <div class="bar-fill h-full rounded-full bg-gradient-to-r from-yellow to-orange" style="--tw-bar-w:50%; width:50%;"></div>
+        </div>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <div class="font-fredoka text-[18px] text-[#3c3c3c]">10 days</div>
+        <div class="text-[12px] font-black text-yellow-dark mt-[2px]">+200 ⭐</div>
+      </div>
+      <div class="w-8 h-8 rounded-full flex items-center justify-center text-[16px] flex-shrink-0 bg-yellow text-[#5c3a00] border-b-[3px] border-yellow-dark shadow-[0_2px_0_#E5A100] animate-pulseGlow font-fredoka">5</div>
+    </div>
+
+    <!-- Locked -->
+    <div class="relative bg-white rounded-[18px] p-[16px_20px] flex items-center gap-[14px] border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-[#e0e0e0]">
+      <div class="text-[32px] flex-shrink-0 grayscale-[.7] opacity-50">💎</div>
+      <div class="flex-1">
+        <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Diamond Learner!</div>
+        <div class="text-[12px] text-[#aaa] font-black mt-[2px]">Build a 30-day streak</div>
+        <div class="h-[7px] bg-[#f0f0f0] rounded-full overflow-hidden mt-[7px]">
+          <div class="bar-fill h-full rounded-full bg-[#e0e0e0]" style="--tw-bar-w:17%; width:17%;"></div>
+        </div>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <div class="font-fredoka text-[18px] text-[#3c3c3c]">30 days</div>
+        <div class="text-[12px] font-black text-yellow-dark mt-[2px]">+500 ⭐</div>
+      </div>
+      <div class="w-8 h-8 rounded-full flex items-center justify-center text-[16px] flex-shrink-0 bg-[#f0f0f0] text-[#ccc] border-b-[3px] border-[#e0e0e0]">○</div>
+    </div>
+
+    <div class="relative bg-white rounded-[18px] p-[16px_20px] flex items-center gap-[14px] border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-[#e0e0e0]">
+      <div class="text-[32px] flex-shrink-0 grayscale-[.7] opacity-50">👑</div>
+      <div class="flex-1">
+        <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Streak Legend!</div>
+        <div class="text-[12px] text-[#aaa] font-black mt-[2px]">The ultimate 100-day streak</div>
+        <div class="h-[7px] bg-[#f0f0f0] rounded-full overflow-hidden mt-[7px]">
+          <div class="bar-fill h-full rounded-full bg-[#e0e0e0]" style="--tw-bar-w:5%; width:5%;"></div>
+        </div>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <div class="font-fredoka text-[18px] text-[#3c3c3c]">100 days</div>
+        <div class="text-[12px] font-black text-yellow-dark mt-[2px]">+1000 ⭐</div>
+      </div>
+      <div class="w-8 h-8 rounded-full flex items-center justify-center text-[16px] flex-shrink-0 bg-[#f0f0f0] text-[#ccc] border-b-[3px] border-[#e0e0e0]">○</div>
+    </div>
+
+  </div>
+
+</div><!-- /main -->
+
+<script>
+function navGo(page){
+  const map={home:'index.html',lesson:'index.html',minigames:'index.html',achievements:'achievements-tailwind.html',settings:'index.html'};
+  fireConf();
+  setTimeout(()=>{ window.location.href = map[page]||'index.html'; },300);
+}
+
+function fireConf(){
+  const picks=['🔥','⭐','🌟','✨','🎉','🏅'];
+  for(let i=0;i<16;i++){
+    setTimeout(()=>{
+      const c=document.createElement('div');
+      c.className='conf';
+      c.textContent=picks[Math.floor(Math.random()*picks.length)];
+      c.style.left=(10+Math.random()*70)+'vw';
+      c.style.top=(10+Math.random()*40)+'vh';
+      c.style.fontSize=(14+Math.random()*18)+'px';
+      c.style.animationDuration=(.6+Math.random()*.8)+'s';
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),1500);
+    },i*55);
+  }
+}
+
+function useFreeze(card){
+  card.style.transform='scale(.97)';
+  setTimeout(()=>card.style.transform='',150);
+}
+
+function getShield(){
+  const btn=document.getElementById('shieldBtn');
+  btn.textContent='✓ Got it! 🧊';
+  btn.style.background='#58CC02';btn.style.color='#fff';
+  fireConf();
+  setTimeout(()=>{btn.textContent='Get More! 🧊';btn.style.background='#fff';btn.style.color='#0a8fcc';},2000);
+}
+
+/* ── Heatmap ── */
+const TODAY = new Date(2026, 3, 4);
+const activityData = {
+  '2026-3-1':3,'2026-3-2':4,'2026-3-3':2,'2026-3-5':1,'2026-3-6':4,
+  '2026-3-8':3,'2026-3-10':4,'2026-3-11':2,'2026-3-12':3,'2026-3-14':4,
+  '2026-3-15':4,'2026-3-17':2,'2026-3-18':3,'2026-3-20':4,'2026-3-22':1,
+  '2026-3-24':3,'2026-3-25':4,'2026-3-27':2,'2026-3-28':4,'2026-3-29':3,
+  '2026-3-30':4,'2026-3-31':4,
+  '2026-4-1':3,'2026-4-2':4,'2026-4-3':2,'2026-4-4':4,
+};
+let viewYear=TODAY.getFullYear(), viewMonth=TODAY.getMonth();
+const MONTH_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function buildHeatmap(){
+  const grid=document.getElementById('heatmapGrid');
+  document.getElementById('hmMonthLabel').textContent=MONTH_NAMES[viewMonth]+' '+viewYear;
+  grid.innerHTML='';
+  const totalDays=new Date(viewYear,viewMonth+1,0).getDate();
+  const startDow=new Date(viewYear,viewMonth,1).getDay();
+  const isCurrentMonth=(viewYear===TODAY.getFullYear()&&viewMonth===TODAY.getMonth());
+  const todayDate=TODAY.getDate();
+
+  for(let i=0;i<startDow;i++){
+    const c=document.createElement('div');
+    c.className='aspect-square rounded-[10px]';
+    grid.appendChild(c);
+  }
+  for(let d=1;d<=totalDays;d++){
+    const c=document.createElement('div');
+    c.className='aspect-square rounded-[10px] flex items-center justify-center font-fredoka text-[11px] cursor-pointer transition-all hover:scale-[1.08] hover:shadow-[0_4px_12px_rgba(0,0,0,.18)] hover:z-10 relative';
+    c.textContent=d;
+    const key=`${viewYear}-${viewMonth}-${d}`;
+    const isFuture=isCurrentMonth?d>todayDate:(viewYear>TODAY.getFullYear()||(viewYear===TODAY.getFullYear()&&viewMonth>TODAY.getMonth()));
+    const isToday=isCurrentMonth&&d===todayDate;
+
+    if(isToday){
+      c.classList.add('bg-[#FF9600]','text-white','border-[3px]','border-[#FF9600]');
+      c.title='Today! 🔥';
+    } else if(isFuture){
+      c.classList.add('bg-[#f4f4f4]','text-[#ddd]');
+      c.title='Future';
+    } else {
+      const lvl=activityData[key]||0;
+      if(lvl===0){ c.classList.add('bg-[#f4f4f4]','text-[#ccc]'); c.title='No lesson'; }
+      else { c.classList.add('bg-[#FF9600]','text-white','border-b-2','border-[#cc7700]'); c.title='Learned 🔥'; }
+    }
+    grid.appendChild(c);
+  }
+}
+
+function prevMonth(){
+  viewMonth--;
+  if(viewMonth<0){viewMonth=11;viewYear--;}
+  buildHeatmap();
+}
+function nextMonth(){
+  const nextY=viewMonth===11?viewYear+1:viewYear;
+  const nextM=viewMonth===11?0:viewMonth+1;
+  if(nextY>TODAY.getFullYear()||(nextY===TODAY.getFullYear()&&nextM>TODAY.getMonth()))return;
+  viewMonth=nextM;viewYear=nextY;
+  buildHeatmap();
+}
+buildHeatmap();
+</script>
+</body>
+</html>
