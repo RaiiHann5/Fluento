@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fluento Knight · Streak</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Afacad:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Afacad', sans-serif; background: #f8fafc; }
+
+    @keyframes sidebarIn { from{opacity:0;transform:translateX(-28px) scale(.96)} to{opacity:1;transform:none} }
+    @keyframes itemIn { from{opacity:0;transform:translateX(-12px)} to{opacity:1;transform:none} }
+    @keyframes ripple { from{transform:scale(0);opacity:.3} to{transform:scale(5);opacity:0} }
+    @keyframes pulseAva { 0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,.5)} 50%{box-shadow:0 0 0 7px rgba(251,191,36,0)} }
+    @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
+    @keyframes pageIn { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:none} }
+    @keyframes fadeScaleIn { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:none} }
+    @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+    @keyframes flamePulse { 0%,100%{transform:scale(1) rotate(-2deg);filter:brightness(1)} 50%{transform:scale(1.08) rotate(2deg);filter:brightness(1.15)} }
+    @keyframes countUp { from{opacity:0;transform:translateY(8px) scale(.9)} to{opacity:1;transform:none} }
+    @keyframes barGrow { from{width:0} to{width:var(--bar-w)} }
+    @keyframes dayPopIn { from{opacity:0;transform:scale(.6)} to{opacity:1;transform:scale(1)} }
+    @keyframes ringFill { from{stroke-dashoffset:283} to{stroke-dashoffset:var(--dash-offset)} }
+    @keyframes glowPulse { 0%,100%{box-shadow:0 0 0 0 rgba(249,115,22,.25)} 50%{box-shadow:0 0 18px 6px rgba(249,115,22,.18)} }
+
+    .ripple-el { position:absolute; border-radius:50%; background:rgba(74,108,247,.18); pointer-events:none; transform:scale(0); animation:ripple .55s ease-out forwards; }
+    .shimmer { position:absolute; inset:0; background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.22) 50%,transparent 65%); background-size:200% 100%; animation:shimmer 3.5s linear infinite; border-radius:inherit; pointer-events:none; }
+    .nav-item .nav-icon svg { transition:transform .2s; }
+    .nav-item:hover .nav-icon svg { transform:translateY(-2px); }
+
+    /* flame */
+    .flame-icon { animation: flamePulse 2s ease-in-out infinite; display:inline-block; }
+
+    /* sidebar active */
+    .nav-item.active { background: #f3f4f6; color: #1e293b; }
+    .nav-item.active-streak { background: linear-gradient(135deg,#fff7ed,#fef3c7); color:#c2410c !important; }
+    .nav-item.active-streak .nav-label { color:#c2410c; font-weight:600; }
+    .nav-item.active-streak .nav-icon svg { color:#f97316; }
+
+    /* heatmap */
+    .heat-cell { width:14px; height:14px; border-radius:3px; transition:transform .15s, filter .15s; cursor:pointer; }
+    .heat-cell:hover { transform:scale(1.35); filter:brightness(1.1); }
+    .heat-0 { background:#f1f5f9; }
+    .heat-1 { background:#fed7aa; }
+    .heat-2 { background:#fb923c; }
+    .heat-3 { background:#f97316; }
+    .heat-4 { background:#ea580c; }
+
+    /* week day cells */
+    .week-day { animation: dayPopIn .3s ease both; }
+
+    /* ring */
+    .ring-svg circle.track { fill:none; stroke:#f1f5f9; stroke-width:10; }
+    .ring-svg circle.fill { fill:none; stroke-width:10; stroke-linecap:round; transform:rotate(-90deg); transform-origin:50% 50%; animation: ringFill 1.2s ease forwards; }
+
+    /* stat card hover */
+    .stat-card { transition:all .2s ease; }
+    .stat-card:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.08); }
+
+    /* streak number glow */
+    .streak-glow { animation: glowPulse 2.4s ease-in-out infinite; }
+
+    /* page animation */
+    .page-content { animation: pageIn .35s ease both; }
+
+    /* tooltip */
+    .heat-cell[data-tip]:hover::after { content: attr(data-tip); position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%); background:#1e293b; color:#fff; font-size:11px; padding:3px 8px; border-radius:6px; white-space:nowrap; pointer-events:none; font-family:'Afacad',sans-serif; z-index:99; }
+    .heat-cell { position:relative; }
+
+    /* milestone badge */
+    .badge { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:600; }
+
+    /* progress bar */
+    .prog-bar-fill { animation: barGrow 1s ease both; }
+
+    /* collapsed sidebar */
+    .sidebar-collapsed { width: 68px !important; }
+    .sidebar-collapsed .logo-text,
+    .sidebar-collapsed .nav-label,
+    .sidebar-collapsed .section-label,
+    .sidebar-collapsed .profile-inner { display:none !important; }
+    .sidebar-collapsed .profile-collapsed-icon { display:flex !important; }
+    .sidebar-collapsed #toggleBtn svg { transform: rotate(180deg); }
+    .sidebar-collapsed .logo-area { justify-content: center; }
+    .sidebar-collapsed .nav-item { justify-content: center; padding: 10px; }
+    .sidebar-collapsed .nav-icon { margin:0; }
+    .main-expanded { margin-left: 68px !important; }
+  </style>
+</head>
+<body class="bg-slate-50 font-[Afacad]">
+
+<!-- SIDEBAR -->
+<div id="sidebar" class="fixed top-0 left-0 h-screen bg-white rounded-r-2xl shadow-lg flex flex-col overflow-hidden transition-all duration-300 z-[100] w-[240px]">
+  <div id="toggleBtn" class="absolute top-4 -right-3 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center cursor-pointer z-20 shadow-sm hover:bg-gray-50 text-gray-400" onclick="toggleSidebar()">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </div>
+  <div id="scrollArea" class="flex-1 overflow-y-auto overflow-x-hidden px-3 py-5">
+    <div class="logo-area flex items-center gap-2.5 pb-5 min-h-[56px]">
+      <div class="logo-icon w-8 h-8 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0"><i data-lucide="graduation-cap" class="w-4 h-4 text-white"></i></div>
+      <span class="logo-text font-bold text-[17px] text-slate-800 whitespace-nowrap tracking-tight">Fluento Knight</span>
+    </div>
+    <div class="section-label text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-2 py-3 whitespace-nowrap">Menu</div>
+
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all duration-200 hover:bg-gray-50" data-page="dashboard">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="layout-dashboard" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Dashboard</span>
+    </div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all duration-200 hover:bg-gray-50" data-page="myspace">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="house" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">My Space</span>
+    </div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all duration-200 hover:bg-gray-50" data-page="lesson">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="pencil-line" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Lesson</span>
+    </div>
+    <div class="nav-item active-streak flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer mb-1 transition-all duration-200" data-page="streak">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center text-orange-500"><i data-lucide="book-marked" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-semibold text-orange-700">Streak</span>
+    </div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all duration-200 hover:bg-gray-50" data-page="achievements">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="trophy" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Achievements</span>
+    </div>
+
+    <div class="h-px bg-gray-100 my-2 mx-1"></div>
+    <div class="section-label text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-2 py-3">Account</div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all duration-200 hover:bg-gray-50">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="settings-2" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Settings</span>
+    </div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-400 mb-1 transition-all duration-200 hover:bg-gray-50 mt-1">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="log-out" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Log out</span>
+    </div>
+  </div>
+
+  <div id="profileCard" class="relative mx-3 mb-4 rounded-2xl bg-gradient-to-br from-amber-100 via-amber-300 to-orange-400 p-4 flex-shrink-0 cursor-pointer overflow-hidden">
+    <div class="shimmer"></div>
+    <div class="profile-inner relative z-10 flex items-center gap-2.5">
+      <div class="w-9 h-9 bg-white/30 rounded-full flex items-center justify-center border-2 border-white/50 animate-[pulseAva_2.4s_ease-in-out_infinite] flex-shrink-0">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="rgba(0,0,0,.55)" stroke="none"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </div>
+      <div>
+        <div class="text-sm font-bold text-amber-900">John Doe</div>
+        <div class="text-[11.5px] font-medium text-amber-800/70">Gold Learner</div>
+      </div>
+    </div>
+    <div class="profile-collapsed-icon hidden justify-center relative z-10">
+      <div class="w-10 h-10 bg-white/30 rounded-full flex items-center justify-center border-2 border-white/50">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="rgba(0,0,0,.55)"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main" class="transition-all duration-300 ml-[240px] min-h-screen p-10 bg-slate-50">
+  <div class="page-content max-w-5xl mx-auto">
+
+    <!-- Page Header -->
+    <div class="flex items-center gap-3 mb-1.5">
+      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-500 to-amber-400 flex items-center justify-center shadow-sm">
+        <span class="flame-icon text-xl leading-none">🔥</span>
+      </div>
+      <div class="text-2xl font-bold text-slate-800 tracking-tight">Streak</div>
+    </div>
+    <div class="text-sm text-gray-400 ml-14 mb-7">Keep your learning fire alive — every day counts</div>
+
+    <!-- Top Row: Big Streak + Ring + Quick Stats -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-7">
+
+      <!-- Big Streak Card -->
+      <div class="lg:col-span-1 bg-gradient-to-br from-orange-500 to-amber-400 rounded-3xl p-6 text-white shadow-md streak-glow relative overflow-hidden flex flex-col justify-between min-h-[200px]">
+        <div class="shimmer"></div>
+        <div class="relative z-10">
+          <div class="text-sm font-semibold text-white/80 uppercase tracking-wider mb-1">Current Streak</div>
+          <div class="flex items-end gap-2">
+            <div class="text-7xl font-extrabold leading-none" id="streak-number">0</div>
+            <div class="text-2xl font-bold text-white/80 mb-1">days</div>
+          </div>
+        </div>
+        <div class="relative z-10 mt-4">
+          <div class="flex items-center gap-2 text-white/90 text-sm font-medium">
+            <i data-lucide="calendar-check" class="w-4 h-4"></i>
+            <span>Started <span id="streak-start-label">—</span></span>
+          </div>
+          <div class="mt-2 h-1.5 bg-white/30 rounded-full overflow-hidden">
+            <div id="streak-prog" class="h-full bg-white rounded-full prog-bar-fill transition-all" style="--bar-w:0%;width:var(--bar-w)"></div>
+          </div>
+          <div class="text-xs text-white/70 mt-1"><span id="streak-next-milestone-label">Next milestone: 7 days</span></div>
+        </div>
+        <!-- decorative circle -->
+        <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-white/10 rounded-full"></div>
+        <div class="absolute -right-2 -bottom-2 w-16 h-16 bg-white/10 rounded-full"></div>
+      </div>
+
+      <!-- Ring + XP -->
+      <div class="bg-white rounded-3xl p-6 shadow-sm flex flex-col items-center justify-center gap-3">
+        <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Today's Goal</div>
+        <div class="relative w-32 h-32">
+          <svg class="ring-svg w-full h-full" viewBox="0 0 100 100">
+            <circle class="track" cx="50" cy="50" r="45"/>
+            <circle class="fill" cx="50" cy="50" r="45"
+              id="goal-ring"
+              stroke="url(#ringGrad)"
+              style="--dash-offset:85; stroke-dasharray:283; stroke-dashoffset:283"/>
+            <defs>
+              <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#f97316"/>
+                <stop offset="100%" stop-color="#fbbf24"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <div class="text-2xl font-extrabold text-slate-800" id="goal-pct">70%</div>
+            <div class="text-xs text-gray-400">done</div>
+          </div>
+        </div>
+        <div class="text-sm text-gray-500 font-medium">
+          <span id="goal-done">21</span><span class="text-gray-300">/</span><span id="goal-total">30</span> <span class="text-gray-400">min studied</span>
+        </div>
+        <button onclick="logToday()" class="mt-1 bg-gradient-to-r from-orange-500 to-amber-400 text-white rounded-full px-5 py-2 text-sm font-semibold shadow-sm hover:shadow-md transition-all flex items-center gap-1.5">
+          <i data-lucide="plus" class="w-4 h-4"></i> Log Today
+        </button>
+      </div>
+
+      <!-- Mini Stats -->
+      <div class="flex flex-col gap-4">
+        <div class="stat-card bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+          </div>
+          <div>
+            <div class="text-xs font-semibold text-gray-400 uppercase">Longest Streak</div>
+            <div class="text-2xl font-extrabold text-slate-800"><span id="stat-longest">21</span> <span class="text-sm font-medium text-gray-400">days</span></div>
+          </div>
+        </div>
+        <div class="stat-card bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="check-circle-2" class="w-5 h-5 text-white"></i>
+          </div>
+          <div>
+            <div class="text-xs font-semibold text-gray-400 uppercase">Total Days</div>
+            <div class="text-2xl font-extrabold text-slate-800"><span id="stat-total-days">47</span> <span class="text-sm font-medium text-gray-400">days</span></div>
+          </div>
+        </div>
+        <div class="stat-card bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-400 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="clock" class="w-5 h-5 text-white"></i>
+          </div>
+          <div>
+            <div class="text-xs font-semibold text-gray-400 uppercase">Total Time</div>
+            <div class="text-2xl font-extrabold text-slate-800"><span id="stat-total-time">23</span> <span class="text-sm font-medium text-gray-400">hrs</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- This Week -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+      <div class="flex items-center justify-between mb-5">
+        <div class="flex items-center gap-2">
+          <i data-lucide="calendar-days" class="w-5 h-5 text-orange-500"></i>
+          <span class="font-bold text-slate-800">This Week</span>
+        </div>
+        <div class="text-xs font-semibold text-gray-400 bg-gray-100 px-3 py-1 rounded-full" id="week-range-label">—</div>
+      </div>
+      <div class="grid grid-cols-7 gap-2" id="week-grid"></div>
+    </div>
+
+    <!-- Activity Heatmap -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+      <div class="flex items-center justify-between mb-5">
+        <div class="flex items-center gap-2">
+          <i data-lucide="activity" class="w-5 h-5 text-orange-500"></i>
+          <span class="font-bold text-slate-800">Activity Heatmap</span>
+          <span class="text-xs text-gray-400 font-medium">— last 16 weeks</span>
+        </div>
+        <div class="flex items-center gap-1.5 text-xs text-gray-400">
+          <span>Less</span>
+          <div class="w-3 h-3 rounded-sm heat-0"></div>
+          <div class="w-3 h-3 rounded-sm heat-1"></div>
+          <div class="w-3 h-3 rounded-sm heat-2"></div>
+          <div class="w-3 h-3 rounded-sm heat-3"></div>
+          <div class="w-3 h-3 rounded-sm heat-4"></div>
+          <span>More</span>
+        </div>
+      </div>
+      <div class="flex gap-1 overflow-x-auto pb-1" id="heatmap-grid"></div>
+      <div class="flex gap-2 mt-3 text-xs text-gray-400">
+        <span>Mon</span><span>Wed</span><span>Fri</span>
+      </div>
+    </div>
+
+    <!-- Milestones & Log -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
+
+      <!-- Milestones -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm">
+        <div class="flex items-center gap-2 mb-5">
+          <i data-lucide="flag" class="w-5 h-5 text-orange-500"></i>
+          <span class="font-bold text-slate-800">Milestones</span>
+        </div>
+        <div class="space-y-3" id="milestones-list"></div>
+      </div>
+
+      <!-- Recent Log -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-5">
+          <div class="flex items-center gap-2">
+            <i data-lucide="list-checks" class="w-5 h-5 text-orange-500"></i>
+            <span class="font-bold text-slate-800">Recent Sessions</span>
+          </div>
+          <button onclick="openLogModal()" class="text-xs font-semibold text-orange-500 hover:text-orange-600 flex items-center gap-1">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add
+          </button>
+        </div>
+        <div class="space-y-2.5" id="log-list"></div>
+        <div id="log-empty" class="text-center py-8 text-gray-400 text-sm hidden">
+          No sessions logged yet
+        </div>
+      </div>
+    </div>
+
+    <!-- Freeze / Restore Banner -->
+    <div class="bg-gradient-to-r from-slate-800 to-slate-700 rounded-2xl p-5 flex items-center justify-between flex-wrap gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-lg">🛡️</div>
+        <div>
+          <div class="font-bold text-white">Streak Shield</div>
+          <div class="text-xs text-slate-400">You have <span id="shield-count" class="text-amber-400 font-bold">2</span> freeze tokens — use one to protect your streak on a missed day</div>
+        </div>
+      </div>
+      <button onclick="useShield()" class="bg-amber-400 text-slate-900 rounded-full px-5 py-2 text-sm font-bold hover:bg-amber-300 transition-all flex items-center gap-1.5 flex-shrink-0">
+        <i data-lucide="shield" class="w-4 h-4"></i> Use Shield
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Log Session Modal -->
+<div id="modal-log" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-[500] p-5">
+  <div class="bg-white rounded-3xl w-full max-w-sm p-7 animate-[fadeScaleIn_.22s_ease]">
+    <div class="flex items-center gap-2 text-lg font-bold mb-5">
+      <i data-lucide="pencil" class="w-5 h-5 text-orange-500"></i> Log Session
+    </div>
+    <div class="mb-3">
+      <label class="text-xs font-semibold text-gray-500">Activity</label>
+      <select id="log-activity" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm mt-1 outline-none focus:border-orange-400">
+        <option>Vocabulary</option>
+        <option>Grammar</option>
+        <option>Listening</option>
+        <option>Speaking</option>
+        <option>Reading</option>
+        <option>Writing</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="text-xs font-semibold text-gray-500">Duration (minutes)</label>
+      <input type="number" id="log-duration" min="1" max="300" value="15" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm mt-1 outline-none focus:border-orange-400"/>
+    </div>
+    <div class="mb-5">
+      <label class="text-xs font-semibold text-gray-500">Note (optional)</label>
+      <input type="text" id="log-note" placeholder="e.g. chapter 3 vocab" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm mt-1 outline-none focus:border-orange-400"/>
+    </div>
+    <div class="flex justify-end gap-3">
+      <button onclick="closeLogModal()" class="px-5 py-2 bg-gray-100 rounded-full text-sm font-medium">Cancel</button>
+      <button onclick="saveSession()" class="px-5 py-2 bg-gradient-to-r from-orange-500 to-amber-400 text-white rounded-full text-sm font-medium shadow-sm">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ─── Sidebar ─────────────────────────────────────────────────────────────
+  const sidebar = document.getElementById('sidebar');
+  const mainEl  = document.getElementById('main');
+  function toggleSidebar() {
+    sidebar.classList.toggle('sidebar-collapsed');
+    mainEl.classList.toggle('main-expanded');
+  }
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.onclick = (e) => {
+      let rect = el.getBoundingClientRect();
+      let rip = document.createElement('span');
+      rip.className = 'ripple-el';
+      rip.style.left = (e.clientX - rect.left - 15) + 'px';
+      rip.style.top  = (e.clientY - rect.top  - 15) + 'px';
+      el.appendChild(rip);
+      setTimeout(() => rip.remove(), 600);
+    };
+  });
+
+  // ─── Data ─────────────────────────────────────────────────────────────────
+  const MILESTONES = [3, 7, 14, 21, 30, 60, 100];
+  const DAYS_LABEL = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+  // Build fake activity data for demo (last 112 days)
+  function buildActivityMap() {
+    const map = {};
+    const today = new Date();
+    let streak = 0;
+    // simulate a current streak of 12 and some gaps
+    for (let i = 0; i < 112; i++) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const key = fmtKey(d);
+      if (i < 12) {
+        map[key] = Math.floor(Math.random() * 3) + 2; // heat 2-4
+      } else if (i === 12) {
+        // gap
+      } else if (i < 35 && Math.random() > 0.3) {
+        map[key] = Math.floor(Math.random() * 3) + 1;
+      } else if (Math.random() > 0.55) {
+        map[key] = Math.floor(Math.random() * 2) + 1;
+      }
+    }
+    return map;
+  }
+
+  function fmtKey(d) {
+    return d.toISOString().slice(0, 10);
+  }
+  function today() { return new Date(); }
+  function todayKey() { return fmtKey(today()); }
+
+  let activityMap = buildActivityMap();
+  // ensure today is active
+  activityMap[todayKey()] = 3;
+
+  let sessions = [
+    { id:1, activity:'Vocabulary', duration:20, note:'Unit 5 words', date:'Today' },
+    { id:2, activity:'Grammar',    duration:15, note:'Past perfect',  date:'Yesterday' },
+    { id:3, activity:'Listening',  duration:25, note:'BBC podcast',   date:'2 days ago' },
+  ];
+  let shieldCount = 2;
+  let goalDone = 21;
+  let goalTotal = 30;
+
+  function computeCurrentStreak() {
+    let streak = 0;
+    const d = new Date();
+    while (true) {
+      const k = fmtKey(d);
+      if (activityMap[k]) streak++;
+      else break;
+      d.setDate(d.getDate() - 1);
+    }
+    return streak;
+  }
+
+  function computeTotalDays() {
+    return Object.keys(activityMap).length;
+  }
+
+  // ─── Render ───────────────────────────────────────────────────────────────
+  function renderAll() {
+    renderStats();
+    renderWeek();
+    renderHeatmap();
+    renderMilestones();
+    renderLog();
+    renderRing();
+    lucide.createIcons();
+  }
+
+  function renderStats() {
+    const streak = computeCurrentStreak();
+    document.getElementById('streak-number').textContent = streak;
+
+    // start date
+    const startD = new Date();
+    startD.setDate(startD.getDate() - (streak - 1));
+    document.getElementById('streak-start-label').textContent = startD.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+
+    // progress to next milestone
+    const next = MILESTONES.find(m => m > streak) || MILESTONES[MILESTONES.length-1];
+    const prev = MILESTONES.filter(m => m <= streak).slice(-1)[0] || 0;
+    const pct = Math.round(((streak - prev) / (next - prev)) * 100);
+    document.getElementById('streak-prog').style.setProperty('--bar-w', pct + '%');
+    document.getElementById('streak-next-milestone-label').textContent = streak >= 100 ? '🎉 Max milestone reached!' : `Next milestone: ${next} days`;
+
+    document.getElementById('stat-longest').textContent = Math.max(streak, 21);
+    document.getElementById('stat-total-days').textContent = computeTotalDays();
+    document.getElementById('stat-total-time').textContent = Math.round(computeTotalDays() * 0.5);
+    document.getElementById('shield-count').textContent = shieldCount;
+  }
+
+  function renderRing() {
+    const pct = Math.round((goalDone / goalTotal) * 100);
+    const circum = 283;
+    const offset = circum - (circum * pct / 100);
+    const ring = document.getElementById('goal-ring');
+    ring.style.setProperty('--dash-offset', offset);
+    ring.style.strokeDashoffset = offset;
+    document.getElementById('goal-pct').textContent = pct + '%';
+    document.getElementById('goal-done').textContent = goalDone;
+    document.getElementById('goal-total').textContent = goalTotal;
+  }
+
+  function renderWeek() {
+    const grid = document.getElementById('week-grid');
+    const today = new Date();
+    // find Monday of current week
+    const dayOfWeek = (today.getDay() + 6) % 7; // Mon=0
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - dayOfWeek);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+
+    document.getElementById('week-range-label').textContent =
+      monday.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' – ' +
+      sunday.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+
+    grid.innerHTML = DAYS_LABEL.map((label, i) => {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      const key = fmtKey(d);
+      const isToday = key === todayKey();
+      const isFuture = d > today;
+      const active = !!activityMap[key];
+      const isPast = !isFuture && !isToday;
+
+      let cellClass = '';
+      let innerContent = '';
+
+      if (isFuture) {
+        cellClass = 'bg-gray-50 border-2 border-dashed border-gray-200';
+        innerContent = `<span class="text-gray-300 text-lg">·</span>`;
+      } else if (active) {
+        cellClass = 'bg-gradient-to-br from-orange-500 to-amber-400 shadow-md';
+        innerContent = `<span class="text-white text-xl">🔥</span>`;
+      } else {
+        cellClass = 'bg-gray-100 border-2 border-gray-200';
+        innerContent = `<span class="text-gray-400 text-lg">✗</span>`;
+      }
+
+      return `
+        <div class="week-day flex flex-col items-center gap-1.5" style="animation-delay:${i*60}ms">
+          <div class="text-xs font-semibold ${isToday ? 'text-orange-500' : 'text-gray-400'}">${label}</div>
+          <div class="w-full aspect-square rounded-xl flex items-center justify-center ${cellClass} ${isToday ? 'ring-2 ring-orange-400 ring-offset-1' : ''}">
+            ${innerContent}
+          </div>
+          <div class="text-[10px] text-gray-400">${d.getDate()}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderHeatmap() {
+    const container = document.getElementById('heatmap-grid');
+    const today = new Date();
+    const WEEKS = 16;
+    // start from 16 weeks ago Monday
+    const dayOfWeek = (today.getDay() + 6) % 7;
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - dayOfWeek - (WEEKS - 1) * 7);
+
+    let html = '';
+    for (let w = 0; w < WEEKS; w++) {
+      html += `<div class="flex flex-col gap-1">`;
+      for (let d = 0; d < 7; d++) {
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + w * 7 + d);
+        const key = fmtKey(date);
+        const level = activityMap[key] || 0;
+        const isFuture = date > today;
+        const cls = isFuture ? 'heat-0 opacity-30' : `heat-${Math.min(level, 4)}`;
+        const tip = isFuture ? '' : (level ? `${date.toLocaleDateString('en-US',{month:'short',day:'numeric'})}: ${level * 10} min` : `${date.toLocaleDateString('en-US',{month:'short',day:'numeric'})}: no activity`);
+        html += `<div class="heat-cell ${cls}" data-tip="${tip}" title="${tip}"></div>`;
+      }
+      html += `</div>`;
+    }
+    container.innerHTML = html;
+  }
+
+  function renderMilestones() {
+    const streak = computeCurrentStreak();
+    const list = document.getElementById('milestones-list');
+    list.innerHTML = MILESTONES.map(m => {
+      const done = streak >= m;
+      const active = !done && (MILESTONES.filter(x => x <= streak).slice(-1)[0] || 0) < m && (MILESTONES.find(x => x > streak) === m);
+      const pct = done ? 100 : Math.round(Math.min(streak / m * 100, 99));
+      const emoji = m <= 3 ? '🌱' : m <= 7 ? '🔥' : m <= 14 ? '⚡' : m <= 30 ? '💪' : m <= 60 ? '🏆' : '👑';
+      return `
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center text-lg flex-shrink-0 ${done ? 'bg-gradient-to-br from-orange-500 to-amber-400' : 'bg-gray-100'}">${done ? '✅' : emoji}</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-sm font-semibold ${done ? 'text-slate-800' : 'text-gray-500'}">${m}-Day Streak</span>
+              <span class="text-xs font-bold ${done ? 'text-orange-500' : 'text-gray-400'}">${done ? '✓' : pct + '%'}</span>
+            </div>
+            <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+              <div class="h-full rounded-full prog-bar-fill ${done ? 'bg-gradient-to-r from-orange-500 to-amber-400' : 'bg-orange-200'}" style="--bar-w:${pct}%;width:${pct}%"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderLog() {
+    const list = document.getElementById('log-list');
+    const empty = document.getElementById('log-empty');
+    if (sessions.length === 0) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
+    empty.classList.add('hidden');
+    const colors = { Vocabulary:'bg-indigo-100 text-indigo-600', Grammar:'bg-purple-100 text-purple-600', Listening:'bg-blue-100 text-blue-600', Speaking:'bg-emerald-100 text-emerald-600', Reading:'bg-amber-100 text-amber-700', Writing:'bg-rose-100 text-rose-600' };
+    list.innerHTML = sessions.slice(0, 5).map(s => `
+      <div class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-orange-50 transition-all group">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${colors[s.activity] || 'bg-gray-200 text-gray-600'} text-xs font-bold">${s.activity.slice(0,3)}</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-sm font-semibold text-slate-700">${s.activity}</div>
+          ${s.note ? `<div class="text-xs text-gray-400 truncate">${escHtml(s.note)}</div>` : ''}
+        </div>
+        <div class="text-right flex-shrink-0">
+          <div class="text-sm font-bold text-slate-700">${s.duration}<span class="text-xs text-gray-400 font-normal">m</span></div>
+          <div class="text-xs text-gray-400">${s.date}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ─── Log Modal ────────────────────────────────────────────────────────────
+  window.openLogModal = function() {
+    const m = document.getElementById('modal-log');
+    m.style.display = 'flex'; m.classList.add('flex');
+    lucide.createIcons();
+  };
+  window.closeLogModal = function() {
+    const m = document.getElementById('modal-log');
+    m.style.display = 'none'; m.classList.remove('flex');
+  };
+  window.saveSession = function() {
+    const activity = document.getElementById('log-activity').value;
+    const duration = parseInt(document.getElementById('log-duration').value) || 15;
+    const note     = document.getElementById('log-note').value.trim();
+    sessions.unshift({ id: Date.now(), activity, duration, note, date: 'Today' });
+    // mark today active
+    activityMap[todayKey()] = Math.min((activityMap[todayKey()] || 0) + 1, 4);
+    goalDone = Math.min(goalDone + duration, goalTotal + 10);
+    closeLogModal();
+    renderAll();
+    showToast('Session logged 🔥');
+  };
+
+  window.logToday = function() { openLogModal(); };
+
+  window.useShield = function() {
+    if (shieldCount <= 0) { showToast('No shields left'); return; }
+    shieldCount--;
+    showToast('🛡️ Shield used! Streak protected');
+    renderStats();
+    lucide.createIcons();
+  };
+
+  // ─── Helpers ──────────────────────────────────────────────────────────────
+  function escHtml(s) { return String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+  function showToast(msg) {
+    const old = document.querySelector('.toast'); if (old) old.remove();
+    const t = document.createElement('div');
+    t.className = 'toast fixed bottom-5 right-5 bg-slate-800 text-white rounded-full px-5 py-2.5 text-sm font-medium shadow-lg z-[999] flex items-center gap-2 animate-[slideUp_.25s_ease]';
+    t.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> ${msg}`;
+    document.body.appendChild(t);
+    lucide.createIcons();
+    setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2200);
+  }
+
+  // ─── Init ─────────────────────────────────────────────────────────────────
+  renderAll();
+  lucide.createIcons();
+</script>
+</body>
+</html>

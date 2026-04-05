@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fluento Knight · My Space</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Afacad:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Afacad', sans-serif; background: #f8fafc; }
+    /* custom keyframes & sidebar animations tetap pakai css murni karena tailwind ga bisa cover semua */
+    @keyframes sidebarIn { from{opacity:0;transform:translateX(-28px) scale(.96)} to{opacity:1;transform:none} }
+    @keyframes itemIn { from{opacity:0;transform:translateX(-12px)} to{opacity:1;transform:none} }
+    @keyframes ripple { from{transform:scale(0);opacity:.3} to{transform:scale(5);opacity:0} }
+    @keyframes pulseAva { 0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,.5)} 50%{box-shadow:0 0 0 7px rgba(251,191,36,0)} }
+    @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
+    @keyframes pageIn { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:none} }
+    @keyframes fadeScaleIn { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:none} }
+    @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+    .ripple-el { position:absolute; border-radius:50%; background:rgba(74,108,247,.18); pointer-events:none; transform:scale(0); animation:ripple .55s ease-out forwards; }
+    .shimmer { position:absolute; inset:0; background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.22) 50%,transparent 65%); background-size:200% 100%; animation:shimmer 3.5s linear infinite; border-radius:inherit; pointer-events:none; }
+    .nav-item .nav-icon svg { transition:transform .2s; }
+    .nav-item:hover .nav-icon svg { transform:translateY(-2px); }
+    .note-card, .link-row, .coll-card { transition: all 0.2s ease; }
+  </style>
+</head>
+<body class="bg-slate-50 font-[Afacad]">
+
+<!-- SIDEBAR TETAP LENGKAP, SAMA PERSIS SEPERTI ASLI -->
+<div id="sidebar" class="fixed top-0 left-0 h-screen bg-white rounded-r-2xl shadow-lg flex flex-col overflow-hidden transition-all duration-300 z-[100] w-[240px]">
+  <div id="toggleBtn" class="absolute top-4 -right-3 w-6.5 h-6.5 bg-white border border-gray-200 rounded-full flex items-center justify-center cursor-pointer z-20 shadow-sm hover:bg-gray-50 text-gray-400">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </div>
+  <div id="scrollArea" class="flex-1 overflow-y-auto overflow-x-hidden px-3 py-5 scrollbar-thin">
+    <div class="logo-area flex items-center gap-2.5 pb-5 min-h-[56px]">
+      <div class="logo-icon w-8 h-8 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0"><i data-lucide="graduation-cap" class="w-4.5 h-4.5 text-white"></i></div>
+      <span class="logo-text font-bold text-[17px] text-slate-800 whitespace-nowrap tracking-tight transition-opacity duration-200">Fluento Knight</span>
+    </div>
+    <div class="section-label text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-2 py-3 whitespace-nowrap overflow-hidden">Menu</div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all duration-200 hover:bg-gray-50 active-page" data-page="userspace">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="layout-dashboard" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Dashboard</span>
+    </div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all duration-200 hover:bg-gray-50 active" data-page="userspace">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="house" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">My Space</span>
+    </div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all duration-200 hover:bg-gray-50" data-page="userspace">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="pencil-line" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Lesson</span>
+    </div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all duration-200 hover:bg-gray-50" data-page="userspace">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="book-marked" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Streak</span>
+    </div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all duration-200 hover:bg-gray-50" data-page="userspace">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="trophy" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Achievements</span>
+    </div>
+    <div class="divider h-px bg-gray-100 my-2 mx-1"></div>
+    <div class="section-label text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-2 py-3">Account</div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all duration-200 hover:bg-gray-50" data-page="userspace">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="settings-2" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Settings</span>
+    </div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-400 mb-1 transition-all duration-200 hover:bg-gray-50 mt-1" data-page="userspace">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="log-out" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Log out</span>
+    </div>
+  </div>
+  <div id="profileCard" class="relative mx-3 mb-4 rounded-2xl bg-gradient-to-br from-amber-100 via-amber-300 to-orange-400 p-4 flex-shrink-0 cursor-pointer transition-all duration-200 overflow-hidden">
+    <div class="shimmer"></div>
+    <div class="profile-inner relative z-10 flex items-center gap-2.5">
+      <div class="avatar-ring w-9 h-9 bg-white/30 rounded-full flex items-center justify-center border-2 border-white/50 animate-[pulseAva_2.4s_ease-in-out_infinite]"><svg viewBox="0 0 24 24" width="20" height="20" fill="rgba(0,0,0,.55)" stroke="none"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+      <div><div class="profile-name text-sm font-bold text-amber-900">John Doe</div><div class="profile-role text-[11.5px] font-medium text-amber-800/70">Gold Learner</div></div>
+    </div>
+    <div class="profile-collapsed-icon hidden justify-center relative z-10"><div class="avatar-ring-sm w-10 h-10 bg-white/30 rounded-full flex items-center justify-center border-2 border-white/50"><svg viewBox="0 0 24 24" width="20" height="20" fill="rgba(0,0,0,.55)"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div></div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT: HANYA USER SPACE YANG TAMPIL -->
+<div id="main" class="transition-all duration-300 ml-[240px] min-h-screen p-10 bg-slate-50">
+  <div class="page active" id="page-userspace">
+    <!-- Header -->
+    <div class="flex items-center gap-3 mb-1.5">
+      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center shadow-sm"><i data-lucide="house" class="w-5 h-5 text-white"></i></div>
+      <div class="text-2xl font-bold text-slate-800 tracking-tight">My Space</div>
+    </div>
+    <div class="text-sm text-gray-400 ml-14 mb-7">Your personal hub — notes, links & collections</div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-7">
+      <div class="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all"><div class="text-indigo-500 mb-2"><i data-lucide="file-text" class="w-6 h-6"></i></div><div class="text-xs font-semibold text-gray-400 uppercase">Notes</div><div class="text-3xl font-extrabold text-slate-800 mt-1" id="stat-notes">0</div><div class="text-xs text-gray-400 mt-1">total entries</div></div>
+      <div class="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all"><div class="text-blue-500 mb-2"><i data-lucide="link-2" class="w-6 h-6"></i></div><div class="text-xs font-semibold text-gray-400 uppercase">Links</div><div class="text-3xl font-extrabold text-slate-800 mt-1" id="stat-links">0</div><div class="text-xs text-gray-400 mt-1">saved resources</div></div>
+      <div class="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all"><div class="text-emerald-500 mb-2"><i data-lucide="folder-open" class="w-6 h-6"></i></div><div class="text-xs font-semibold text-gray-400 uppercase">Collections</div><div class="text-3xl font-extrabold text-slate-800 mt-1" id="stat-colls">3</div><div class="text-xs text-gray-400 mt-1">learning bundles</div></div>
+      <div class="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all"><div class="text-amber-500 mb-2"><i data-lucide="pin" class="w-6 h-6"></i></div><div class="text-xs font-semibold text-gray-400 uppercase">Pinned</div><div class="text-3xl font-extrabold text-slate-800 mt-1" id="stat-pinned">0</div><div class="text-xs text-gray-400 mt-1">priority items</div></div>
+    </div>
+
+    <!-- Pinned bar -->
+    <div id="pinned-bar" class="bg-white rounded-xl p-4 mb-6 shadow-sm hidden">
+      <div class="flex items-center gap-2 mb-2"><i data-lucide="pin" class="w-4 h-4 text-amber-500"></i><span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Pinned</span></div>
+      <div class="flex flex-wrap gap-2" id="pinned-chips"></div>
+    </div>
+
+    <!-- Search & Actions -->
+    <div class="flex flex-wrap justify-between items-center gap-4 mb-5">
+      <div class="flex items-center gap-2 bg-white border border-gray-200 rounded-full py-2 px-5 flex-1 max-w-md focus-within:ring-2 focus-within:ring-purple-200"><i data-lucide="search" class="w-4 h-4 text-gray-400"></i><input type="text" id="space-search-input" placeholder="Search notes or links..." class="bg-transparent outline-none w-full text-sm"></div>
+      <div class="flex gap-2"><button onclick="openModal('note')" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full px-5 py-2 text-sm font-semibold flex items-center gap-1.5 shadow-sm hover:shadow-md transition-all"><i data-lucide="plus" class="w-4 h-4"></i> New Note</button><button onclick="openModal('link')" class="bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-full px-5 py-2 text-sm font-semibold flex items-center gap-1.5 shadow-sm hover:shadow-md"><i data-lucide="link-2" class="w-4 h-4"></i> New Link</button></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex gap-1.5 mb-6 bg-white p-1.5 rounded-full w-fit shadow-sm">
+      <div class="sp-tab cursor-pointer rounded-full px-6 py-2 text-sm font-medium text-gray-500 flex items-center gap-1.5 transition-all active-tab" data-tab="notes"><i data-lucide="file-text" class="w-4 h-4"></i> Notes</div>
+      <div class="sp-tab cursor-pointer rounded-full px-6 py-2 text-sm font-medium text-gray-500 flex items-center gap-1.5 transition-all" data-tab="links"><i data-lucide="link-2" class="w-4 h-4"></i> Links</div>
+      <div class="sp-tab cursor-pointer rounded-full px-6 py-2 text-sm font-medium text-gray-500 flex items-center gap-1.5 transition-all" data-tab="collections"><i data-lucide="folder-open" class="w-4 h-4"></i> Collections</div>
+    </div>
+
+    <!-- Notes Panel -->
+    <div class="sp-panel active-panel" id="sp-notes">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="notes-grid"></div>
+      <div id="notes-empty" class="text-center py-16 bg-white rounded-2xl mt-4"><div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-3"><i data-lucide="file-text" class="w-7 h-7 text-gray-400"></i></div><div class="font-semibold text-gray-700">No notes yet</div><div class="text-sm text-gray-400">Click "New Note" to start writing</div></div>
+    </div>
+
+    <!-- Links Panel -->
+    <div class="sp-panel hidden" id="sp-links">
+      <div class="space-y-3" id="links-list"></div>
+      <div id="links-empty" class="text-center py-16 bg-white rounded-2xl mt-4"><div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-3"><i data-lucide="link-2" class="w-7 h-7 text-gray-400"></i></div><div class="font-semibold text-gray-700">No links saved</div><div class="text-sm text-gray-400">Save articles, videos or tools</div></div>
+    </div>
+
+    <!-- Collections Panel (static) -->
+    <div class="sp-panel hidden" id="sp-collections">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="bg-white rounded-2xl p-5 shadow-sm"><div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-500 flex items-center justify-center mb-3"><i data-lucide="book-open" class="w-5 h-5 text-white"></i></div><div class="font-bold text-lg">Grammar vault</div><div class="text-sm text-gray-500 mb-3">12 resources</div><div class="h-1.5 bg-gray-100 rounded-full overflow-hidden"><div class="h-full w-[70%] bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full"></div></div></div>
+        <div class="bg-white rounded-2xl p-5 shadow-sm"><div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center mb-3"><i data-lucide="mic" class="w-5 h-5 text-white"></i></div><div class="font-bold text-lg">Speaking drills</div><div class="text-sm text-gray-500 mb-3">5 videos</div><div class="h-1.5 bg-gray-100 rounded-full overflow-hidden"><div class="h-full w-[45%] bg-gradient-to-r from-emerald-500 to-green-500 rounded-full"></div></div></div>
+        <div class="bg-white rounded-2xl p-5 shadow-sm"><div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mb-3"><i data-lucide="bookmark" class="w-5 h-5 text-white"></i></div><div class="font-bold text-lg">Vocab builder</div><div class="text-sm text-gray-500 mb-3">24 words</div><div class="h-1.5 bg-gray-100 rounded-full overflow-hidden"><div class="h-full w-[88%] bg-gradient-to-r from-amber-500 to-orange-500 rounded-full"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modals -->
+<div id="modal-note" class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-[500] p-5"><div class="bg-white rounded-3xl w-full max-w-md p-7 animate-[fadeScaleIn_.22s_ease]"><div class="flex items-center gap-2 text-lg font-bold mb-4"><i data-lucide="file-text" class="w-5 h-5 text-purple-600"></i><span id="modal-note-title">New Note</span></div><div class="mb-3"><label class="text-xs font-semibold text-gray-500">Title</label><input id="note-title-input" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-purple-400 outline-none"></div><div class="mb-3"><label class="text-xs font-semibold text-gray-500">Content</label><textarea id="note-body-input" rows="3" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm resize-none focus:border-purple-400 outline-none"></textarea></div><div class="mb-3"><label class="text-xs font-semibold text-gray-500">Category</label><select id="note-cat-input" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm"><option>Grammar</option><option>Vocab</option><option>Culture</option><option>Tips</option><option>Other</option></select></div><div class="mb-4"><label class="text-xs font-semibold text-gray-500">Color</label><div class="flex gap-3 mt-2"><div class="color-dot w-7 h-7 rounded-full cursor-pointer border-2 border-transparent selected-dot" style="background:#3b82f6" data-color="c-blue"></div><div class="color-dot w-7 h-7 rounded-full cursor-pointer border-2 border-transparent" style="background:#10b981" data-color="c-green"></div><div class="color-dot w-7 h-7 rounded-full cursor-pointer border-2 border-transparent" style="background:#f97316" data-color="c-orange"></div><div class="color-dot w-7 h-7 rounded-full cursor-pointer border-2 border-transparent" style="background:#8b5cf6" data-color="c-purple"></div><div class="color-dot w-7 h-7 rounded-full cursor-pointer border-2 border-transparent" style="background:#eab308" data-color="c-yellow"></div></div></div><input type="hidden" id="note-edit-id"><div class="flex justify-end gap-3 mt-2"><button onclick="closeModal('note')" class="px-5 py-2 bg-gray-100 rounded-full text-sm font-medium">Cancel</button><button onclick="saveNote()" class="px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full text-sm font-medium shadow-sm">Save Note</button></div></div></div>
+<div id="modal-link" class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-[500] p-5"><div class="bg-white rounded-3xl w-full max-w-md p-7"><div class="flex items-center gap-2 text-lg font-bold mb-4"><i data-lucide="link-2" class="w-5 h-5 text-blue-600"></i><span id="modal-link-title">Save Link</span></div><div class="mb-3"><label class="text-xs font-semibold text-gray-500">URL</label><input id="link-url-input" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm"></div><div class="mb-3"><label class="text-xs font-semibold text-gray-500">Title</label><input id="link-title-input" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm"></div><div class="mb-3"><label class="text-xs font-semibold text-gray-500">Category</label><select id="link-cat-input" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm"><option>Article</option><option>Video</option><option>Tool</option><option>Reference</option><option>Other</option></select></div><div class="mb-4"><label class="text-xs font-semibold text-gray-500">Short note (optional)</label><input id="link-note-input" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm"></div><input type="hidden" id="link-edit-id"><div class="flex justify-end gap-3"><button onclick="closeModal('link')" class="px-5 py-2 bg-gray-100 rounded-full text-sm font-medium">Cancel</button><button onclick="saveLink()" class="px-5 py-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-full text-sm font-medium shadow-sm">Save Link</button></div></div></div>
+
+<script>
+  // sidebar collapse logic (tetap ada)
+  const sidebar = document.getElementById('sidebar');
+  function toggleSidebar() { sidebar.classList.toggle('collapsed'); document.body.classList.toggle('collapsed-body'); }
+  document.getElementById('toggleBtn').onclick = toggleSidebar;
+  
+  // data
+  let notes = [];
+  let links = [];
+  let noteColor = 'c-blue';
+  function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+  function today() { return new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }); }
+  
+  // modals
+  window.openModal = (type) => { if(type==='note'){ resetNote(); document.getElementById('modal-note').classList.add('flex'); document.getElementById('modal-note').style.display='flex'; } else { resetLink(); document.getElementById('modal-link').classList.add('flex'); document.getElementById('modal-link').style.display='flex'; } lucide.createIcons(); };
+  window.closeModal = (type) => { document.getElementById(`modal-${type}`).classList.remove('flex'); document.getElementById(`modal-${type}`).style.display='none'; };
+  function resetNote() { document.getElementById('note-title-input').value=''; document.getElementById('note-body-input').value=''; document.getElementById('note-cat-input').value='Grammar'; document.getElementById('note-edit-id').value=''; noteColor='c-blue'; document.querySelectorAll('#modal-note .color-dot').forEach((d,i)=>d.classList.toggle('selected-dot',i===0)); }
+  function resetLink() { document.getElementById('link-url-input').value=''; document.getElementById('link-title-input').value=''; document.getElementById('link-cat-input').value='Article'; document.getElementById('link-note-input').value=''; document.getElementById('link-edit-id').value=''; }
+  window.selectColor = (el,type) => { el.closest('.modal-box').querySelectorAll('.color-dot').forEach(d=>d.classList.remove('selected-dot')); el.classList.add('selected-dot'); if(type==='note') noteColor = el.dataset.color; };
+  
+  window.saveNote = () => { let title = document.getElementById('note-title-input').value.trim(); if(!title) return; let body=document.getElementById('note-body-input').value, cat=document.getElementById('note-cat-input').value, editId=document.getElementById('note-edit-id').value; if(editId){ let n=notes.find(x=>x.id===editId); if(n){ n.title=title; n.body=body; n.cat=cat; n.color=noteColor; n.date=today(); } } else { notes.unshift({ id:genId(), title, body, cat, color:noteColor, date:today(), pinned:false }); } closeModal('note'); renderAll(); showToast('Note saved'); };
+  window.saveLink = () => { let url = document.getElementById('link-url-input').value.trim(); if(!url) return; if(!url.startsWith('http')) url='https://'+url; let title=document.getElementById('link-title-input').value.trim()||url, cat=document.getElementById('link-cat-input').value, note=document.getElementById('link-note-input').value, editId=document.getElementById('link-edit-id').value; if(editId){ let l=links.find(x=>x.id===editId); if(l){ l.url=url; l.title=title; l.cat=cat; l.note=note; l.date=today(); } } else { links.unshift({ id:genId(), url, title, cat, note, date:today(), pinned:false, favicon:`https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=32` }); } closeModal('link'); renderAll(); showToast('Link saved'); };
+  window.editNote = (id) => { let n=notes.find(x=>x.id===id); if(!n) return; document.getElementById('note-title-input').value=n.title; document.getElementById('note-body-input').value=n.body; document.getElementById('note-cat-input').value=n.cat; document.getElementById('note-edit-id').value=id; noteColor=n.color; document.querySelectorAll('#modal-note .color-dot').forEach(d=>d.classList.toggle('selected-dot',d.dataset.color===n.color)); document.getElementById('modal-note').classList.add('flex'); document.getElementById('modal-note').style.display='flex'; lucide.createIcons(); };
+  window.deleteNote = (id) => { notes=notes.filter(x=>x.id!==id); renderAll(); showToast('Note deleted'); };
+  window.togglePinNote = (id) => { let n=notes.find(x=>x.id===id); if(n){ n.pinned=!n.pinned; renderAll(); showToast(n.pinned?'Pinned ✓':'Unpinned'); } };
+  window.editLink = (id) => { let l=links.find(x=>x.id===id); if(!l)return; document.getElementById('link-url-input').value=l.url; document.getElementById('link-title-input').value=l.title; document.getElementById('link-cat-input').value=l.cat; document.getElementById('link-note-input').value=l.note||''; document.getElementById('link-edit-id').value=id; document.getElementById('modal-link').classList.add('flex'); document.getElementById('modal-link').style.display='flex'; lucide.createIcons(); };
+  window.deleteLink = (id) => { links=links.filter(x=>x.id!==id); renderAll(); showToast('Link removed'); };
+  window.togglePinLink = (id) => { let l=links.find(x=>x.id===id); if(l){ l.pinned=!l.pinned; renderAll(); showToast(l.pinned?'Pinned ✓':'Unpinned'); } };
+  window.openLink = (url) => { window.open(url,'_blank'); };
+  
+  // tab switching
+  document.querySelectorAll('.sp-tab').forEach(tab=>{ tab.onclick=()=>{ let target=tab.dataset.tab; document.querySelectorAll('.sp-tab').forEach(t=>t.classList.remove('bg-purple-600','text-white','shadow-sm')); tab.classList.add('bg-purple-600','text-white','shadow-sm'); document.querySelectorAll('.sp-panel').forEach(p=>p.classList.add('hidden')); document.getElementById(`sp-${target}`).classList.remove('hidden'); lucide.createIcons(); }; });
+  document.querySelector('.sp-tab[data-tab="notes"]').classList.add('bg-purple-600','text-white','shadow-sm');
+  
+  // search filter
+  function filterItems(){ let q=document.getElementById('space-search-input').value.toLowerCase(); document.querySelectorAll('.note-card').forEach(c=>c.style.display=c.textContent.toLowerCase().includes(q)?'':'none'); document.querySelectorAll('.link-row').forEach(r=>r.style.display=r.textContent.toLowerCase().includes(q)?'':'none'); }
+  document.getElementById('space-search-input').addEventListener('input',filterItems);
+  
+  function renderAll(){ renderNotes(); renderLinks(); updateStats(); renderPinned(); lucide.createIcons(); }
+  function renderNotes(){ let grid=document.getElementById('notes-grid'),empty=document.getElementById('notes-empty'); let q=document.getElementById('space-search-input').value.toLowerCase(); let filtered=notes.filter(n=>!q||n.title.toLowerCase().includes(q)||n.body.toLowerCase().includes(q)); if(filtered.length===0){ grid.innerHTML=''; empty.classList.remove('hidden'); return; } empty.classList.add('hidden'); grid.innerHTML=filtered.map(n=>`<div class="note-card ${n.color} bg-white rounded-2xl p-5 border-l-[5px] shadow-sm hover:shadow-md transition-all"><div class="font-bold text-lg">${escapeHtml(n.title)}</div>${n.body?`<div class="text-gray-500 text-sm mt-1 line-clamp-2">${escapeHtml(n.body)}</div>`:''}<div class="flex justify-between items-center mt-3"><span class="text-xs bg-gray-100 px-3 py-1 rounded-full">${escapeHtml(n.cat)}</span><div class="flex gap-2"><div class="cursor-pointer p-1.5 rounded-lg hover:bg-gray-100" onclick="togglePinNote('${n.id}')"><i data-lucide="pin" class="w-3.5 h-3.5 ${n.pinned?'text-amber-500':''}"></i></div><div class="cursor-pointer p-1.5 rounded-lg hover:bg-gray-100" onclick="editNote('${n.id}')"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></div><div class="cursor-pointer p-1.5 rounded-lg hover:bg-gray-100" onclick="deleteNote('${n.id}')"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></div></div></div></div>`).join(''); lucide.createIcons(); }
+  function renderLinks(){ let list=document.getElementById('links-list'),empty=document.getElementById('links-empty'); let q=document.getElementById('space-search-input').value.toLowerCase(); let filtered=links.filter(l=>!q||l.title.toLowerCase().includes(q)||l.url.toLowerCase().includes(q)); if(filtered.length===0){ list.innerHTML=''; empty.classList.remove('hidden'); return; } empty.classList.add('hidden'); list.innerHTML=filtered.map(l=>`<div class="link-row bg-white rounded-xl p-4 shadow-sm flex flex-wrap items-center gap-4 hover:shadow-md transition-all"><div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">${l.favicon?`<img src="${l.favicon}" width="20">`:'🔗'}</div><div class="flex-1 min-w-[140px]"><div class="font-semibold">${escapeHtml(l.title)}</div><div class="text-xs text-gray-400 truncate">${escapeHtml(l.url)}</div>${l.note?`<div class="text-xs text-gray-500 mt-1">${escapeHtml(l.note)}</div>`:''}</div><div class="flex items-center gap-2 flex-wrap"><span class="text-xs bg-gray-100 px-3 py-1 rounded-full">${escapeHtml(l.cat)}</span><div class="cursor-pointer p-1.5 rounded-lg hover:bg-gray-100" onclick="togglePinLink('${l.id}')"><i data-lucide="pin" class="w-3.5 h-3.5 ${l.pinned?'text-amber-500':''}"></i></div><div class="cursor-pointer p-1.5 rounded-lg hover:bg-gray-100" onclick="editLink('${l.id}')"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></div><div class="cursor-pointer p-1.5 rounded-lg hover:bg-gray-100" onclick="openLink('${l.url}')"><i data-lucide="external-link" class="w-3.5 h-3.5"></i></div><div class="cursor-pointer p-1.5 rounded-lg hover:bg-gray-100" onclick="deleteLink('${l.id}')"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></div></div></div>`).join(''); lucide.createIcons(); }
+  function updateStats(){ document.getElementById('stat-notes').innerText=notes.length; document.getElementById('stat-links').innerText=links.length; document.getElementById('stat-pinned').innerText=notes.filter(n=>n.pinned).length+links.filter(l=>l.pinned).length; }
+  function renderPinned(){ let bar=document.getElementById('pinned-bar'),chipsDiv=document.getElementById('pinned-chips'); let pinned=[...notes.filter(n=>n.pinned).map(n=>({id:n.id,label:n.title,type:'note'})), ...links.filter(l=>l.pinned).map(l=>({id:l.id,label:l.title,type:'link'}))]; if(pinned.length===0){ bar.classList.add('hidden'); return; } bar.classList.remove('hidden'); chipsDiv.innerHTML=pinned.map(p=>`<div class="p-chip bg-gray-50 border border-gray-200 rounded-full px-3 py-1.5 text-xs flex items-center gap-1.5 cursor-pointer hover:bg-purple-50" onclick="${p.type==='note'?`editNote('${p.id}')`:`editLink('${p.id}')`}"><i data-lucide="pin" class="w-3 h-3 text-amber-500"></i> ${escapeHtml(p.label)}</div>`).join(''); lucide.createIcons(); }
+  function escapeHtml(s){ return String(s).replace(/[&<>]/g,function(m){if(m==='&')return '&amp;';if(m==='<')return '&lt;';if(m==='>')return '&gt;';return m;}); }
+  function showToast(msg){ let old=document.querySelector('.toast'); if(old)old.remove(); let t=document.createElement('div'); t.className='toast fixed bottom-5 right-5 bg-slate-800 text-white rounded-full px-5 py-2.5 text-sm font-medium shadow-lg z-[999] flex items-center gap-2 animate-[slideUp_.25s_ease]'; t.innerHTML=`<i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> ${msg}`; document.body.appendChild(t); lucide.createIcons(); setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);},2200); }
+  
+  renderAll();
+  lucide.createIcons();
+  // sidebar navs click hanya untuk ripple dan tetap di userspace
+  document.querySelectorAll('.nav-item').forEach(el=>{ el.onclick=(e)=>{ let rect=el.getBoundingClientRect(); let rip=document.createElement('span'); rip.className='ripple-el'; rip.style.left=(e.clientX-rect.left-15)+'px'; rip.style.top=(e.clientY-rect.top-15)+'px'; el.appendChild(rip); setTimeout(()=>rip.remove(),600); document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active')); el.classList.add('active'); }; });
+</script>
+</body>
+</html>

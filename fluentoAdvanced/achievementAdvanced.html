@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fluento Knight · Achievements</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Afacad:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Afacad',sans-serif; background:#f8fafc; }
+
+    @keyframes ripple    { from{transform:scale(0);opacity:.3} to{transform:scale(5);opacity:0} }
+    @keyframes pulseAva  { 0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,.5)} 50%{box-shadow:0 0 0 7px rgba(251,191,36,0)} }
+    @keyframes shimmer   { 0%{background-position:-200% center} 100%{background-position:200% center} }
+    @keyframes pageIn    { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:none} }
+    @keyframes fadeScaleIn { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:none} }
+    @keyframes slideUp   { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+    @keyframes badgePop  { 0%{transform:scale(.7) rotate(-8deg);opacity:0} 60%{transform:scale(1.12) rotate(3deg);opacity:1} 100%{transform:scale(1) rotate(0deg);opacity:1} }
+    @keyframes shine     { 0%{left:-60%} 100%{left:160%} }
+    @keyframes barGrow   { from{width:0} to{width:var(--bar-w)} }
+    @keyframes glowBadge { 0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,.4)} 50%{box-shadow:0 0 20px 6px rgba(251,191,36,.2)} }
+    @keyframes floatUp   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+    @keyframes countTick { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+    @keyframes lockShake { 0%,100%{transform:none} 25%{transform:rotate(-4deg)} 75%{transform:rotate(4deg)} }
+
+    .ripple-el { position:absolute;border-radius:50%;background:rgba(74,108,247,.18);pointer-events:none;transform:scale(0);animation:ripple .55s ease-out forwards; }
+    .shimmer-bg { position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.22) 50%,transparent 65%);background-size:200% 100%;animation:shimmer 3.5s linear infinite;border-radius:inherit;pointer-events:none; }
+    .nav-item .nav-icon svg { transition:transform .2s; }
+    .nav-item:hover .nav-icon svg { transform:translateY(-2px); }
+
+    /* sidebar active */
+    .nav-item.active-ach { background:linear-gradient(135deg,#fef9c3,#fef08a);color:#854d0e !important; }
+    .nav-item.active-ach .nav-label { color:#854d0e;font-weight:600; }
+    .nav-item.active-ach .nav-icon svg { color:#ca8a04; }
+
+    /* sidebar collapse */
+    .sidebar-collapsed { width:68px !important; }
+    .sidebar-collapsed .logo-text,.sidebar-collapsed .nav-label,.sidebar-collapsed .section-label,.sidebar-collapsed .profile-inner { display:none !important; }
+    .sidebar-collapsed .profile-collapsed-icon { display:flex !important; }
+    .sidebar-collapsed #toggleBtn svg { transform:rotate(180deg); }
+    .sidebar-collapsed .logo-area { justify-content:center; }
+    .sidebar-collapsed .nav-item { justify-content:center;padding:10px; }
+    .sidebar-collapsed .nav-icon { margin:0; }
+    .main-expanded { margin-left:68px !important; }
+
+    /* badge card */
+    .badge-card { transition:all .22s ease;cursor:pointer;position:relative;overflow:hidden; }
+    .badge-card:hover { transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.1); }
+    .badge-card:hover .badge-icon { animation:floatUp 1.2s ease-in-out infinite; }
+    .badge-card.locked { filter:grayscale(.6);opacity:.75; }
+    .badge-card.locked:hover { filter:none;opacity:1; }
+    .badge-card.locked:hover .lock-overlay { opacity:1; }
+    .lock-overlay { position:absolute;inset:0;background:rgba(248,250,252,.7);backdrop-blur:0px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;border-radius:inherit; }
+    .lock-overlay i { animation:lockShake 1s ease; }
+
+    /* shine sweep on unlocked badge */
+    .badge-shine { position:absolute;top:0;bottom:0;width:40%;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:skewX(-15deg);left:-60%;pointer-events:none; }
+    .badge-card:not(.locked):hover .badge-shine { animation:shine .55s ease forwards; }
+
+    /* rarity tags */
+    .rarity-common   { background:#f1f5f9;color:#64748b; }
+    .rarity-rare     { background:#dbeafe;color:#1d4ed8; }
+    .rarity-epic     { background:#ede9fe;color:#7c3aed; }
+    .rarity-legendary{ background:linear-gradient(90deg,#fef9c3,#fde68a);color:#92400e; }
+
+    /* stat card */
+    .stat-card { transition:all .2s ease; }
+    .stat-card:hover { transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.08); }
+
+    /* tab */
+    .ach-tab { transition:all .2s; }
+
+    /* page */
+    .page-content { animation:pageIn .35s ease both; }
+
+    /* progress bar */
+    .prog-fill { animation:barGrow 1s ease both; }
+
+    /* XP bar glow */
+    .xp-glow { box-shadow:0 0 12px rgba(251,191,36,.5); }
+
+    /* newly unlocked banner */
+    .new-badge { animation:badgePop .5s cubic-bezier(.34,1.56,.64,1) both; }
+    .new-badge .badge-icon-wrap { animation:glowBadge 2.5s ease-in-out infinite; }
+  </style>
+</head>
+<body class="bg-slate-50">
+
+<!-- SIDEBAR -->
+<div id="sidebar" class="fixed top-0 left-0 h-screen bg-white rounded-r-2xl shadow-lg flex flex-col overflow-hidden transition-all duration-300 z-[100] w-[240px]">
+  <div id="toggleBtn" onclick="toggleSidebar()" class="absolute top-4 -right-3 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center cursor-pointer z-20 shadow-sm hover:bg-gray-50 text-gray-400">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </div>
+  <div class="flex-1 overflow-y-auto overflow-x-hidden px-3 py-5">
+    <div class="logo-area flex items-center gap-2.5 pb-5 min-h-[56px]">
+      <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0"><i data-lucide="graduation-cap" class="w-4 h-4 text-white"></i></div>
+      <span class="logo-text font-bold text-[17px] text-slate-800 whitespace-nowrap tracking-tight">Fluento Knight</span>
+    </div>
+    <div class="section-label text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-2 py-3">Menu</div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all hover:bg-gray-50">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="layout-dashboard" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Dashboard</span>
+    </div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all hover:bg-gray-50">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="house" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">My Space</span>
+    </div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all hover:bg-gray-50">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="pencil-line" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Lesson</span>
+    </div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all hover:bg-gray-50">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="book-marked" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Streak</span>
+    </div>
+    <div class="nav-item active-ach flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer mb-1 transition-all">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="trophy" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px]">Achievements</span>
+    </div>
+    <div class="h-px bg-gray-100 my-2 mx-1"></div>
+    <div class="section-label text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-2 py-3">Account</div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all hover:bg-gray-50">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="settings-2" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Settings</span>
+    </div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-400 mb-1 transition-all hover:bg-gray-50 mt-1">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="log-out" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Log out</span>
+    </div>
+  </div>
+  <div class="relative mx-3 mb-4 rounded-2xl bg-gradient-to-br from-amber-100 via-amber-300 to-orange-400 p-4 flex-shrink-0 overflow-hidden cursor-pointer">
+    <div class="shimmer-bg"></div>
+    <div class="profile-inner relative z-10 flex items-center gap-2.5">
+      <div class="w-9 h-9 bg-white/30 rounded-full flex items-center justify-center border-2 border-white/50 animate-[pulseAva_2.4s_ease-in-out_infinite] flex-shrink-0">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="rgba(0,0,0,.55)" stroke="none"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </div>
+      <div>
+        <div class="text-sm font-bold text-amber-900">John Doe</div>
+        <div class="text-[11.5px] font-medium text-amber-800/70">Gold Learner</div>
+      </div>
+    </div>
+    <div class="profile-collapsed-icon hidden justify-center relative z-10">
+      <div class="w-10 h-10 bg-white/30 rounded-full flex items-center justify-center border-2 border-white/50">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="rgba(0,0,0,.55)"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main" class="transition-all duration-300 ml-[240px] min-h-screen p-10 bg-slate-50">
+  <div class="page-content max-w-5xl mx-auto">
+
+    <!-- Header -->
+    <div class="flex items-center gap-3 mb-1.5">
+      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center shadow-sm">
+        <i data-lucide="trophy" class="w-5 h-5 text-white"></i>
+      </div>
+      <div class="text-2xl font-bold text-slate-800 tracking-tight">Achievements</div>
+    </div>
+    <div class="text-sm text-gray-400 ml-14 mb-7">Collect badges, earn XP, climb the ranks</div>
+
+    <!-- XP / Level Banner -->
+    <div class="relative bg-gradient-to-br from-slate-800 to-slate-700 rounded-3xl p-6 mb-7 overflow-hidden">
+      <div class="shimmer-bg"></div>
+      <div class="relative z-10 flex flex-wrap items-center gap-6">
+        <!-- avatar + level ring -->
+        <div class="relative flex-shrink-0">
+          <svg class="w-20 h-20" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="36" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="6"/>
+            <circle cx="40" cy="40" r="36" fill="none" stroke="url(#xpGrad)" stroke-width="6"
+              stroke-linecap="round" stroke-dasharray="226" stroke-dashoffset="56"
+              transform="rotate(-90 40 40)" style="transition:stroke-dashoffset 1s ease"/>
+            <defs>
+              <linearGradient id="xpGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#fbbf24"/>
+                <stop offset="100%" stop-color="#f97316"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <div class="text-xl font-extrabold text-white leading-none">12</div>
+            <div class="text-[10px] text-white/60 font-medium">LVL</div>
+          </div>
+        </div>
+        <!-- XP info -->
+        <div class="flex-1 min-w-[200px]">
+          <div class="flex items-center gap-3 mb-1">
+            <div class="text-white font-bold text-xl">Gold Learner</div>
+            <div class="text-xs font-semibold px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">Level 12</div>
+          </div>
+          <div class="text-slate-400 text-sm mb-3">2,840 / 3,500 XP to next level</div>
+          <div class="h-2.5 bg-white/10 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full xp-glow prog-fill" style="--bar-w:81%;width:81%"></div>
+          </div>
+          <div class="flex justify-between text-xs text-slate-500 mt-1.5">
+            <span>660 XP needed</span>
+            <span>Next: <span class="text-amber-400 font-semibold">Platinum Scholar</span></span>
+          </div>
+        </div>
+        <!-- quick stats -->
+        <div class="flex gap-4 flex-wrap">
+          <div class="text-center">
+            <div class="text-2xl font-extrabold text-white" id="stat-unlocked">0</div>
+            <div class="text-xs text-slate-400">Unlocked</div>
+          </div>
+          <div class="w-px bg-white/10"></div>
+          <div class="text-center">
+            <div class="text-2xl font-extrabold text-white" id="stat-total">0</div>
+            <div class="text-xs text-slate-400">Total</div>
+          </div>
+          <div class="w-px bg-white/10"></div>
+          <div class="text-center">
+            <div class="text-2xl font-extrabold text-white" id="stat-xp">2,840</div>
+            <div class="text-xs text-slate-400">XP earned</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recently Unlocked -->
+    <div id="recent-section" class="mb-7 hidden">
+      <div class="flex items-center gap-2 mb-4">
+        <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
+        <span class="font-bold text-slate-800">Recently Unlocked</span>
+      </div>
+      <div class="flex gap-4 overflow-x-auto pb-1" id="recent-list"></div>
+    </div>
+
+    <!-- Filter tabs + search -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <div class="flex gap-1.5 bg-white p-1.5 rounded-full shadow-sm">
+        <button class="ach-tab active-tab-btn rounded-full px-5 py-2 text-sm font-medium flex items-center gap-1.5 bg-yellow-500 text-white shadow-sm" data-cat="all">All</button>
+        <button class="ach-tab rounded-full px-5 py-2 text-sm font-medium text-gray-500 flex items-center gap-1.5 hover:bg-gray-50" data-cat="streak">🔥 Streak</button>
+        <button class="ach-tab rounded-full px-5 py-2 text-sm font-medium text-gray-500 flex items-center gap-1.5 hover:bg-gray-50" data-cat="vocab">📚 Vocab</button>
+        <button class="ach-tab rounded-full px-5 py-2 text-sm font-medium text-gray-500 flex items-center gap-1.5 hover:bg-gray-50" data-cat="lesson">✏️ Lesson</button>
+        <button class="ach-tab rounded-full px-5 py-2 text-sm font-medium text-gray-500 flex items-center gap-1.5 hover:bg-gray-50" data-cat="social">🤝 Social</button>
+      </div>
+      <div class="flex items-center gap-2 bg-white border border-gray-200 rounded-full py-2 px-5 max-w-xs focus-within:ring-2 focus-within:ring-yellow-200">
+        <i data-lucide="search" class="w-4 h-4 text-gray-400"></i>
+        <input type="text" id="ach-search" placeholder="Search achievements…" class="bg-transparent outline-none text-sm w-full" oninput="renderBadges()"/>
+      </div>
+    </div>
+
+    <!-- Badges grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-8" id="badges-grid"></div>
+
+    <!-- Leaderboard strip -->
+    <div class="bg-white rounded-2xl shadow-sm p-6">
+      <div class="flex items-center gap-2 mb-5">
+        <i data-lucide="bar-chart-2" class="w-5 h-5 text-yellow-500"></i>
+        <span class="font-bold text-slate-800">Weekly XP Leaderboard</span>
+        <span class="ml-auto text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">This week</span>
+      </div>
+      <div class="space-y-3" id="leaderboard-list"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Badge Detail Modal -->
+<div id="modal-badge" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-[500] p-5">
+  <div class="bg-white rounded-3xl w-full max-w-sm p-7 animate-[fadeScaleIn_.22s_ease] relative overflow-hidden">
+    <div class="shimmer-bg opacity-30"></div>
+    <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+    <div class="relative z-10 flex flex-col items-center text-center gap-3">
+      <div id="modal-icon" class="text-6xl w-24 h-24 rounded-3xl flex items-center justify-center shadow-lg new-badge"></div>
+      <div id="modal-name" class="text-xl font-extrabold text-slate-800"></div>
+      <div id="modal-rarity" class="badge text-xs"></div>
+      <div id="modal-desc" class="text-sm text-gray-500 leading-relaxed"></div>
+      <div id="modal-xp" class="font-bold text-amber-500 text-lg"></div>
+      <div id="modal-prog-wrap" class="w-full hidden">
+        <div class="flex justify-between text-xs text-gray-400 mb-1">
+          <span id="modal-prog-label">Progress</span>
+          <span id="modal-prog-pct"></span>
+        </div>
+        <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+          <div id="modal-prog-bar" class="h-full bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full prog-fill" style="--bar-w:0%"></div>
+        </div>
+      </div>
+      <div id="modal-unlocked-date" class="text-xs text-gray-400"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── Sidebar ───────────────────────────────────────────────────────────────
+const sidebar = document.getElementById('sidebar');
+const mainEl  = document.getElementById('main');
+function toggleSidebar() {
+  sidebar.classList.toggle('sidebar-collapsed');
+  mainEl.classList.toggle('main-expanded');
+}
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.onclick = e => {
+    const rect = el.getBoundingClientRect();
+    const rip = document.createElement('span');
+    rip.className = 'ripple-el';
+    rip.style.left = (e.clientX - rect.left - 15) + 'px';
+    rip.style.top  = (e.clientY - rect.top  - 15) + 'px';
+    el.appendChild(rip);
+    setTimeout(() => rip.remove(), 600);
+  };
+});
+
+// ─── Data ──────────────────────────────────────────────────────────────────
+const BADGES = [
+  // Streak
+  { id:'s1', cat:'streak', icon:'🔥', name:'First Spark',      rarity:'common',    xp:50,   desc:'Complete your first study day.',                 prog:1,   goal:1,   unlocked:true,  date:'Mar 2' },
+  { id:'s2', cat:'streak', icon:'🔥', name:'Week Warrior',     rarity:'common',    xp:100,  desc:'Maintain a 7-day streak.',                       prog:7,   goal:7,   unlocked:true,  date:'Mar 9' },
+  { id:'s3', cat:'streak', icon:'⚡', name:'Fortnight Force',  rarity:'rare',      xp:200,  desc:'Hit a 14-day streak without missing a day.',     prog:14,  goal:14,  unlocked:true,  date:'Mar 23' },
+  { id:'s4', cat:'streak', icon:'💥', name:'30 Days Ablaze',   rarity:'epic',      xp:400,  desc:'Reach a 30-day consecutive streak.',             prog:12,  goal:30,  unlocked:false },
+  { id:'s5', cat:'streak', icon:'👑', name:'Century Legend',   rarity:'legendary', xp:1000, desc:'100 days straight. Absolute commitment.',        prog:12,  goal:100, unlocked:false },
+
+  // Vocab
+  { id:'v1', cat:'vocab',  icon:'📖', name:'Word Seed',        rarity:'common',    xp:50,   desc:'Learn your first 10 words.',                     prog:10,  goal:10,  unlocked:true,  date:'Mar 1' },
+  { id:'v2', cat:'vocab',  icon:'📚', name:'Bookworm',         rarity:'common',    xp:100,  desc:'Learn 100 vocabulary words.',                    prog:100, goal:100, unlocked:true,  date:'Mar 15' },
+  { id:'v3', cat:'vocab',  icon:'🧠', name:'Vocab Vault',      rarity:'rare',      xp:250,  desc:'Learn 500 words.',                               prog:312, goal:500, unlocked:false },
+  { id:'v4', cat:'vocab',  icon:'🌐', name:'Lexicon Master',   rarity:'epic',      xp:600,  desc:'Reach 1,000 words mastered.',                    prog:312, goal:1000,unlocked:false },
+  { id:'v5', cat:'vocab',  icon:'✨', name:'Wordsmith',        rarity:'legendary', xp:1500, desc:'Master 2,500 vocabulary items.',                 prog:312, goal:2500,unlocked:false },
+
+  // Lesson
+  { id:'l1', cat:'lesson', icon:'✏️', name:'First Step',       rarity:'common',    xp:50,   desc:'Complete your first lesson.',                    prog:1,   goal:1,   unlocked:true,  date:'Feb 28' },
+  { id:'l2', cat:'lesson', icon:'📝', name:'Consistent',       rarity:'common',    xp:100,  desc:'Finish 10 lessons.',                             prog:10,  goal:10,  unlocked:true,  date:'Mar 10' },
+  { id:'l3', cat:'lesson', icon:'🎯', name:'Sharp Focus',      rarity:'rare',      xp:200,  desc:'Score 100% in 5 lessons in a row.',              prog:3,   goal:5,   unlocked:false },
+  { id:'l4', cat:'lesson', icon:'🏅', name:'Grammar Guru',     rarity:'epic',      xp:500,  desc:'Complete the entire Grammar module.',            prog:7,   goal:12,  unlocked:false },
+  { id:'l5', cat:'lesson', icon:'🎓', name:'Scholar',          rarity:'legendary', xp:1200, desc:'Finish all available lesson tracks.',            prog:1,   goal:6,   unlocked:false },
+
+  // Social
+  { id:'c1', cat:'social', icon:'👋', name:'Newcomer',         rarity:'common',    xp:30,   desc:'Join the community.',                            prog:1,   goal:1,   unlocked:true,  date:'Feb 28' },
+  { id:'c2', cat:'social', icon:'🤝', name:'Collaborator',     rarity:'rare',      xp:150,  desc:'Join 3 study groups.',                           prog:1,   goal:3,   unlocked:false },
+  { id:'c3', cat:'social', icon:'🌟', name:'Mentor',           rarity:'epic',      xp:400,  desc:'Help 10 learners in the community.',             prog:2,   goal:10,  unlocked:false },
+  { id:'c4', cat:'social', icon:'🏆', name:'Community Hero',   rarity:'legendary', xp:1000, desc:'Become a top contributor for 3 months.',        prog:0,   goal:3,   unlocked:false },
+];
+
+const LEADERBOARD = [
+  { rank:1, name:'Sarah K.',    xp:3420, avatar:'🧑‍🦰', you:false },
+  { rank:2, name:'John Doe',    xp:2840, avatar:'🧑',   you:true  },
+  { rank:3, name:'Alex M.',     xp:2610, avatar:'👩',   you:false },
+  { rank:4, name:'Rania P.',    xp:1990, avatar:'👩‍🦱', you:false },
+  { rank:5, name:'Tomás G.',    xp:1740, avatar:'👨‍🦳', you:false },
+];
+
+let activeFilter = 'all';
+
+// ─── Render ────────────────────────────────────────────────────────────────
+function renderAll() {
+  renderTopStats();
+  renderRecent();
+  renderBadges();
+  renderLeaderboard();
+  lucide.createIcons();
+}
+
+function renderTopStats() {
+  const unlocked = BADGES.filter(b => b.unlocked).length;
+  document.getElementById('stat-unlocked').textContent = unlocked;
+  document.getElementById('stat-total').textContent    = BADGES.length;
+}
+
+function renderRecent() {
+  const recent = BADGES.filter(b => b.unlocked).slice(-4).reverse();
+  const section = document.getElementById('recent-section');
+  const list    = document.getElementById('recent-list');
+  if (!recent.length) { section.classList.add('hidden'); return; }
+  section.classList.remove('hidden');
+  list.innerHTML = recent.map((b, i) => `
+    <div class="flex-shrink-0 bg-white rounded-2xl p-4 flex flex-col items-center gap-2 w-32 shadow-sm cursor-pointer hover:shadow-md transition-all new-badge"
+         style="animation-delay:${i*80}ms" onclick="openModal('${b.id}')">
+      <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-sm ${gradForRarity(b.rarity)} new-badge badge-icon-wrap">${b.icon}</div>
+      <div class="text-xs font-semibold text-slate-700 text-center leading-tight">${b.name}</div>
+      <div class="text-[10px] font-semibold px-2 py-0.5 rounded-full ${rarityClass(b.rarity)}">${cap(b.rarity)}</div>
+    </div>
+  `).join('');
+}
+
+function renderBadges() {
+  const q   = document.getElementById('ach-search').value.toLowerCase();
+  const cat = activeFilter;
+  const filtered = BADGES.filter(b =>
+    (cat === 'all' || b.cat === cat) &&
+    (!q || b.name.toLowerCase().includes(q) || b.desc.toLowerCase().includes(q))
+  );
+  const grid = document.getElementById('badges-grid');
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="col-span-4 text-center py-12 text-gray-400">No achievements found</div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map((b, i) => {
+    const pct = Math.round(Math.min(b.prog / b.goal, 1) * 100);
+    return `
+    <div class="badge-card bg-white rounded-2xl p-5 shadow-sm ${b.unlocked ? '' : 'locked'}"
+         style="animation:badgePop .4s cubic-bezier(.34,1.56,.64,1) ${i*45}ms both"
+         onclick="openModal('${b.id}')">
+      <div class="badge-shine"></div>
+      ${!b.unlocked ? `<div class="lock-overlay rounded-2xl"><i data-lucide="lock" class="w-6 h-6 text-gray-400"></i></div>` : ''}
+      <div class="flex flex-col items-center text-center gap-3">
+        <div class="badge-icon w-16 h-16 rounded-2xl flex items-center justify-center text-4xl shadow-md ${b.unlocked ? gradForRarity(b.rarity) : 'bg-gray-100'}">${b.icon}</div>
+        <div>
+          <div class="font-bold text-sm text-slate-800 leading-tight">${b.name}</div>
+          <div class="text-[11px] text-gray-400 mt-0.5 line-clamp-2">${b.desc}</div>
+        </div>
+        <div class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${rarityClass(b.rarity)}">${cap(b.rarity)}</div>
+        ${b.unlocked
+          ? `<div class="text-xs text-emerald-500 font-semibold flex items-center gap-1"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i> +${b.xp} XP</div>`
+          : `<div class="w-full">
+               <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                 <div class="h-full rounded-full bg-gradient-to-r from-yellow-400 to-amber-400 prog-fill" style="--bar-w:${pct}%;width:${pct}%"></div>
+               </div>
+               <div class="text-[10px] text-gray-400 mt-1 text-right">${b.prog} / ${b.goal}</div>
+             </div>`
+        }
+      </div>
+    </div>
+  `}).join('');
+  lucide.createIcons();
+}
+
+function renderLeaderboard() {
+  const maxXp = LEADERBOARD[0].xp;
+  document.getElementById('leaderboard-list').innerHTML = LEADERBOARD.map((p, i) => {
+    const pct = Math.round(p.xp / maxXp * 100);
+    const medals = ['🥇','🥈','🥉'];
+    return `
+    <div class="flex items-center gap-3 ${p.you ? 'bg-amber-50 border border-amber-200 rounded-xl px-3 py-2' : 'px-1 py-1'}">
+      <div class="w-7 text-center text-lg flex-shrink-0">${medals[i] || `<span class='text-xs font-bold text-gray-400'>${p.rank}</span>`}</div>
+      <div class="text-xl flex-shrink-0">${p.avatar}</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex justify-between items-center mb-1">
+          <span class="text-sm font-semibold ${p.you ? 'text-amber-700' : 'text-slate-700'}">${p.name}${p.you ? ' <span class="text-[10px] font-bold text-amber-500 bg-amber-100 px-1.5 py-0.5 rounded-full ml-1">You</span>' : ''}</span>
+          <span class="text-sm font-bold ${p.you ? 'text-amber-600' : 'text-slate-500'}">${p.xp.toLocaleString()} XP</span>
+        </div>
+        <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+          <div class="h-full rounded-full prog-fill ${p.you ? 'bg-gradient-to-r from-amber-400 to-orange-400' : 'bg-gradient-to-r from-indigo-400 to-blue-400'}" style="--bar-w:${pct}%;width:${pct}%"></div>
+        </div>
+      </div>
+    </div>
+  `}).join('');
+}
+
+// ─── Modal ─────────────────────────────────────────────────────────────────
+window.openModal = id => {
+  const b = BADGES.find(x => x.id === id); if (!b) return;
+  const m = document.getElementById('modal-badge');
+
+  const iconEl = document.getElementById('modal-icon');
+  iconEl.textContent = b.icon;
+  iconEl.className = `text-6xl w-24 h-24 rounded-3xl flex items-center justify-center shadow-lg new-badge ${b.unlocked ? gradForRarity(b.rarity) : 'bg-gray-100'}`;
+
+  document.getElementById('modal-name').textContent = b.name;
+  document.getElementById('modal-desc').textContent = b.desc;
+  document.getElementById('modal-xp').textContent   = b.unlocked ? `+${b.xp} XP earned` : `${b.xp} XP reward`;
+
+  const rarEl = document.getElementById('modal-rarity');
+  rarEl.textContent  = cap(b.rarity);
+  rarEl.className    = `badge text-xs ${rarityClass(b.rarity)}`;
+
+  const pw = document.getElementById('modal-prog-wrap');
+  if (!b.unlocked) {
+    pw.classList.remove('hidden');
+    const pct = Math.round(b.prog / b.goal * 100);
+    document.getElementById('modal-prog-label').textContent = `${b.prog} / ${b.goal}`;
+    document.getElementById('modal-prog-pct').textContent   = pct + '%';
+    const bar = document.getElementById('modal-prog-bar');
+    bar.style.setProperty('--bar-w', pct + '%');
+    bar.style.width = pct + '%';
+  } else { pw.classList.add('hidden'); }
+
+  const dateEl = document.getElementById('modal-unlocked-date');
+  dateEl.textContent = b.unlocked ? `Unlocked on ${b.date}` : 'Not yet unlocked';
+
+  m.style.display = 'flex'; m.classList.add('flex');
+  lucide.createIcons();
+};
+window.closeModal = () => {
+  const m = document.getElementById('modal-badge');
+  m.style.display = 'none'; m.classList.remove('flex');
+};
+
+// ─── Tabs ──────────────────────────────────────────────────────────────────
+document.querySelectorAll('.ach-tab').forEach(btn => {
+  btn.onclick = () => {
+    activeFilter = btn.dataset.cat;
+    document.querySelectorAll('.ach-tab').forEach(b => {
+      b.classList.remove('bg-yellow-500','text-white','shadow-sm');
+      b.classList.add('text-gray-500');
+    });
+    btn.classList.add('bg-yellow-500','text-white','shadow-sm');
+    btn.classList.remove('text-gray-500');
+    renderBadges();
+    lucide.createIcons();
+  };
+});
+
+// ─── Helpers ───────────────────────────────────────────────────────────────
+function rarityClass(r) {
+  return { common:'rarity-common', rare:'rarity-rare', epic:'rarity-epic', legendary:'rarity-legendary' }[r] || 'rarity-common';
+}
+function gradForRarity(r) {
+  return { common:'bg-gradient-to-br from-slate-200 to-slate-300', rare:'bg-gradient-to-br from-blue-400 to-indigo-500', epic:'bg-gradient-to-br from-purple-500 to-indigo-600', legendary:'bg-gradient-to-br from-amber-400 to-orange-500' }[r] || 'bg-gray-100';
+}
+function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+function showToast(msg) {
+  const old = document.querySelector('.toast'); if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast fixed bottom-5 right-5 bg-slate-800 text-white rounded-full px-5 py-2.5 text-sm font-medium shadow-lg z-[999] flex items-center gap-2 animate-[slideUp_.25s_ease]';
+  t.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> ${msg}`;
+  document.body.appendChild(t); lucide.createIcons();
+  setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 2200);
+}
+
+// ─── Init ──────────────────────────────────────────────────────────────────
+renderAll();
+lucide.createIcons();
+</script>
+</body>
+</html>

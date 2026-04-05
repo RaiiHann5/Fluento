@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fluento Knight · Settings</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Afacad:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Afacad', sans-serif; background: #f8fafc; }
+    @keyframes sidebarIn { from{opacity:0;transform:translateX(-28px) scale(.96)} to{opacity:1;transform:none} }
+    @keyframes ripple { from{transform:scale(0);opacity:.3} to{transform:scale(5);opacity:0} }
+    @keyframes pulseAva { 0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,.5)} 50%{box-shadow:0 0 0 7px rgba(251,191,36,0)} }
+    @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
+    @keyframes slideDown { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:none} }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    .ripple-el { position:absolute; border-radius:50%; background:rgba(74,108,247,.18); pointer-events:none; transform:scale(0); animation:ripple .55s ease-out forwards; }
+    .shimmer { position:absolute; inset:0; background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.22) 50%,transparent 65%); background-size:200% 100%; animation:shimmer 3.5s linear infinite; border-radius:inherit; pointer-events:none; }
+    .nav-item .nav-icon svg { transition:transform .2s; }
+    .nav-item:hover .nav-icon svg { transform:translateY(-2px); }
+    .setting-card { transition: all 0.2s ease; }
+    .setting-card:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -12px rgba(0,0,0,0.15); }
+    .toggle-switch { transition: all 0.2s ease; }
+    .danger-zone { transition: all 0.2s ease; }
+    .danger-zone:hover { border-color: #fecaca; background: #fef2f2; }
+  </style>
+</head>
+<body class="bg-slate-50 font-[Afacad]">
+
+<!-- SIDEBAR SAMA PERSIS SEPERTI SEBELUMNYA -->
+<div id="sidebar" class="fixed top-0 left-0 h-screen bg-white rounded-r-2xl shadow-lg flex flex-col overflow-hidden transition-all duration-300 z-[100] w-[240px]">
+  <div id="toggleBtn" class="absolute top-4 -right-3 w-6.5 h-6.5 bg-white border border-gray-200 rounded-full flex items-center justify-center cursor-pointer z-20 shadow-sm hover:bg-gray-50 text-gray-400">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </div>
+  <div id="scrollArea" class="flex-1 overflow-y-auto overflow-x-hidden px-3 py-5">
+    <div class="logo-area flex items-center gap-2.5 pb-5 min-h-[56px]">
+      <div class="logo-icon w-8 h-8 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0"><i data-lucide="graduation-cap" class="w-4.5 h-4.5 text-white"></i></div>
+      <span class="logo-text font-bold text-[17px] text-slate-800 whitespace-nowrap tracking-tight">Fluento Knight</span>
+    </div>
+    <div class="section-label text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-2 py-3">Menu</div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all duration-200 hover:bg-gray-50" data-page="dashboard">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="layout-dashboard" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Dashboard</span>
+    </div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all duration-200 hover:bg-gray-50" data-page="userspace">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="house" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">My Space</span>
+    </div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all duration-200 hover:bg-gray-50" data-page="practice">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="pencil-line" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Lesson</span>
+    </div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all duration-200 hover:bg-gray-50" data-page="vocabulary">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="book-marked" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Streak</span>
+    </div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all duration-200 hover:bg-gray-50" data-page="achievements">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="trophy" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Achievements</span>
+    </div>
+    <div class="divider h-px bg-gray-100 my-2 mx-1"></div>
+    <div class="section-label text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-2 py-3">Account</div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-500 mb-1 transition-all duration-200 hover:bg-gray-50 active" data-page="settings">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="settings-2" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Settings</span>
+    </div>
+    <div class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-400 mb-1 transition-all duration-200 hover:bg-gray-50 mt-1" data-page="logout">
+      <span class="nav-icon w-5 h-5 flex items-center justify-center"><i data-lucide="log-out" class="w-[19px] h-[19px]"></i></span>
+      <span class="nav-label text-[15.5px] font-medium">Log out</span>
+    </div>
+  </div>
+  <div id="profileCard" class="relative mx-3 mb-4 rounded-2xl bg-gradient-to-br from-amber-100 via-amber-300 to-orange-400 p-4 flex-shrink-0 cursor-pointer transition-all duration-200 overflow-hidden">
+    <div class="shimmer"></div>
+    <div class="profile-inner relative z-10 flex items-center gap-2.5">
+      <div class="avatar-ring w-9 h-9 bg-white/30 rounded-full flex items-center justify-center border-2 border-white/50 animate-[pulseAva_2.4s_ease-in-out_infinite]"><svg viewBox="0 0 24 24" width="20" height="20" fill="rgba(0,0,0,.55)" stroke="none"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+      <div><div class="profile-name text-sm font-bold text-amber-900">John Doe</div><div class="profile-role text-[11.5px] font-medium text-amber-800/70">Gold Learner</div></div>
+    </div>
+    <div class="profile-collapsed-icon hidden justify-center relative z-10"><div class="avatar-ring-sm w-10 h-10 bg-white/30 rounded-full flex items-center justify-center border-2 border-white/50"><svg viewBox="0 0 24 24" width="20" height="20" fill="rgba(0,0,0,.55)"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div></div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT: SETTINGS PAGE -->
+<div id="main" class="transition-all duration-300 ml-[240px] min-h-screen p-10 bg-slate-50">
+  
+  <!-- DASHBOARD PAGE (coming soon placeholder) -->
+  <div class="page hidden" id="page-dashboard">
+    <div class="flex items-center gap-3 mb-6"><div class="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center"><i data-lucide="layout-dashboard" class="w-5 h-5 text-white"></i></div><div class="text-2xl font-bold text-slate-800">Dashboard</div></div>
+    <div class="bg-white rounded-2xl p-12 text-center"><div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4"><i data-lucide="construction" class="w-10 h-10 text-gray-400"></i></div><h3 class="text-xl font-semibold text-slate-700 mb-2">Coming Soon</h3><p class="text-gray-500">Dashboard features are under development.</p></div>
+  </div>
+  
+  <!-- USER SPACE PAGE (placeholder) -->
+  <div class="page hidden" id="page-userspace">
+    <div class="flex items-center gap-3 mb-6"><div class="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center"><i data-lucide="house" class="w-5 h-5 text-white"></i></div><div class="text-2xl font-bold text-slate-800">My Space</div></div>
+    <div class="bg-white rounded-2xl p-12 text-center"><div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4"><i data-lucide="folder-open" class="w-10 h-10 text-gray-400"></i></div><h3 class="text-xl font-semibold text-slate-700 mb-2">Your Space</h3><p class="text-gray-500">Notes, links & collections — coming back soon.</p></div>
+  </div>
+  
+  <!-- PRACTICE PAGE placeholder -->
+  <div class="page hidden" id="page-practice">
+    <div class="flex items-center gap-3 mb-6"><div class="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center"><i data-lucide="pencil-line" class="w-5 h-5 text-white"></i></div><div class="text-2xl font-bold text-slate-800">Lesson</div></div>
+    <div class="bg-white rounded-2xl p-12 text-center"><div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4"><i data-lucide="book-open" class="w-10 h-10 text-gray-400"></i></div><h3 class="text-xl font-semibold text-slate-700 mb-2">Practice Zone</h3><p class="text-gray-500">Lessons & quizzes coming soon.</p></div>
+  </div>
+  
+  <!-- VOCABULARY PAGE placeholder -->
+  <div class="page hidden" id="page-vocabulary">
+    <div class="flex items-center gap-3 mb-6"><div class="w-11 h-11 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center"><i data-lucide="book-marked" class="w-5 h-5 text-white"></i></div><div class="text-2xl font-bold text-slate-800">Streak & Vocab</div></div>
+    <div class="bg-white rounded-2xl p-12 text-center"><div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4"><i data-lucide="flame" class="w-10 h-10 text-gray-400"></i></div><h3 class="text-xl font-semibold text-slate-700 mb-2">Vocabulary Builder</h3><p class="text-gray-500">Word bank & streak tracker coming soon.</p></div>
+  </div>
+  
+  <!-- ACHIEVEMENTS PAGE placeholder -->
+  <div class="page hidden" id="page-achievements">
+    <div class="flex items-center gap-3 mb-6"><div class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center"><i data-lucide="trophy" class="w-5 h-5 text-white"></i></div><div class="text-2xl font-bold text-slate-800">Achievements</div></div>
+    <div class="bg-white rounded-2xl p-12 text-center"><div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4"><i data-lucide="award" class="w-10 h-10 text-gray-400"></i></div><h3 class="text-xl font-semibold text-slate-700 mb-2">Milestones</h3><p class="text-gray-500">Your achievements will appear here soon.</p></div>
+  </div>
+  
+  <!-- LOGOUT PAGE placeholder -->
+  <div class="page hidden" id="page-logout">
+    <div class="flex items-center justify-center min-h-[70vh]"><div class="text-center"><div class="w-24 h-24 bg-gradient-to-br from-red-100 to-red-200 rounded-3xl flex items-center justify-center mx-auto mb-6"><i data-lucide="log-out" class="w-12 h-12 text-red-500"></i></div><h2 class="text-2xl font-bold text-slate-800 mb-2">See you soon, John!</h2><p class="text-gray-500 mb-6">Your progress has been saved.</p><button onclick="switchPage('dashboard')" class="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-full font-medium shadow-sm hover:shadow-md transition-all">Back to Dashboard</button></div></div>
+  </div>
+
+  <!-- SETTINGS PAGE (FULLY FEATURED) -->
+  <div class="page active" id="page-settings">
+    <!-- Header -->
+    <div class="flex items-center gap-3 mb-2">
+      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-slate-600 to-gray-600 flex items-center justify-center shadow-sm"><i data-lucide="settings-2" class="w-5 h-5 text-white"></i></div>
+      <div class="text-2xl font-bold text-slate-800 tracking-tight">Settings</div>
+    </div>
+    <div class="text-sm text-gray-400 ml-14 mb-8">Manage your account, preferences, and learning experience</div>
+
+    <!-- Settings Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- Profile Section -->
+      <div class="setting-card bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2"><i data-lucide="user" class="w-5 h-5 text-indigo-500"></i><h3 class="font-bold text-slate-800">Profile Information</h3></div>
+        <div class="p-6 space-y-4">
+          <div class="flex items-center justify-between py-2"><div><div class="font-medium text-slate-700">Display Name</div><div class="text-sm text-gray-400">John Doe</div></div><button onclick="editField('name')" class="text-indigo-600 text-sm font-medium hover:text-indigo-700 transition">Edit</button></div>
+          <div class="flex items-center justify-between py-2 border-t border-gray-100"><div><div class="font-medium text-slate-700">Email Address</div><div class="text-sm text-gray-400">john.doe@fluento.com</div></div><button onclick="editField('email')" class="text-indigo-600 text-sm font-medium hover:text-indigo-700 transition">Edit</button></div>
+          <div class="flex items-center justify-between py-2 border-t border-gray-100"><div><div class="font-medium text-slate-700">Language Level</div><div class="text-sm text-gray-400">Intermediate (B1)</div></div><button onclick="editField('level')" class="text-indigo-600 text-sm font-medium hover:text-indigo-700 transition">Change</button></div>
+          <div class="flex items-center justify-between py-2 border-t border-gray-100"><div><div class="font-medium text-slate-700">Native Language</div><div class="text-sm text-gray-400">English</div></div><button onclick="editField('native')" class="text-indigo-600 text-sm font-medium hover:text-indigo-700 transition">Edit</button></div>
+        </div>
+      </div>
+
+      <!-- Preferences Section -->
+      <div class="setting-card bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2"><i data-lucide="sliders" class="w-5 h-5 text-emerald-500"></i><h3 class="font-bold text-slate-800">Learning Preferences</h3></div>
+        <div class="p-6 space-y-4">
+          <div class="flex items-center justify-between"><div><div class="font-medium text-slate-700">Daily Goal</div><div class="text-sm text-gray-400">15 minutes per day</div></div><select id="dailyGoal" class="bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-sm focus:border-indigo-400 outline-none"><option>10 minutes</option><option selected>15 minutes</option><option>30 minutes</option><option>45 minutes</option><option>60 minutes</option></select></div>
+          <div class="flex items-center justify-between pt-2 border-t border-gray-100"><div><div class="font-medium text-slate-700">Default Study Time</div><div class="text-sm text-gray-400">Morning (8:00 AM)</div></div><select id="studyTime" class="bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-sm"><option selected>Morning (8:00 AM)</option><option>Afternoon (1:00 PM)</option><option>Evening (7:00 PM)</option><option>Night (10:00 PM)</option></select></div>
+          <div class="flex items-center justify-between pt-2 border-t border-gray-100"><div><div class="font-medium text-slate-700">Vocabulary Review</div><div class="text-sm text-gray-400">Daily spaced repetition</div></div><div class="toggle-switch relative inline-block w-11 h-6"><input type="checkbox" id="vocabReview" class="peer opacity-0 w-0 h-0" checked><div class="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 rounded-full transition-colors peer-checked:bg-indigo-500 before:absolute before:content-[''] before:h-5 before:w-5 before:left-0.5 before:bottom-0.5 before:bg-white before:rounded-full before:transition-transform peer-checked:before:translate-x-5"></div></div></div>
+        </div>
+      </div>
+
+      <!-- Notifications Section -->
+      <div class="setting-card bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2"><i data-lucide="bell" class="w-5 h-5 text-amber-500"></i><h3 class="font-bold text-slate-800">Notifications</h3></div>
+        <div class="p-6 space-y-4">
+          <div class="flex items-center justify-between"><div><div class="font-medium text-slate-700">Daily Reminder</div><div class="text-sm text-gray-400">Get notified to complete your daily goal</div></div><div class="toggle-switch relative inline-block w-11 h-6"><input type="checkbox" id="dailyReminder" class="peer opacity-0 w-0 h-0" checked><div class="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 rounded-full transition-colors peer-checked:bg-indigo-500 before:absolute before:content-[''] before:h-5 before:w-5 before:left-0.5 before:bottom-0.5 before:bg-white before:rounded-full before:transition-transform peer-checked:before:translate-x-5"></div></div></div>
+          <div class="flex items-center justify-between pt-2 border-t border-gray-100"><div><div class="font-medium text-slate-700">Streak Alerts</div><div class="text-sm text-gray-400">Warning when your streak is at risk</div></div><div class="toggle-switch relative inline-block w-11 h-6"><input type="checkbox" id="streakAlerts" class="peer opacity-0 w-0 h-0" checked><div class="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 rounded-full transition-colors peer-checked:bg-indigo-500 before:absolute before:content-[''] before:h-5 before:w-5 before:left-0.5 before:bottom-0.5 before:bg-white before:rounded-full before:transition-transform peer-checked:before:translate-x-5"></div></div></div>
+          <div class="flex items-center justify-between pt-2 border-t border-gray-100"><div><div class="font-medium text-slate-700">Achievement Unlocked</div><div class="text-sm text-gray-400">Celebrate your milestones</div></div><div class="toggle-switch relative inline-block w-11 h-6"><input type="checkbox" id="achievementNotify" class="peer opacity-0 w-0 h-0" checked><div class="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 rounded-full transition-colors peer-checked:bg-indigo-500 before:absolute before:content-[''] before:h-5 before:w-5 before:left-0.5 before:bottom-0.5 before:bg-white before:rounded-full before:transition-transform peer-checked:before:translate-x-5"></div></div></div>
+          <div class="flex items-center justify-between pt-2 border-t border-gray-100"><div><div class="font-medium text-slate-700">Email Newsletter</div><div class="text-sm text-gray-400">Learning tips and updates</div></div><div class="toggle-switch relative inline-block w-11 h-6"><input type="checkbox" id="emailNews" class="peer opacity-0 w-0 h-0"><div class="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 rounded-full transition-colors peer-checked:bg-indigo-500 before:absolute before:content-[''] before:h-5 before:w-5 before:left-0.5 before:bottom-0.5 before:bg-white before:rounded-full before:transition-transform peer-checked:before:translate-x-5"></div></div></div>
+        </div>
+      </div>
+
+      <!-- Appearance Section -->
+      <div class="setting-card bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2"><i data-lucide="palette" class="w-5 h-5 text-purple-500"></i><h3 class="font-bold text-slate-800">Appearance</h3></div>
+        <div class="p-6 space-y-4">
+          <div class="flex items-center justify-between"><div><div class="font-medium text-slate-700">Theme</div><div class="text-sm text-gray-400">Light / Dark mode</div></div><select id="themeSelect" class="bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-sm"><option selected>Light</option><option>Dark</option><option>System Default</option></select></div>
+          <div class="flex items-center justify-between pt-2 border-t border-gray-100"><div><div class="font-medium text-slate-700">Font Size</div><div class="text-sm text-gray-400">Adjust text size</div></div><select id="fontSize" class="bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-sm"><option>Small</option><option selected>Medium</option><option>Large</option></select></div>
+          <div class="flex items-center justify-between pt-2 border-t border-gray-100"><div><div class="font-medium text-slate-700">Animations</div><div class="text-sm text-gray-400">Enable UI transitions</div></div><div class="toggle-switch relative inline-block w-11 h-6"><input type="checkbox" id="animations" class="peer opacity-0 w-0 h-0" checked><div class="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 rounded-full transition-colors peer-checked:bg-indigo-500 before:absolute before:content-[''] before:h-5 before:w-5 before:left-0.5 before:bottom-0.5 before:bg-white before:rounded-full before:transition-transform peer-checked:before:translate-x-5"></div></div></div>
+        </div>
+      </div>
+
+      <!-- Privacy & Security -->
+      <div class="setting-card bg-white rounded-2xl shadow-sm overflow-hidden lg:col-span-2">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2"><i data-lucide="shield" class="w-5 h-5 text-red-500"></i><h3 class="font-bold text-slate-800">Privacy & Security</h3></div>
+        <div class="p-6 space-y-4">
+          <div class="flex items-center justify-between"><div><div class="font-medium text-slate-700">Two-Factor Authentication</div><div class="text-sm text-gray-400">Add an extra layer of security</div></div><button class="px-4 py-1.5 bg-gray-100 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200 transition">Setup</button></div>
+          <div class="flex items-center justify-between pt-2 border-t border-gray-100"><div><div class="font-medium text-slate-700">Change Password</div><div class="text-sm text-gray-400">Last changed 3 months ago</div></div><button class="px-4 py-1.5 bg-gray-100 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200 transition">Update</button></div>
+          <div class="flex items-center justify-between pt-2 border-t border-gray-100"><div><div class="font-medium text-slate-700">Data Export</div><div class="text-sm text-gray-400">Download your learning data</div></div><button class="px-4 py-1.5 bg-gray-100 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200 transition">Export</button></div>
+        </div>
+      </div>
+
+      <!-- Danger Zone -->
+      <div class="lg:col-span-2">
+        <div class="danger-zone bg-white rounded-2xl shadow-sm border-2 border-transparent p-6">
+          <div class="flex items-center gap-2 mb-3"><i data-lucide="alert-triangle" class="w-5 h-5 text-red-500"></i><h3 class="font-bold text-red-600">Danger Zone</h3></div>
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div><div class="font-medium text-slate-700">Delete Account</div><div class="text-sm text-gray-400">Permanently remove your account and all data</div></div>
+            <button onclick="confirmDelete()" class="px-5 py-2 bg-red-50 text-red-600 rounded-full text-sm font-medium border border-red-200 hover:bg-red-100 hover:border-red-300 transition">Delete Account</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Save Button -->
+      <div class="lg:col-span-2 flex justify-end pt-4">
+        <button onclick="saveAllSettings()" class="px-8 py-2.5 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-full font-semibold shadow-sm hover:shadow-md transition-all flex items-center gap-2"><i data-lucide="save" class="w-4 h-4"></i> Save All Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // sidebar collapse logic
+  const sidebar = document.getElementById('sidebar');
+  function toggleSidebar() { sidebar.classList.toggle('collapsed'); document.body.classList.toggle('collapsed-body'); }
+  document.getElementById('toggleBtn').onclick = toggleSidebar;
+  
+  // Page switching logic
+  function switchPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    document.getElementById(`page-${pageId}`).classList.remove('hidden');
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    document.querySelector(`.nav-item[data-page="${pageId}"]`).classList.add('active');
+    lucide.createIcons();
+    showToast(`Switched to ${pageId}`, 'info');
+  }
+  
+  // Save settings & show toast
+  function saveAllSettings() {
+    const dailyGoal = document.getElementById('dailyGoal').value;
+    const studyTime = document.getElementById('studyTime').value;
+    const theme = document.getElementById('themeSelect').value;
+    showToast(`Settings saved! Daily goal: ${dailyGoal}, Theme: ${theme}`, 'success');
+  }
+  
+  function editField(field) {
+    const messages = { name: 'Edit display name', email: 'Update email address', level: 'Change language level', native: 'Edit native language' };
+    showToast(messages[field] || 'Feature coming soon', 'info');
+  }
+  
+  function confirmDelete() {
+    if(confirm('⚠️ WARNING: This will permanently delete your account. Are you absolutely sure?')) {
+      showToast('Account deletion requested (demo)', 'error');
+    }
+  }
+  
+  function showToast(msg, type = 'success') {
+    const old = document.querySelector('.toast');
+    if(old) old.remove();
+    const t = document.createElement('div');
+    t.className = `toast fixed bottom-5 right-5 bg-slate-800 text-white rounded-full px-5 py-2.5 text-sm font-medium shadow-lg z-[999] flex items-center gap-2 animate-[slideDown_.25s_ease]`;
+    const icon = type === 'success' ? 'check-circle' : (type === 'error' ? 'alert-circle' : 'info');
+    t.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4 ${type === 'success' ? 'text-emerald-400' : (type === 'error' ? 'text-red-400' : 'text-blue-400')}"></i> ${msg}`;
+    document.body.appendChild(t);
+    lucide.createIcons();
+    setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2500);
+  }
+  
+  // Sidebar navigation click handlers with ripple
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.onclick = (e) => {
+      const rect = el.getBoundingClientRect();
+      const rip = document.createElement('span');
+      rip.className = 'ripple-el';
+      rip.style.left = (e.clientX - rect.left - 15) + 'px';
+      rip.style.top = (e.clientY - rect.top - 15) + 'px';
+      el.appendChild(rip);
+      setTimeout(() => rip.remove(), 600);
+      const page = el.dataset.page;
+      if(page) switchPage(page);
+    };
+  });
+  
+  // Initialize icons and set active page to settings
+  lucide.createIcons();
+  document.querySelector('.nav-item[data-page="settings"]').classList.add('active');
+</script>
+</body>
+</html>
