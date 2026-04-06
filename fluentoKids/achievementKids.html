@@ -85,14 +85,11 @@ tailwind.config = {
 
   /* bar fill grow animation */
   .bar-fill { animation: grow 1s .2s ease both; }
-
-  /* xp bar grow */
   .xp-bar-fill { animation: grow .8s .8s ease both; }
 
   /* hero trophy spin */
   .hero-star-spin::before {
-    content: '🏆';
-    font-size: 130px;
+    content: '';
     position: absolute; right: -12px; top: -22px;
     opacity: .1; pointer-events: none;
     animation: starSpin 8s linear infinite;
@@ -104,12 +101,135 @@ tailwind.config = {
 
   /* confetti */
   .conf { position: fixed; pointer-events: none; font-size: 20px; animation: confetti 1.2s ease-in forwards; z-index: 9999; }
+
+  /* Custom SVG icon sizing */
+  .icon-lg { width: 36px; height: 36px; }
+  .icon-xl { width: 72px; height: 72px; }
+  .icon-sm { width: 19px; height: 19px; }
+  .icon-xs { width: 14px; height: 14px; }
 </style>
 </head>
 <body class="bg-[#F7F7F7] min-h-screen">
 
+<!-- ═══ SVG ICONS SPRITE (Reusable) ═══ -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <!-- 🏆 Trophy -->
+    <symbol id="icon-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M6 9H4.5a2.5 2.5 0 010-5H6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M18 9h1.5a2.5 2.5 0 000-5H18" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4 22h16" stroke-linecap="round"/>
+      <path d="M12 15a4 4 0 004-4V6H8v5a4 4 0 004 4z" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke-linecap="round"/>
+      <circle cx="12" cy="9" r="1.5" fill="currentColor"/>
+    </symbol>
+    <!-- ⭐ Star -->
+    <symbol id="icon-star" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2l2.8 6.8 7.2.6-5.4 4.7 1.7 7-6.3-3.8-6.3 3.8 1.7-7L2 9.4l7.2-.6L12 2z"/>
+    </symbol>
+    <!-- 🔥 Flame -->
+    <symbol id="icon-flame" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 22c4.97 0 9-4.03 9-9 0-3.53-2.61-6.43-6-7.73V4c0-.55-.45-1-1-1s-1 .45-1 1v1.27c-3.39 1.3-6 4.2-6 7.73 0 4.97 4.03 9 9 9zm-1-7c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2z"/>
+    </symbol>
+    <!-- 🦁 Lion -->
+    <symbol id="icon-lion" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="12" cy="12" r="5" stroke-linecap="round"/>
+      <path d="M12 7V4M12 20v-3M7 12H4M20 12h-3M7.5 7.5L5.5 5.5M18.5 18.5l-2-2M16.5 7.5l2-2M5.5 18.5l2-2" stroke-linecap="round"/>
+      <circle cx="10" cy="11" r="1" fill="currentColor"/>
+      <circle cx="14" cy="11" r="1" fill="currentColor"/>
+      <path d="M10 14c.5.5 1.5 1 2 1s1.5-.5 2-1" stroke-linecap="round"/>
+    </symbol>
+    <!-- 🎵 Music -->
+    <symbol id="icon-music" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M9 18V5l12-2v13" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="6" cy="18" r="3"/>
+      <circle cx="18" cy="16" r="3"/>
+    </symbol>
+    <!-- 🐾 Paw -->
+    <symbol id="icon-paw" viewBox="0 0 24 24" fill="currentColor">
+      <ellipse cx="12" cy="15" rx="4" ry="3"/>
+      <circle cx="6" cy="9" r="2"/>
+      <circle cx="12" cy="7" r="2"/>
+      <circle cx="18" cy="9" r="2"/>
+    </symbol>
+    <!-- 💯 Medal -->
+    <symbol id="icon-medal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="12" cy="14" r="5"/>
+      <path d="M12 9V4M8 4h8" stroke-linecap="round"/>
+      <path d="M9 14l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <!-- 📚 Book -->
+    <symbol id="icon-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke-linecap="round"/>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <!-- 🚀 Rocket -->
+    <symbol id="icon-rocket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z"/>
+      <path d="M12 15l-3-3a22 22 0 012-3.95A12.88 12.88 0 0122 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 01-4 2z"/>
+      <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" stroke-linecap="round"/>
+    </symbol>
+    <!-- 🌈 Rainbow -->
+    <symbol id="icon-rainbow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M5 17a7 7 0 0114 0" stroke-linecap="round"/>
+      <path d="M7 14a5 5 0 0110 0" stroke-linecap="round"/>
+      <path d="M9 11a3 3 0 016 0" stroke-linecap="round"/>
+      <circle cx="12" cy="17" r="1" fill="currentColor"/>
+    </symbol>
+    <!-- 👑 Crown -->
+    <symbol id="icon-crown" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M3 20h18" stroke-linecap="round"/>
+    </symbol>
+    <!-- 💬 Chat -->
+    <symbol id="icon-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <!-- 🎮 Game -->
+    <symbol id="icon-game" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <rect x="2" y="6" width="20" height="12" rx="2"/>
+      <path d="M6 12h4M8 10v4" stroke-linecap="round"/>
+      <circle cx="17" cy="10" r="1" fill="currentColor"/>
+      <circle cx="15" cy="14" r="1" fill="currentColor"/>
+    </symbol>
+    <!-- 🗺️ Map -->
+    <symbol id="icon-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6-10l6 3m0 13l5.447-2.724a1 1 0 00.553-.894V5.618a1 1 0 00-1.447-.894L15 7" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <!-- 🏠 Home -->
+    <symbol id="icon-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M3 12l9-9 9 9" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9 21V12h6v9" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <!-- ⚙️ Gear -->
+    <symbol id="icon-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+    </symbol>
+    <!-- 🐱 Cat Avatar -->
+    <symbol id="icon-cat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="12" cy="14" r="6"/>
+      <path d="M8 8l-3-3M16 8l3-3" stroke-linecap="round"/>
+      <circle cx="9" cy="13" r="1.5" fill="currentColor"/>
+      <circle cx="15" cy="13" r="1.5" fill="currentColor"/>
+      <path d="M10 17c.5.5 1.5 1 2 1s1.5-.5 2-1" stroke-linecap="round"/>
+    </symbol>
+    <!-- 🔒 Lock -->
+    <symbol id="icon-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <rect x="4" y="11" width="16" height="9" rx="2"/>
+      <path d="M8 11V7a4 4 0 118 0v4" stroke-linecap="round"/>
+    </symbol>
+    <!-- ✨ Sparkle -->
+    <symbol id="icon-sparkle" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5L12 2z"/>
+      <circle cx="19" cy="5" r="1.5"/>
+      <circle cx="5" cy="19" r="1"/>
+    </symbol>
+  </defs>
+</svg>
+
 <!-- ═══ SIDEBAR ═══ -->
-<div id="sidebar" class="fixed top-0 left-0 h-screen w-[248px] bg-sidebar flex flex-col animate-slideIn z-[100] border-r-4 border-sidebar-dark [animation-delay:0s]" style="position:fixed;">
+<div id="sidebar" class="fixed top-0 left-0 h-screen w-[248px] bg-sidebar flex flex-col animate-slideIn z-[100] border-r-4 border-sidebar-dark" style="position:fixed;">
 
   <div id="sideScroll" class="flex-1 overflow-y-auto overflow-x-hidden px-[10px] pb-2 pt-4 mt-1">
 
@@ -136,54 +256,53 @@ tailwind.config = {
       </div>
     </div>
 
-    <!-- Section Label -->
-    <div class="font-fredoka text-[11px] text-white/35 tracking-[.12em] uppercase px-[10px] pb-1 pt-[10px] whitespace-nowrap">Learn</div>
+    <!-- Section: Learn -->
+    <div class="font-fredoka text-[11px] text-white/35 tracking-[.12em] uppercase px-[10px] pb-1 pt-[10px]">Learn</div>
 
-    <!-- Nav Items -->
-    <div class="nav-item mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.08s]" onclick="navGo('home')">
-      <div class="nav-btn flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 transition-all text-white/75 hover:bg-white/[.15] hover:text-white">
-        <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-white/[.12] border-b-[3px] border-black/20 text-[19px] transition-transform hover:rotate-[-8deg] hover:scale-110">🏠</div>
-        <span class="font-fredoka text-[17px] tracking-[.2px] whitespace-nowrap">Home</span>
+    <div class="mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.08s]" onclick="navGo('home')">
+      <div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15] hover:text-white transition-all">
+        <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-white/[.12] border-b-[3px] border-black/20 text-[19px] hover:rotate-[-8deg] hover:scale-110 transition-transform">🏠</div>
+        <span class="font-fredoka text-[17px] whitespace-nowrap">Home</span>
       </div>
     </div>
 
-    <div class="nav-item mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.13s]" onclick="navGo('lesson')">
-      <div class="nav-btn flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 transition-all text-white/75 hover:bg-white/[.15] hover:text-white">
+    <div class="mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.13s]" onclick="navGo('lesson')">
+      <div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15] hover:text-white transition-all">
         <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-white/[.12] border-b-[3px] border-black/20 text-[19px]">🗺️</div>
-        <span class="font-fredoka text-[17px] tracking-[.2px] whitespace-nowrap">Lesson</span>
+        <span class="font-fredoka text-[17px] whitespace-nowrap">Lesson</span>
       </div>
     </div>
 
-    <div class="nav-item mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.18s]" onclick="navGo('minigames')">
-      <div class="nav-btn flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 transition-all text-white/75 hover:bg-white/[.15] hover:text-white">
+    <div class="mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.18s]" onclick="navGo('minigames')">
+      <div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15] hover:text-white transition-all">
         <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-white/[.12] border-b-[3px] border-black/20 text-[19px]">🎮</div>
-        <span class="font-fredoka text-[17px] tracking-[.2px] whitespace-nowrap">Mini Games</span>
+        <span class="font-fredoka text-[17px] whitespace-nowrap">Mini Games</span>
       </div>
     </div>
 
-    <div class="nav-item mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.23s]" onclick="navGo('streak')">
-      <div class="nav-btn flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 transition-all text-white/75 hover:bg-white/[.15] hover:text-white">
-        <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-white/[.12] border-b-[3px] border-black/20 text-[19px]">🔥</div>
-        <span class="font-fredoka text-[17px] tracking-[.2px] whitespace-nowrap">Streak</span>
+    <!-- Active: Streak -->
+    <div class="mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.23s]">
+      <div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white text-sidebar border-b-[3px] border-[#bcd1f0] shadow-[0_2px_0_#a0bce8]">
+        <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-green border-b-[3px] border-green-dark text-[19px]">🔥</div>
+        <span class="font-fredoka text-[17px] whitespace-nowrap">Streak</span>
       </div>
     </div>
 
     <!-- Divider -->
     <div class="h-[2px] bg-white/[.08] my-2 mx-1 rounded-full"></div>
-    <div class="font-fredoka text-[11px] text-white/35 tracking-[.12em] uppercase px-[10px] pb-1 pt-[10px] whitespace-nowrap">My Stuff</div>
+    <div class="font-fredoka text-[11px] text-white/35 tracking-[.12em] uppercase px-[10px] pb-1 pt-[10px]">My Stuff</div>
 
-    <!-- Active: Achievements -->
-    <div class="nav-item mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.28s]">
-      <div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white text-sidebar border-b-[3px] border-[#bcd1f0] shadow-[0_2px_0_#a0bce8]">
-        <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-green border-b-[3px] border-green-dark text-[19px]">🏆</div>
-        <span class="font-fredoka text-[17px] tracking-[.2px] whitespace-nowrap">Achievements</span>
+    <div class="mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.28s]" onclick="navGo('achievements')">
+      <div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15] hover:text-white transition-all">
+        <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-white/[.12] border-b-[3px] border-black/20 text-[19px]">🏆</div>
+        <span class="font-fredoka text-[17px] whitespace-nowrap">Achievements</span>
       </div>
     </div>
 
-    <div class="nav-item mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.33s]" onclick="navGo('settings')">
-      <div class="nav-btn flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 transition-all text-white/75 hover:bg-white/[.15] hover:text-white">
+    <div class="mb-1 cursor-pointer relative overflow-hidden rounded-2xl transition-transform active:scale-95 animate-pageIn [animation-delay:.33s]" onclick="navGo('settings')">
+      <div class="flex items-center gap-3 w-full px-3 py-[11px] rounded-2xl bg-white/[.08] border-b-[3px] border-black/25 text-white/75 hover:bg-white/[.15] hover:text-white transition-all">
         <div class="w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center bg-white/[.12] border-b-[3px] border-black/20 text-[19px]">⚙️</div>
-        <span class="font-fredoka text-[17px] tracking-[.2px] whitespace-nowrap">Settings</span>
+        <span class="font-fredoka text-[17px] whitespace-nowrap">Settings</span>
       </div>
     </div>
 
@@ -210,7 +329,9 @@ tailwind.config = {
 
   <!-- Header -->
   <div class="flex items-center gap-[14px] mb-1">
-    <div class="w-14 h-14 rounded-[20px] flex items-center justify-center text-[28px] flex-shrink-0 border-b-4 border-black/15 shadow-[0_4px_0_rgba(0,0,0,.12)] bg-gradient-to-br from-[#FFC800] to-[#FF9600]">🏆</div>
+    <div class="w-14 h-14 rounded-[20px] flex items-center justify-center flex-shrink-0 border-b-4 border-black/15 shadow-[0_4px_0_rgba(0,0,0,.12)] bg-gradient-to-br from-[#FFC800] to-[#FF9600]">
+      <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><use href="#icon-trophy"/></svg>
+    </div>
     <div class="font-fredoka text-[32px] text-[#3c3c3c] tracking-[.2px]">Achievements! 🌟</div>
   </div>
 
@@ -224,7 +345,9 @@ tailwind.config = {
 
   <!-- Badges Section Header -->
   <div class="flex items-center gap-[10px] mb-[14px] mt-1">
-    <div class="w-9 h-9 rounded-xl flex items-center justify-center text-[18px] border-b-[3px] flex-shrink-0 bg-[#fff3cd] border-b-[#e5c800]">🎖️</div>
+    <div class="w-9 h-9 rounded-xl flex items-center justify-center text-[18px] border-b-[3px] flex-shrink-0 bg-[#fff3cd] border-b-[#e5c800]">
+      <svg class="icon-lg text-[#c89900]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><use href="#icon-medal"/></svg>
+    </div>
     <div class="font-fredoka text-[18px] text-[#3c3c3c] tracking-[.2px]">My Badges</div>
     <div class="text-[12px] font-black text-[#bbb] ml-1">7 / 10 earned</div>
   </div>
@@ -235,74 +358,94 @@ tailwind.config = {
     <!-- Earned badges -->
     <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all hover:-translate-y-[5px] hover:scale-[1.02] hover:shadow-[0_10px_0_#e0e0e0] active:translate-y-[2px] active:border-b-[2px] badge-shimmer" data-filter="earned">
       <div class="absolute top-3 right-3 font-fredoka text-[10px] bg-red text-white px-2 py-[3px] rounded-full animate-bounce2 z-[2]">NEW!</div>
-      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 border-black/10 animate-floatY bg-gradient-to-br from-[#FFF3CD] to-[#FFE066] border-b-[#c89900]">🌟</div>
-      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">First Star</div>
-      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Completed your very first lesson!</div>
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center border-b-4 animate-floatY bg-gradient-to-br from-[#FFF3CD] to-[#FFE066] border-b-[#c89900]">
+        <svg class="icon-xl text-[#c89900]" fill="none" viewBox="0 0 24 24"><use href="#icon-star"/></svg>
+      </div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">First Words!</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Learned your first 10 English words!</div>
       <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#FFC800] text-[#5c3a00] border-b-[#E5A100]">Earned! ⭐</div>
     </div>
 
     <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all hover:-translate-y-[5px] hover:scale-[1.02] hover:shadow-[0_10px_0_#e0e0e0] active:translate-y-[2px] active:border-b-[2px] badge-shimmer" data-filter="earned">
       <div class="absolute top-3 right-3 font-fredoka text-[10px] bg-red text-white px-2 py-[3px] rounded-full animate-bounce2 z-[2]">NEW!</div>
-      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 animate-floatY bg-gradient-to-br from-[#FFE5D4] to-[#FFB380] border-b-[#cc5500]">🔥</div>
-      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">On Fire!</div>
-      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Kept a 5-day learning streak!</div>
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center border-b-4 animate-floatY bg-gradient-to-br from-[#FFE5D4] to-[#FFB380] border-b-[#cc5500]">
+        <svg class="icon-xl text-[#cc5500]" fill="none" viewBox="0 0 24 24"><use href="#icon-flame"/></svg>
+      </div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Hot Streak!</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Practiced 5 days in a row!</div>
       <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#FF9600] text-white border-b-[#cc7700]">Earned! 🔥</div>
     </div>
 
     <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all hover:-translate-y-[5px] hover:scale-[1.02] hover:shadow-[0_10px_0_#e0e0e0] active:translate-y-[2px] active:border-b-[2px] badge-shimmer" data-filter="earned">
-      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 animate-floatY bg-gradient-to-br from-[#FFE5D4] to-[#FFAD66] border-b-[#cc7700]">🦁</div>
-      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Lion Heart</div>
-      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Never gave up — 10 lessons done!</div>
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center border-b-4 animate-floatY bg-gradient-to-br from-[#FFE5D4] to-[#FFAD66] border-b-[#cc7700]">
+        <svg class="icon-xl text-[#cc7700]" fill="none" viewBox="0 0 24 24"><use href="#icon-lion"/></svg>
+      </div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Brave Learner</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Finished 10 lessons without giving up!</div>
       <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#FF9600] text-white border-b-[#cc7700]">Earned! 💪</div>
     </div>
 
     <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all hover:-translate-y-[5px] hover:scale-[1.02] hover:shadow-[0_10px_0_#e0e0e0] active:translate-y-[2px] active:border-b-[2px] badge-shimmer" data-filter="earned">
-      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 animate-floatY bg-gradient-to-br from-[#E8D5FF] to-[#C580FF] border-b-[#9040d4]">🎵</div>
-      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Music Star</div>
-      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Sang along 3 times!</div>
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center border-b-4 animate-floatY bg-gradient-to-br from-[#E8D5FF] to-[#C580FF] border-b-[#9040d4]">
+        <svg class="icon-xl text-[#9040d4]" fill="none" viewBox="0 0 24 24"><use href="#icon-music"/></svg>
+      </div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Sing Along!</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Sang with Fluento 3 times!</div>
       <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#CE82FF] text-white border-b-[#a45fd4]">Earned! 🎤</div>
     </div>
 
     <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all hover:-translate-y-[5px] hover:scale-[1.02] hover:shadow-[0_10px_0_#e0e0e0] active:translate-y-[2px] active:border-b-[2px] badge-shimmer" data-filter="earned">
-      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 animate-floatY bg-gradient-to-br from-[#D4F5D4] to-[#80E080] border-b-[#46a302]">🐾</div>
-      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Animal Expert</div>
-      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Learned all Animal Kingdom words!</div>
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center border-b-4 animate-floatY bg-gradient-to-br from-[#D4F5D4] to-[#80E080] border-b-[#46a302]">
+        <svg class="icon-xl text-[#46a302]" fill="none" viewBox="0 0 24 24"><use href="#icon-paw"/></svg>
+      </div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Animal Friend</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Learned all animal words!</div>
       <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#58CC02] text-white border-b-[#46A302]">Earned! 🐾</div>
     </div>
 
     <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all hover:-translate-y-[5px] hover:scale-[1.02] hover:shadow-[0_10px_0_#e0e0e0] active:translate-y-[2px] active:border-b-[2px] badge-shimmer" data-filter="earned">
-      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 animate-floatY bg-gradient-to-br from-[#D1F0FF] to-[#66CCFF] border-b-[#0a8fcc]">💯</div>
-      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Perfect!</div>
-      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Got 100% on a quiz!</div>
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center border-b-4 animate-floatY bg-gradient-to-br from-[#D1F0FF] to-[#66CCFF] border-b-[#0a8fcc]">
+        <svg class="icon-xl text-[#0a8fcc]" fill="none" viewBox="0 0 24 24"><use href="#icon-medal"/></svg>
+      </div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Perfect Score!</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Got all answers right in a quiz!</div>
       <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#1CB0F6] text-white border-b-[#0A8FCC]">Earned! 💯</div>
     </div>
 
     <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all hover:-translate-y-[5px] hover:scale-[1.02] hover:shadow-[0_10px_0_#e0e0e0] active:translate-y-[2px] active:border-b-[2px] badge-shimmer" data-filter="earned">
-      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 animate-floatY bg-gradient-to-br from-[#FFF3CD] to-[#FFD966] border-b-[#c89900]">📚</div>
-      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Bookworm</div>
-      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Read through 3 full word lists!</div>
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center border-b-4 animate-floatY bg-gradient-to-br from-[#FFF3CD] to-[#FFD966] border-b-[#c89900]">
+        <svg class="icon-xl text-[#c89900]" fill="none" viewBox="0 0 24 24"><use href="#icon-book"/></svg>
+      </div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Story Explorer</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Read 3 full story lessons!</div>
       <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#FFC800] text-[#5c3a00] border-b-[#E5A100]">Earned! 📖</div>
     </div>
 
     <!-- Locked badges -->
     <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all opacity-45 grayscale-[.8] hover:-translate-y-[2px] hover:scale-100" data-filter="locked">
-      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 bg-[#f0f0f0] border-b-[#c8c8c8]">🚀</div>
-      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Rocket Kid</div>
-      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Explore the Outer Space world</div>
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center border-b-4 bg-[#f0f0f0] border-b-[#c8c8c8]">
+        <svg class="icon-xl text-[#c8c8c8]" fill="none" viewBox="0 0 24 24"><use href="#icon-rocket"/></svg>
+      </div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Space Explorer</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Complete the Space World lessons</div>
       <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#e0e0e0] text-[#aaa] border-b-[#c8c8c8]">Locked 🔒</div>
     </div>
 
     <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all opacity-45 grayscale-[.8] hover:-translate-y-[2px] hover:scale-100" data-filter="locked">
-      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 bg-[#f0f0f0] border-b-[#c8c8c8]">🌈</div>
-      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Rainbow</div>
-      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Complete Colors &amp; Shapes world</div>
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center border-b-4 bg-[#f0f0f0] border-b-[#c8c8c8]">
+        <svg class="icon-xl text-[#c8c8c8]" fill="none" viewBox="0 0 24 24"><use href="#icon-rainbow"/></svg>
+      </div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Color Master</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Learn all colors & shapes</div>
       <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#e0e0e0] text-[#aaa] border-b-[#c8c8c8]">Locked 🔒</div>
     </div>
 
     <div class="badge-card relative overflow-hidden bg-white rounded-[24px] p-[24px_16px_20px] text-center flex flex-col items-center gap-2 border-b-[5px] border-[#e0e0e0] shadow-[0_5px_0_#e8e8e8] cursor-pointer transition-all opacity-45 grayscale-[.8] hover:-translate-y-[2px] hover:scale-100" data-filter="locked">
-      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[36px] border-b-4 bg-[#f0f0f0] border-b-[#c8c8c8]">👑</div>
-      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Champion</div>
-      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Reach Level 10 to unlock!</div>
+      <div class="w-[72px] h-[72px] rounded-full flex items-center justify-center border-b-4 bg-[#f0f0f0] border-b-[#c8c8c8]">
+        <svg class="icon-xl text-[#c8c8c8]" fill="none" viewBox="0 0 24 24"><use href="#icon-crown"/></svg>
+      </div>
+      <div class="font-fredoka text-[16px] text-[#3c3c3c] tracking-[.1px]">Super Star</div>
+      <div class="text-[12px] text-[#aaa] font-black leading-[1.5]">Earn 1000 XP to unlock!</div>
       <div class="text-[11px] font-black px-[14px] py-1 rounded-full uppercase tracking-[.06em] border-b-2 border-black/10 bg-[#e0e0e0] text-[#aaa] border-b-[#c8c8c8]">Locked 🔒</div>
     </div>
 
@@ -310,7 +453,9 @@ tailwind.config = {
 
   <!-- Progress Challenges Header -->
   <div class="flex items-center gap-[10px] mb-[14px] mt-1">
-    <div class="w-9 h-9 rounded-xl flex items-center justify-center text-[18px] border-b-[3px] flex-shrink-0 bg-[#d4f5d4] border-b-[#46a302]">📈</div>
+    <div class="w-9 h-9 rounded-xl flex items-center justify-center text-[18px] border-b-[3px] flex-shrink-0 bg-[#d4f5d4] border-b-[#46a302]">
+      <svg class="icon-lg text-[#46a302]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><use href="#icon-sparkle"/></svg>
+    </div>
     <div class="font-fredoka text-[18px] text-[#3c3c3c] tracking-[.2px]">Progress Challenges</div>
     <div class="text-[12px] font-black text-[#bbb] ml-1">5 active</div>
   </div>
@@ -320,7 +465,9 @@ tailwind.config = {
 
     <!-- Completed -->
     <div class="ach-row relative overflow-hidden bg-white rounded-[20px] p-[18px_20px] flex items-center gap-4 border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-[#58CC02] row-shimmer" data-filter="earned" onclick="popRow(this)">
-      <div class="text-[38px] flex-shrink-0">🔥</div>
+      <div class="text-[38px] flex-shrink-0">
+        <svg class="w-10 h-10 text-[#FF9600]" fill="none" viewBox="0 0 24 24"><use href="#icon-flame"/></svg>
+      </div>
       <div class="flex-1 min-w-0">
         <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Streak Star!</div>
         <div class="text-[12px] text-[#aaa] font-black mt-[3px]">Keep a 5-day learning streak</div>
@@ -338,10 +485,12 @@ tailwind.config = {
     </div>
 
     <div class="ach-row relative overflow-hidden bg-white rounded-[20px] p-[18px_20px] flex items-center gap-4 border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-[#58CC02] row-shimmer" data-filter="earned" onclick="popRow(this)">
-      <div class="text-[38px] flex-shrink-0">💬</div>
+      <div class="text-[38px] flex-shrink-0">
+        <svg class="w-10 h-10 text-[#58CC02]" fill="none" viewBox="0 0 24 24"><use href="#icon-chat"/></svg>
+      </div>
       <div class="flex-1 min-w-0">
-        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Word Wizard!</div>
-        <div class="text-[12px] text-[#aaa] font-black mt-[3px]">Learn 84 words</div>
+        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Word Collector!</div>
+        <div class="text-[12px] text-[#aaa] font-black mt-[3px]">Learn 84 new words</div>
         <div class="mt-[9px]">
           <div class="h-[9px] bg-[#f0f0f0] rounded-full overflow-hidden">
             <div class="bar-fill h-full rounded-full bg-gradient-to-r from-[#58CC02] to-[#89E219]" style="--tw-bar-w:100%; width:100%;"></div>
@@ -356,9 +505,11 @@ tailwind.config = {
     </div>
 
     <div class="ach-row relative overflow-hidden bg-white rounded-[20px] p-[18px_20px] flex items-center gap-4 border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-[#58CC02] row-shimmer" data-filter="earned" onclick="popRow(this)">
-      <div class="text-[38px] flex-shrink-0">🎵</div>
+      <div class="text-[38px] flex-shrink-0">
+        <svg class="w-10 h-10 text-[#1CB0F6]" fill="none" viewBox="0 0 24 24"><use href="#icon-music"/></svg>
+      </div>
       <div class="flex-1 min-w-0">
-        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Sing It!</div>
+        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Sing It Loud!</div>
         <div class="text-[12px] text-[#aaa] font-black mt-[3px]">Complete 3 sing-along lessons</div>
         <div class="mt-[9px]">
           <div class="h-[9px] bg-[#f0f0f0] rounded-full overflow-hidden">
@@ -375,9 +526,11 @@ tailwind.config = {
 
     <!-- In Progress -->
     <div class="ach-row relative overflow-hidden bg-white rounded-[20px] p-[18px_20px] flex items-center gap-4 border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-[#FFC800]" data-filter="progress" onclick="popRow(this)">
-      <div class="text-[38px] flex-shrink-0">🚀</div>
+      <div class="text-[38px] flex-shrink-0">
+        <svg class="w-10 h-10 text-[#FFC800]" fill="none" viewBox="0 0 24 24"><use href="#icon-rocket"/></svg>
+      </div>
       <div class="flex-1 min-w-0">
-        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Speed Racer!</div>
+        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Speed Champ!</div>
         <div class="text-[12px] text-[#aaa] font-black mt-[3px]">Win 5 speed quizzes</div>
         <div class="mt-[9px]">
           <div class="h-[9px] bg-[#f0f0f0] rounded-full overflow-hidden">
@@ -393,10 +546,12 @@ tailwind.config = {
     </div>
 
     <div class="ach-row relative overflow-hidden bg-white rounded-[20px] p-[18px_20px] flex items-center gap-4 border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-[#FFC800]" data-filter="progress" onclick="popRow(this)">
-      <div class="text-[38px] flex-shrink-0">🌍</div>
+      <div class="text-[38px] flex-shrink-0">
+        <svg class="w-10 h-10 text-[#1CB0F6]" fill="none" viewBox="0 0 24 24"><use href="#icon-map"/></svg>
+      </div>
       <div class="flex-1 min-w-0">
-        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">World Explorer!</div>
-        <div class="text-[12px] text-[#aaa] font-black mt-[3px]">Explore all 6 worlds</div>
+        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Adventure Seeker!</div>
+        <div class="text-[12px] text-[#aaa] font-black mt-[3px]">Explore all 6 learning worlds</div>
         <div class="mt-[9px]">
           <div class="h-[9px] bg-[#f0f0f0] rounded-full overflow-hidden">
             <div class="bar-fill h-full rounded-full bg-gradient-to-r from-[#1CB0F6] to-[#58CC02]" style="--tw-bar-w:50%; width:50%;"></div>
@@ -411,9 +566,11 @@ tailwind.config = {
     </div>
 
     <div class="ach-row relative overflow-hidden bg-white rounded-[20px] p-[18px_20px] flex items-center gap-4 border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-[#FFC800]" data-filter="progress" onclick="popRow(this)">
-      <div class="text-[38px] flex-shrink-0">🧩</div>
+      <div class="text-[38px] flex-shrink-0">
+        <svg class="w-10 h-10 text-[#CE82FF]" fill="none" viewBox="0 0 24 24"><use href="#icon-game"/></svg>
+      </div>
       <div class="flex-1 min-w-0">
-        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Puzzle Master!</div>
+        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Puzzle Pro!</div>
         <div class="text-[12px] text-[#aaa] font-black mt-[3px]">Complete 10 word puzzles</div>
         <div class="mt-[9px]">
           <div class="h-[9px] bg-[#f0f0f0] rounded-full overflow-hidden">
@@ -430,9 +587,11 @@ tailwind.config = {
 
     <!-- Locked -->
     <div class="ach-row relative overflow-hidden bg-white rounded-[20px] p-[18px_20px] flex items-center gap-4 border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-[#e0e0e0] opacity-55" data-filter="locked">
-      <div class="text-[38px] flex-shrink-0">💎</div>
+      <div class="text-[38px] flex-shrink-0">
+        <svg class="w-10 h-10 text-[#ccc]" fill="none" viewBox="0 0 24 24"><use href="#icon-lock"/></svg>
+      </div>
       <div class="flex-1 min-w-0">
-        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Diamond Learner!</div>
+        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Dedication Star!</div>
         <div class="text-[12px] text-[#aaa] font-black mt-[3px]">Reach a 30-day streak</div>
         <div class="mt-[9px]">
           <div class="h-[9px] bg-[#f0f0f0] rounded-full overflow-hidden">
@@ -448,9 +607,11 @@ tailwind.config = {
     </div>
 
     <div class="ach-row relative overflow-hidden bg-white rounded-[20px] p-[18px_20px] flex items-center gap-4 border-b-4 border-[#e0e0e0] shadow-[0_4px_0_#e8e8e8] cursor-pointer transition-transform hover:translate-x-[5px] border-l-[5px] border-l-[#e0e0e0] opacity-55" data-filter="locked">
-      <div class="text-[38px] flex-shrink-0">👑</div>
+      <div class="text-[38px] flex-shrink-0">
+        <svg class="w-10 h-10 text-[#ccc]" fill="none" viewBox="0 0 24 24"><use href="#icon-lock"/></svg>
+      </div>
       <div class="flex-1 min-w-0">
-        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Streak Legend!</div>
+        <div class="font-fredoka text-[17px] text-[#3c3c3c] tracking-[.1px]">Legend Streak!</div>
         <div class="text-[12px] text-[#aaa] font-black mt-[3px]">The ultimate 100-day streak</div>
         <div class="mt-[9px]">
           <div class="h-[9px] bg-[#f0f0f0] rounded-full overflow-hidden">
